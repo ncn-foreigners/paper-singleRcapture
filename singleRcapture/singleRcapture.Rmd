@@ -1,7 +1,7 @@
 ---
 documentclass: jss
 author:
-  - name: Piotr Chrostowski
+  - name: Piotr Chlebicki
     affiliation: Adam Mickiewicz University
     address: |
       | Faculty of Mathetmatics and Informatics
