@@ -1,0 +1,147 @@
+\documentclass[
+]{jss}
+
+%% recommended packages
+\usepackage{orcidlink,thumbpdf,lmodern}
+
+\usepackage[utf8]{inputenc}
+
+\author{
+Piotr Chrostowski\\Adam Mickiewicz University \And Maciej
+Beręsewicz~\orcidlink{0000-0002-8281-4301}\\Poznań University of
+Economics\\
+and Bisiness \AND
+}
+\title{Single-Source Capture-Recapture Models With \pkg{singleRcapture}
+and \pkg{singleRcaptureExtra}}
+
+\Plainauthor{Piotr Chrostowski, Maciej Beręsewicz}
+\Plaintitle{Single-Source Capture-Recapture Models With singleRcapture
+and singleRcaptureExtra}
+\Shorttitle{\pkg{singleRcapture}: Single-Source Capture-Recapture
+Models}
+
+
+\Abstract{
+Estimating population size is an important issue in official statistics,
+social sciences and natural sciences. One way to approach this problem
+is to use capture-recapture methods, which can be classified according
+to the number of sources used, the main distinction being between
+methods based on one source and those based on two or more sources. In
+this presentation we will introduce the \pkg{singleRcapture} R package
+for fitting SSCR models. The package implements state-of-the-art models
+as well as some new models proposed by the authors (e.g.~extensions of
+zero-truncated one-inflated and one-inflated zero-truncated models). The
+software is intended for users interested in estimating the size of
+populations, particularly those that are difficult to reach or for which
+information is available from only one source and dual/multiple system
+estimation cannot be used.
+}
+
+\Keywords{population size estimation, truncated distributuons, count
+regression models, \proglang{R}}
+\Plainkeywords{population size estimation, truncated
+distributuons, count regression models, R}
+
+%% publication information
+%% \Volume{50}
+%% \Issue{9}
+%% \Month{June}
+%% \Year{2012}
+%% \Submitdate{}
+%% \Acceptdate{2012-06-04}
+
+\Address{
+    Piotr Chrostowski\\
+    Adam Mickiewicz University\\
+    Faculty of Mathetmatics and Informatics\\
+Wieniawskiego 1\\
+61-712 Poznań, Poland\\
+  E-mail: \email{piochl@st.amu.edu.pl}\\
+  URL: \url{https://github.com/Kertoo}\\~\\
+      Maciej Beręsewicz\\
+    Statistical Office in Poznań\\
+    Poznań University of Economics and Business\\
+Department of Statistics\\
+Institute of Informatics and Quantitative Economics\\
+Al. Niepodległosci 10\\
+61-875 Poznań, Poland\\
+  E-mail: \email{maciej.beresewicz@ue.poznan.pl}\\
+  
+  }
+
+
+% tightlist command for lists without linebreak
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+
+\usepackage{amsmath}
+
+\begin{document}
+
+
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+This template demonstrates some of the basic LaTeX that you need to know
+to create a JSS article.
+
+\hypertarget{code-formatting}{%
+\subsection{Code formatting}\label{code-formatting}}
+
+In general, don't use Markdown, but use the more precise LaTeX commands
+instead:
+
+\begin{itemize}
+\item
+  \proglang{Java}
+\item
+  \pkg{plyr}
+\end{itemize}
+
+One exception is inline code, which can be written inside a pair of
+backticks (i.e., using the Markdown syntax).
+
+If you want to use LaTeX commands in headers, you need to provide a
+\texttt{short-title} attribute. You can also provide a custom identifier
+if necessary. See the header of Section \ref{r-code} for example.
+
+\section[R code]{\proglang{R} code}\label{r-code}
+
+Can be inserted in regular R markdown blocks.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> x <- 1:10
+R> x
+\end{CodeInput}
+\begin{CodeOutput}
+ [1]  1  2  3  4  5  6  7  8  9 10
+\end{CodeOutput}
+\end{CodeChunk}
+
+\subsection[Features specific to rticles]{Features specific to
+\pkg{rticles}}\label{features-specific-to}
+
+\begin{itemize}
+\tightlist
+\item
+  Adding short titles to section headers is a feature specific to
+  \pkg{rticles} (implemented via a Pandoc Lua filter). This feature is
+  currently not supported by Pandoc and we will update this template if
+  \href{https://github.com/jgm/pandoc/issues/4409}{it is officially
+  supported in the future}.
+\item
+  Using the \texttt{\textbackslash{}AND} syntax in the \texttt{author}
+  field to add authors on a new line. This is a specific to the
+  \texttt{rticles::jss\_article} format.
+\end{itemize}
+
+
+
+
+\end{document}
