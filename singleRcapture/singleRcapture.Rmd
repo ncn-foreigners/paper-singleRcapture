@@ -14,24 +14,17 @@ author:
     email: \email{maciej.beresewicz@ue.poznan.pl}
     affiliation: |
       | Poznań University of Economics
-      | and Bisiness \AND
+      | and Bisiness
     address: |
       | Poznań University of Economics and Business
       | Department of Statistics
       | Institute of Informatics and Quantitative Economics
       | Al. Niepodległosci 10
       | 61-875 Poznań, Poland
-    affiliation2: |
-      | Statistical Office in Poznań
-    address2: |
-      | Centre for Small Area Estimation
-      | Statistical Office in Poznań
-      | ul. Wojska Polskiego 27/29
-      | 60-624 Poznań, Poland
 title:
-  formatted: "Single-Source Capture-Recapture Models With \\pkg{singleRcapture} and \\pkg{singleRcaptureExtra}"
+  formatted: "Single-Source Capture-Recapture Models With \\pkg{singleRcapture}"
   # If you use tex in the formatted title, also supply version without
-  plain:     "Single-Source Capture-Recapture Models With singleRcapture and singleRcaptureExtra"
+  plain:     "Single-Source Capture-Recapture Models With singleRcapture"
   # For running headers, if needed
   short:     "\\pkg{singleRcapture}: Single-Source Capture-Recapture Models"
 abstract: >
