@@ -2,12 +2,11 @@
 documentclass: jss
 author:
   - name: Piotr Chlebicki
-    affiliation: Adam Mickiewicz University
+    affiliation: Stockholm University
     address: |
-      | Faculty of Mathetmatics and Informatics
-      | Wieniawskiego 1
-      | 61-712 Poznań, Poland
-    email: \email{piochl@st.amu.edu.pl}
+      | Matematiska institutionen
+      | 106 91 Stockholm, Albano hus 1
+    email: \email{piotr.chlebicki@math.su.se}
     url: https://github.com/Kertoo
   - name: Maciej Beręsewicz
     orcid: 0000-0002-8281-4301
@@ -44,7 +43,13 @@ keywords:
   formatted: [population size estimation, truncated distributuons, count regression models, "\\proglang{R}"]
   plain:     [population size estimation, truncated distributuons, count regression models, R]
 preamble: >
-  \usepackage{amsmath}
+  \usepackage{amsmath, amsthm, amssymb, csquotes}
+  \DeclareMathAlphabet{\mathmybb}{U}{bbold}{m}{n}
+  \newcommand{\1}{\mathmybb{1}}
+  \newcommand{\bx}{\boldsymbol{x}}
+  \newcommand{\bX}{\boldsymbol{X}}
+  \newcommand{\bbeta}{\boldsymbol{\beta}}
+  \newcommand{\boeta}{\boldsymbol{\eta}}
 output: rticles::jss_article
 ---
 
@@ -54,30 +59,129 @@ options(prompt = 'R> ', continue = '+ ')
 
 # Introduction
 
-This template demonstrates some of the basic LaTeX that you need to know to create a JSS article.
+## Literature review
 
-## Code formatting
+This work is supported by the National Science Center, OPUS 20 grant no. 2020\-/\-39/\-B/\-HS4/\-00941
+\textit{Towards census-like statistics for foreign-born populations -- quality, data integration and estimation}
 
-In general, don't use Markdown, but use the more precise LaTeX commands instead:
+The subject of this workshop is the \pkg{singleRcapture} package and its lightweight extension that allows for integration with other \proglang{R} packages called \pkg{singleRcaptureExtra}.
 
-* \proglang{Java}
-* \pkg{plyr}
+The package is available on CRAN:
+\url{CRAN.R-project.org/package=singleRcapture} while the extension is available on: \url{https://github.com/ncn-foreigners/singleRcaptureExtra}.
 
-One exception is inline code, which can be written inside a pair of backticks (i.e., using the Markdown syntax).
+The \pkg{singleRcapture} package is an \proglang{R} language package that focuses on implementing state of the art methods for frequentist point and interval estimation of size of closed populations in single-source capture-recapture (SSCR) setting (e.g. estimation of the population size of irregular migrants at set time point in a given area). 
 
-If you want to use LaTeX commands in headers, you need to provide a `short-title` attribute. You can also provide a custom identifier if necessary. See the header of Section \ref{r-code} for example.
+## How do we estimate population size with only one register
 
-# \proglang{R} code {short-title="R code" #r-code}
+## Example with \proglang{R} code {short-title="Example with R code" #r-code}
 
-Can be inserted in regular R markdown blocks.
+Installation:
 
-```{r}
-x <- 1:10
-x
+```{r, eval=FALSE}
+install.packages("singleRcapture")
+remotes::install_github("https://github.com/ncn-foreigners/singleRcaptureExtra")
 ```
 
-## Features specific to \pkg{rticles} {short-title="Features specific to rticles"}
+```{r}
+library(singleRcapture)
 
-* Adding short titles to section headers is a feature specific to \pkg{rticles} (implemented via a Pandoc Lua filter). This feature is currently not supported by Pandoc and we will update this template if [it is officially supported in the future](https://github.com/jgm/pandoc/issues/4409).
-* Using the `\AND` syntax in the `author` field to add authors on a new line. This is a specific to the `rticles::jss_article` format.
+head(netherlandsimmigrant)
+```
+
+```{r}
+basicModel <- estimatePopsize(
+  formula = capture ~ gender + age + nation,
+  model   = ztpoisson(),
+  data    = netherlandsimmigrant
+)
+
+summary(basicModel)
+```
+
+
+# Detailed information
+
+## Fitting method
+
+## Avaiable models
+
+The full list of implemented models in \pkg{singleRcapture} along with the expressions for probability density functions and point estimates is found in the collective help file for all family functions:
+```{r, eval=FALSE}
+?ztpoisson
+```
+
+Here we limit ourselves to just listing the family functions:
+
+\begin{itemize}
+    \item Zero-truncated and zero-one-truncated Poisson, geometric, NB type II regression where the untruncated distribution is parameterized as:
+    \begin{equation*}
+        \mathbb{P}[Y=y|\lambda,\alpha] = \frac{\Gamma\left(y+\alpha^{-1}\right)}{\Gamma\left(\alpha^{-1}\right)y!}
+        \left(\frac{\alpha^{-1}}{\alpha^{-1}+\lambda}\right)^{\alpha^{-1}}
+        \left(\frac{\lambda}{\lambda + \alpha^{-1}}\right)^{y}.
+    \end{equation*}
+    \item Zero-truncated one-inflated (ztoi) modifications distributions where the new probability $\mathbb{P}^{\ast}$ measure is defined in terms of count data measure $\mathbb{P}$ with support on $\mathbb{N}\cup\{0\}$ as:
+    \begin{equation*}
+    \mathbb{P}^{\ast}[Y=y]=
+    \begin{cases}
+    \mathbb{P}[Y=0] & y=0, \\
+    \omega\left(1-\mathbb{P}[Y=0]\right)+(1-\omega)\mathbb{P}[Y=1] & y=1, \\
+    (1-\omega)\mathbb{P}[Y=y] & y>1,
+    \end{cases}
+    \end{equation*}
+    \begin{equation*}
+        \mathbb{P}^{\ast}[Y=y|Y>0]=\omega\1_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y|Y>0].
+    \end{equation*}
+    \item One-inflated zero-truncated (oizt) modifications distributions where the new probability $\mathbb{P}^{\ast}$ measure is defined as:
+    \begin{equation*}
+        \mathbb{P}^{\ast}[Y=y] = \omega \1_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y],
+    \end{equation*}
+    \begin{equation*}
+        \mathbb{P}^{\ast}[Y=y|Y>0] = 
+        \omega\frac{\1_{\{1\}}(y)}{1-(1-\omega)\mathbb{P}[Y=0]}+
+        (1-\omega)\frac{\mathbb{P}[Y=y]}{1-(1-\omega)\mathbb{P}[Y=0]}.
+    \end{equation*}
+    \item Generalized Chao's and Zelterman's estimators via logistic regression on variable $Z$ defined as $Z=1$ if $Y=2$ and $Z=0$ if $Y=1$ with $Z\sim b(p)$ where $\text{logit}(p)=\ln(\lambda/2)$ for poisson parameter $\lambda$,
+    \begin{align}
+        \hat{N} &= N_{obs}+
+        \sum_{k=1}^{\boldsymbol{f}_{1}+\boldsymbol{f}_{2}}
+        \left(2\exp\left(\bx_{k}\hat{\bbeta}\right)+
+        2\exp\left(2\bx_{k}\hat{\bbeta}\right)\right)^{-1},
+        \tag{\text{Chao's estimator}}\\
+        \hat{N}&=\sum_{k=1}^{N_{obs}}
+        \left(1-\exp\left(-2\exp\left(\bx_{k}\hat{\bbeta}\right)\right)\right)^{-1}.
+        \tag{\text{Zelterman's estimator}}
+    \end{align}
+    \item Alternative approaches to modelling one-inflation that mimic hurdle models where the first type zero truncated hurdle model (ztHurdle) is defined as:
+    \begin{equation*}
+        \mathbb{P}^{\ast}[Y=y]=\begin{cases}
+        \frac{\mathbb{P}[Y=0]}{1-\mathbb{P}[Y=1]} & y=0, \\
+        \pi(1-\mathbb{P}[Y=1]) & y=1, \\
+        (1-\pi) \frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=1]} & y>1,
+        \end{cases}
+    \end{equation*}
+    \begin{equation*}
+        \mathbb{P}^{\ast}[Y=y|Y>0]=\pi\1_{\{1\}}(y)+
+        (1-\pi)\1_{\mathbb{N}\setminus\{1\}}(y)\frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]}
+    \end{equation*}
+    \item The Hurdle zero truncarted (Hurdlezt) is defined as:
+    \begin{equation*}
+        \mathbb{P}^{\ast}[Y=y]=\begin{cases}
+        \pi & y=1, \\
+        (1-\pi) \frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=1]} & y\neq1,
+        \end{cases}
+        \quad
+        \mathbb{P}^{\ast}[Y=y|Y>0]=\begin{cases}
+            \pi\frac{1-\mathbb{P}[Y=1]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]} & y=1,\\
+            (1-\pi)\frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]} & y>1.
+        \end{cases}
+    \end{equation*}
+\end{itemize}
+
+### Structure of a family function
+
+## Marginal frequencies
+
+A popular method of testing the model fit in single source capture-recapture studies is comparing the fitted marginal frequencies $\displaystyle\sum_{j=1}^{N_{obs}}\hat{\mathbb{P}}\left[Y_{j}=k|\bx_{j}, Y_{k} > 0\right]$ with the observed marginal frequencies $\displaystyle\sum_{j=1}^{N}\1(Y_{k}=k)=\sum_{j=1}^{N_{obs}}\1(Y_{k}=k)$ for $k\geq1$.
+
+If a fitted model bears sufficient resemblance to the real data collection process these quantities should be quite close.
 

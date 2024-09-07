@@ -7,7 +7,7 @@
 \usepackage[utf8]{inputenc}
 
 \author{
-Piotr Chlebicki\\Adam Mickiewicz University \And Maciej
+Piotr Chlebicki\\Stockholm University \And Maciej
 Beręsewicz~\orcidlink{0000-0002-8281-4301}\\Poznań University of
 Economics\\
 and Bisiness
@@ -51,11 +51,10 @@ distributuons, count regression models, R}
 
 \Address{
     Piotr Chlebicki\\
-    Adam Mickiewicz University\\
-    Faculty of Mathetmatics and Informatics\\
-Wieniawskiego 1\\
-61-712 Poznań, Poland\\
-  E-mail: \email{piochl@st.amu.edu.pl}\\
+    Stockholm University\\
+    Matematiska institutionen\\
+106 91 Stockholm, Albano hus 1\\
+  E-mail: \email{piotr.chlebicki@math.su.se}\\
   URL: \url{https://github.com/Kertoo}\\~\\
       Maciej Beręsewicz\\
     Poznań University of Economics\\
@@ -77,7 +76,12 @@ Al. Niepodległosci 10\\
 
 
 
-\usepackage{amsmath}
+\usepackage{amsmath, amsthm, amssymb, csquotes}
+
+\DeclareMathAlphabet{\mathmybb}{U}{bbold}{m}{n}
+\newcommand{\1}{\mathmybb{1}} \newcommand{\bx}{\boldsymbol{x}}
+\newcommand{\bX}{\boldsymbol{X}} \newcommand{\bbeta}{\boldsymbol{\beta}}
+\newcommand{\boeta}{\boldsymbol{\eta}}
 
 \begin{document}
 
@@ -86,59 +90,221 @@ Al. Niepodległosci 10\\
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
 
-This template demonstrates some of the basic LaTeX that you need to know
-to create a JSS article.
+\hypertarget{literature-review}{%
+\subsection{Literature review}\label{literature-review}}
 
-\hypertarget{code-formatting}{%
-\subsection{Code formatting}\label{code-formatting}}
+This work is supported by the National Science Center, OPUS 20 grant no.
+2020-/-39/-B/-HS4/-00941
+\textit{Towards census-like statistics for foreign-born populations -- quality, data integration and estimation}
 
-In general, don't use Markdown, but use the more precise LaTeX commands
-instead:
+The subject of this workshop is the \pkg{singleRcapture} package and its
+lightweight extension that allows for integration with other
+\proglang{R} packages called \pkg{singleRcaptureExtra}.
 
-\begin{itemize}
-\item
-  \proglang{Java}
-\item
-  \pkg{plyr}
-\end{itemize}
+The package is available on CRAN:
+\url{CRAN.R-project.org/package=singleRcapture} while the extension is
+available on:
+\url{https://github.com/ncn-foreigners/singleRcaptureExtra}.
 
-One exception is inline code, which can be written inside a pair of
-backticks (i.e., using the Markdown syntax).
+The \pkg{singleRcapture} package is an \proglang{R} language package
+that focuses on implementing state of the art methods for frequentist
+point and interval estimation of size of closed populations in
+single-source capture-recapture (SSCR) setting (e.g.~estimation of the
+population size of irregular migrants at set time point in a given
+area).
 
-If you want to use LaTeX commands in headers, you need to provide a
-\texttt{short-title} attribute. You can also provide a custom identifier
-if necessary. See the header of Section \ref{r-code} for example.
+\hypertarget{how-do-we-estimate-population-size-with-only-one-register}{%
+\subsection{How do we estimate population size with only one
+register}\label{how-do-we-estimate-population-size-with-only-one-register}}
 
-\section[R code]{\proglang{R} code}\label{r-code}
+\subsection[Example with R code]{Example with \proglang{R}
+code}\label{r-code}
 
-Can be inserted in regular R markdown blocks.
+Installation:
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> x <- 1:10
-R> x
+R> install.packages("singleRcapture")
+R> remotes::install_github("https://github.com/ncn-foreigners/singleRcaptureExtra")
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> library(singleRcapture)
+R> 
+R> head(netherlandsimmigrant)
 \end{CodeInput}
 \begin{CodeOutput}
- [1]  1  2  3  4  5  6  7  8  9 10
+  capture gender    age       reason       nation
+1       1   male <40yrs Other reason North Africa
+2       1   male <40yrs Other reason North Africa
+3       1   male <40yrs Other reason North Africa
+4       1   male <40yrs Other reason         Asia
+5       1   male <40yrs Other reason         Asia
+6       2   male <40yrs Other reason North Africa
 \end{CodeOutput}
 \end{CodeChunk}
 
-\subsection[Features specific to rticles]{Features specific to
-\pkg{rticles}}\label{features-specific-to}
+\begin{CodeChunk}
+\begin{CodeInput}
+R> basicModel <- estimatePopsize(
++   formula = capture ~ gender + age + nation,
++   model   = ztpoisson(),
++   data    = netherlandsimmigrant
++ )
+R> 
+R> summary(basicModel)
+\end{CodeInput}
+\begin{CodeOutput}
+
+Call:
+estimatePopsize.default(formula = capture ~ gender + age + nation, 
+    data = netherlandsimmigrant, model = ztpoisson())
+
+Pearson Residuals:
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+-0.486442 -0.486442 -0.298080  0.002093 -0.209444 13.910844 
+
+Coefficients:
+-----------------------
+For linear predictors associated with: lambda 
+                     Estimate Std. Error z value  P(>|z|)    
+(Intercept)           -1.3411     0.2149  -6.241 4.35e-10 ***
+gendermale             0.3972     0.1630   2.436 0.014832 *  
+age>40yrs             -0.9746     0.4082  -2.387 0.016972 *  
+nationAsia            -1.0926     0.3016  -3.622 0.000292 ***
+nationNorth Africa     0.1900     0.1940   0.979 0.327398    
+nationRest of Africa  -0.9106     0.3008  -3.027 0.002468 ** 
+nationSurinam         -2.3364     1.0136  -2.305 0.021159 *  
+nationTurkey          -1.6754     0.6028  -2.779 0.005445 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+AIC: 1712.901
+BIC: 1757.213
+Residual deviance: 1128.553
+
+Log-likelihood: -848.4504 on 1872 Degrees of freedom 
+Number of iterations: 8
+-----------------------
+Population size estimation results: 
+Point estimate 12690.35
+Observed proportion: 14.8% (N obs = 1880)
+Std. Error 2808.169
+95% CI for the population size:
+          lowerBound upperBound
+normal      7186.444   18194.26
+logNormal   8431.275   19718.32
+95% CI for the share of observed population:
+          lowerBound upperBound
+normal     10.332927   26.16037
+logNormal   9.534281   22.29793
+\end{CodeOutput}
+\end{CodeChunk}
+
+\hypertarget{detailed-information}{%
+\section{Detailed information}\label{detailed-information}}
+
+\hypertarget{fitting-method}{%
+\subsection{Fitting method}\label{fitting-method}}
+
+\hypertarget{avaiable-models}{%
+\subsection{Avaiable models}\label{avaiable-models}}
+
+The full list of implemented models in \pkg{singleRcapture} along with
+the expressions for probability density functions and point estimates is
+found in the collective help file for all family functions:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> ?ztpoisson
+\end{CodeInput}
+\end{CodeChunk}
+
+Here we limit ourselves to just listing the family functions:
 
 \begin{itemize}
-\tightlist
-\item
-  Adding short titles to section headers is a feature specific to
-  \pkg{rticles} (implemented via a Pandoc Lua filter). This feature is
-  currently not supported by Pandoc and we will update this template if
-  \href{https://github.com/jgm/pandoc/issues/4409}{it is officially
-  supported in the future}.
-\item
-  Using the \texttt{\textbackslash{}AND} syntax in the \texttt{author}
-  field to add authors on a new line. This is a specific to the
-  \texttt{rticles::jss\_article} format.
+    \item Zero-truncated and zero-one-truncated Poisson, geometric, NB type II regression where the untruncated distribution is parameterized as:
+    \begin{equation*}
+        \mathbb{P}[Y=y|\lambda,\alpha] = \frac{\Gamma\left(y+\alpha^{-1}\right)}{\Gamma\left(\alpha^{-1}\right)y!}
+        \left(\frac{\alpha^{-1}}{\alpha^{-1}+\lambda}\right)^{\alpha^{-1}}
+        \left(\frac{\lambda}{\lambda + \alpha^{-1}}\right)^{y}.
+    \end{equation*}
+    \item Zero-truncated one-inflated (ztoi) modifications distributions where the new probability $\mathbb{P}^{\ast}$ measure is defined in terms of count data measure $\mathbb{P}$ with support on $\mathbb{N}\cup\{0\}$ as:
+    \begin{equation*}
+    \mathbb{P}^{\ast}[Y=y]=
+    \begin{cases}
+    \mathbb{P}[Y=0] & y=0, \\
+    \omega\left(1-\mathbb{P}[Y=0]\right)+(1-\omega)\mathbb{P}[Y=1] & y=1, \\
+    (1-\omega)\mathbb{P}[Y=y] & y>1,
+    \end{cases}
+    \end{equation*}
+    \begin{equation*}
+        \mathbb{P}^{\ast}[Y=y|Y>0]=\omega\mathmybb{1}_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y|Y>0].
+    \end{equation*}
+    \item One-inflated zero-truncated (oizt) modifications distributions where the new probability $\mathbb{P}^{\ast}$ measure is defined as:
+    \begin{equation*}
+        \mathbb{P}^{\ast}[Y=y] = \omega \mathmybb{1}_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y],
+    \end{equation*}
+    \begin{equation*}
+        \mathbb{P}^{\ast}[Y=y|Y>0] = 
+        \omega\frac{\mathmybb{1}_{\{1\}}(y)}{1-(1-\omega)\mathbb{P}[Y=0]}+
+        (1-\omega)\frac{\mathbb{P}[Y=y]}{1-(1-\omega)\mathbb{P}[Y=0]}.
+    \end{equation*}
+    \item Generalized Chao's and Zelterman's estimators via logistic regression on variable $Z$ defined as $Z=1$ if $Y=2$ and $Z=0$ if $Y=1$ with $Z\sim b(p)$ where $\text{logit}(p)=\ln(\lambda/2)$ for poisson parameter $\lambda$,
+    \begin{align}
+        \hat{N} &= N_{obs}+
+        \sum_{k=1}^{\boldsymbol{f}_{1}+\boldsymbol{f}_{2}}
+        \left(2\exp\left(\boldsymbol{x}_{k}\hat{\boldsymbol{\beta}}\right)+
+        2\exp\left(2\boldsymbol{x}_{k}\hat{\boldsymbol{\beta}}\right)\right)^{-1},
+        \tag{\text{Chao's estimator}}\\
+        \hat{N}&=\sum_{k=1}^{N_{obs}}
+        \left(1-\exp\left(-2\exp\left(\boldsymbol{x}_{k}\hat{\boldsymbol{\beta}}\right)\right)\right)^{-1}.
+        \tag{\text{Zelterman's estimator}}
+    \end{align}
+    \item Alternative approaches to modelling one-inflation that mimic hurdle models where the first type zero truncated hurdle model (ztHurdle) is defined as:
+    \begin{equation*}
+        \mathbb{P}^{\ast}[Y=y]=\begin{cases}
+        \frac{\mathbb{P}[Y=0]}{1-\mathbb{P}[Y=1]} & y=0, \\
+        \pi(1-\mathbb{P}[Y=1]) & y=1, \\
+        (1-\pi) \frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=1]} & y>1,
+        \end{cases}
+    \end{equation*}
+    \begin{equation*}
+        \mathbb{P}^{\ast}[Y=y|Y>0]=\pi\mathmybb{1}_{\{1\}}(y)+
+        (1-\pi)\mathmybb{1}_{\mathbb{N}\setminus\{1\}}(y)\frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]}
+    \end{equation*}
+    \item The Hurdle zero truncarted (Hurdlezt) is defined as:
+    \begin{equation*}
+        \mathbb{P}^{\ast}[Y=y]=\begin{cases}
+        \pi & y=1, \\
+        (1-\pi) \frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=1]} & y\neq1,
+        \end{cases}
+        \quad
+        \mathbb{P}^{\ast}[Y=y|Y>0]=\begin{cases}
+            \pi\frac{1-\mathbb{P}[Y=1]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]} & y=1,\\
+            (1-\pi)\frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]} & y>1.
+        \end{cases}
+    \end{equation*}
 \end{itemize}
+
+\hypertarget{structure-of-a-family-function}{%
+\subsubsection{Structure of a family
+function}\label{structure-of-a-family-function}}
+
+\hypertarget{marginal-frequencies}{%
+\subsection{Marginal frequencies}\label{marginal-frequencies}}
+
+A popular method of testing the model fit in single source
+capture-recapture studies is comparing the fitted marginal frequencies
+\(\displaystyle\sum_{j=1}^{N_{obs}}\hat{\mathbb{P}}\left[Y_{j}=k|\boldsymbol{x}_{j}, Y_{k} > 0\right]\)
+with the observed marginal frequencies
+\(\displaystyle\sum_{j=1}^{N}\mathmybb{1}(Y_{k}=k)=\sum_{j=1}^{N_{obs}}\mathmybb{1}(Y_{k}=k)\)
+for \(k\geq1\).
+
+If a fitted model bears sufficient resemblance to the real data
+collection process these quantities should be quite close.
 
 
 
