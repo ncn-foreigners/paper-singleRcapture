@@ -10,7 +10,7 @@
 Piotr Chlebicki\\Stockholm University \And Maciej
 Beręsewicz~\orcidlink{0000-0002-8281-4301}\\Poznań University of
 Economics\\
-and Bisiness
+and Business
 }
 \title{Single-Source Capture-Recapture Models With \pkg{singleRcapture}}
 
@@ -58,7 +58,7 @@ distributuons, count regression models, R}
   URL: \url{https://github.com/Kertoo}\\~\\
       Maciej Beręsewicz\\
     Poznań University of Economics\\
-and Bisiness\\
+and Business\\
     Poznań University of Economics and Business\\
 Department of Statistics\\
 Institute of Informatics and Quantitative Economics\\
@@ -76,10 +76,10 @@ Al. Niepodległosci 10\\
 
 
 
-\usepackage{amsmath, amsthm, amssymb, csquotes}
+\usepackage{amsmath, amsthm, amssymb} \usepackage{calc, ragged2e}
 
 \DeclareMathAlphabet{\mathmybb}{U}{bbold}{m}{n}
-\newcommand{\1}{\mathmybb{1}} \newcommand{\bx}{\boldsymbol{x}}
+\newcommand{\1}{\mathcal{I}} \newcommand{\bx}{\boldsymbol{x}}
 \newcommand{\bX}{\boldsymbol{X}} \newcommand{\bbeta}{\boldsymbol{\beta}}
 \newcommand{\boeta}{\boldsymbol{\eta}}
 
@@ -89,6 +89,8 @@ Al. Niepodległosci 10\\
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
+
+\allowdisplaybreaks
 
 \hypertarget{literature-review}{%
 \subsection{Literature review}\label{literature-review}}
@@ -113,9 +115,57 @@ single-source capture-recapture (SSCR) setting (e.g.~estimation of the
 population size of irregular migrants at set time point in a given
 area).
 
+The beginning of inference in single source capture-recapture dates back
+to the seminal \cite{ztpoisson} paper in which the zero truncated
+poisson model was applied to study the size of population of irregular
+migrants in fours cities in Netherlands.
+
 \hypertarget{how-do-we-estimate-population-size-with-only-one-register}{%
 \subsection{How do we estimate population size with only one
-register}\label{how-do-we-estimate-population-size-with-only-one-register}}
+register?}\label{how-do-we-estimate-population-size-with-only-one-register}}
+
+Let \(Y_{k}\) represent the number of times \(k\)-th unit was observed
+in source data. Clearly, we don not know how often \(Y_{k}=0\) and to
+find the total population size \(N\) we need to estimate it. In general,
+we assume that conditional distribution of \(Y_{k}\) given
+a\textasciitilde vector of covariates \(\mathbf{x}_{k}\) follows some
+version of zero truncated count data distribution. Knowing the
+parameters of the distribution we may estimate the population size using
+Horwitz-Thompson type estimator: \begin{equation*}
+    \hat{N}=
+    \sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}[Y_{k}>0|\mathbf{x}_{k}]}=
+    \sum_{k=1}^{N_{obs}}\frac{1}{\mathbb{P}[Y_{k}>0|\mathbf{x}_{k}]},
+\end{equation*} where \(I_{k}:=\mathcal{I}_{\mathbb{N}}(Y_{k})\), and
+maximum likelihood estimate of \(N\) is obtained after substituting
+regression estimates for \(\mathbb{P}[Y_{k}>0|\mathbf{x}_{k}]\) into the
+equation above. Most of the methods relate to poisson processes.
+
+The analytic variance estimation is then done by computing two parts of
+the decomposition due to the law of total variance: \begin{equation*}
+  \text{var}[\hat{N}]=
+  \mathbb{E}\left[\text{var}
+  \left[\hat{N}|I_{1},\dots,I_{n}\right]\right]+
+  \text{var}\left[\mathbb{E}[\hat{N}|I_{1},\dots,I_{n}]\right]
+\end{equation*} where the first addend is by the multivariate \(\delta\)
+method seen to be: \begin{equation*}
+  \mathbb{E}\left[\text{var}
+  \left[\hat{N}|I_{1},\dots,I_{n}\right]\right]=
+  \left.\left(\frac{\partial(N|I_1,\dots,I_N)}{\partial\boldsymbol{\beta}}\right)^{T}
+  \text{cov}\left[\boldsymbol{\beta}\right]
+  \left(\frac{\partial(N|I_1,\dots,I_N)}{\partial\boldsymbol{\beta}}\right)
+  \right|_{\boldsymbol{\beta}=\hat{\boldsymbol{\beta}}}
+\end{equation*} while the later part of the decomposition is under the
+assumption of independence of \(I_{k}\)'s optimally estimated via:
+\begin{align}
+  \text{var}\left(\mathbb{E}(\hat{N}|I_{1},\dots,I_{n})\right)&=
+  \text{var}\left(\sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}(Y_{k}>0)}\right)\nonumber\\
+  &=\sum_{k=1}^{N}\text{var}\left(\frac{I_{k}}{\mathbb{P}(Y_{k}>0)}\right)\nonumber\\
+  &=\sum_{k=1}^{N}\frac{1}{\mathbb{P}(Y_{k}>0)^{2}}\text{var}(I_{k})\nonumber\\
+  &=\sum_{k=1}^{N}\frac{1}{\mathbb{P}(Y_{k}>0)^{2}}\mathbb{P}(Y_{k}>0)(1-\mathbb{P}(Y_{k}>0))\nonumber\\
+  &=\sum_{k=1}^{N}\frac{1}{\mathbb{P}(Y_{k}>0)}(1-\mathbb{P}(Y_{k}>0))\nonumber\\
+  &\approx\sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}(Y_{k}>0)^{2}}(1-\mathbb{P}(Y_{k}>0))\nonumber\\
+  &=\sum_{k=1}^{N_{obs}}\frac{1-\mathbb{P}(Y_{k}>0)}{\mathbb{P}(Y_{k}>0)^{2}}
+\end{align}
 
 \subsection[Example with R code]{Example with \proglang{R}
 code}\label{r-code}
@@ -125,7 +175,9 @@ Installation:
 \begin{CodeChunk}
 \begin{CodeInput}
 R> install.packages("singleRcapture")
-R> remotes::install_github("https://github.com/ncn-foreigners/singleRcaptureExtra")
+R> remotes::install_github(
++   "https://github.com/ncn-foreigners/singleRcaptureExtra"
++ )
 \end{CodeInput}
 \end{CodeChunk}
 
@@ -143,6 +195,28 @@ R> head(netherlandsimmigrant)
 4       1   male <40yrs Other reason         Asia
 5       1   male <40yrs Other reason         Asia
 6       2   male <40yrs Other reason North Africa
+\end{CodeOutput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> summary(netherlandsimmigrant)
+\end{CodeInput}
+\begin{CodeOutput}
+    capture         gender         age                reason    
+ Min.   :1.000   female: 398   <40yrs:1769   Illegal stay: 259  
+ 1st Qu.:1.000   male  :1482   >40yrs: 111   Other reason:1621  
+ Median :1.000                                                  
+ Mean   :1.162                                                  
+ 3rd Qu.:1.000                                                  
+ Max.   :6.000                                                  
+                    nation    
+ American and Australia: 173  
+ Asia                  : 284  
+ North Africa          :1023  
+ Rest of Africa        : 243  
+ Surinam               :  64  
+ Turkey                :  93  
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -209,6 +283,44 @@ logNormal   9.534281   22.29793
 \hypertarget{fitting-method}{%
 \subsection{Fitting method}\label{fitting-method}}
 
+As previously showcased the \pkg{singleRcapture} package supports
+modelling (linear) dependence on covariates of all parameters. To that
+end a modified IRLS algorithm is employed, full details are available in
+\cite{VGAM-main}. In order to employ the algorithm a modified model
+matrix is created \(\boldsymbol{X}_{\text{vlm}}\) at call to
+\texttt{estimatePopsize}. In the context of the models implemented in
+\pkg{singleRcapture} this matrix can be writen as:
+
+\begin{equation}
+  \boldsymbol{X}_{vlm}=
+  \begin{pmatrix}
+    \boldsymbol{X}_{1} & \boldsymbol{0} &\dotso &\boldsymbol{0}\cr
+    \boldsymbol{0} & \boldsymbol{X}_{2} &\dotso &\boldsymbol{0}\cr
+    \vdots & \vdots & \ddots & \vdots\cr
+    \boldsymbol{0} & \boldsymbol{0} &\dotso &\boldsymbol{X}_{p}
+  \end{pmatrix}
+\end{equation}
+
+In the context of multi-parameter families we have a matrix of linear
+predictors \(\boldsymbol{\eta}\) instead of a vector, with the number of
+columns matching the number of parameters in the distribution.
+``Weights'' are then modified to be information matrices
+\(\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boldsymbol{\eta}_{(k)}^{T}\partial\boldsymbol{\eta}_{(k)}}\right]\)
+where \(\boldsymbol{\eta}_{(k)}\) is the \(k\)'th row of
+\(\boldsymbol{\eta}\), while in the usual IRLS they are scalars
+\(\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\eta_{k}^{2}}\right]\)
+which is often just
+\(\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}\).
+
+\begin{enumerate}
+    \justifying
+    \item Initialize with $\texttt{converged} \leftarrow$ FALSE, $\texttt{iter}\leftarrow 1, \boldsymbol{\eta}\leftarrow\texttt{start}, \boldsymbol{W}\leftarrow I, \ell\leftarrow\ell(\boldsymbol{\beta})$.
+    \item Store values from the previous step: $\ell_{-}\leftarrow\ell, \boldsymbol{W}_{-}\leftarrow\boldsymbol{W}, \boldsymbol{\beta}_{-}\leftarrow\boldsymbol{\beta}$ (the last assignment is omitted during the first iteration), and assign values in current iteration $\displaystyle\boldsymbol{\eta}\leftarrow\boldsymbol{X}_{\text{vlm}}\boldsymbol{\beta}+\boldsymbol{o}, \boldsymbol{W}_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boldsymbol{\eta}_{(k)}^{T}\partial\boldsymbol{\eta}_{(k)}}\right], Z\leftarrow\boldsymbol{\eta}_{(k)}+\frac{\partial\ell}{\partial\boldsymbol{\eta}_{(k)}}\boldsymbol{W}_{(k)}^{-1}-\boldsymbol{o}_{(k)}$.
+    \item Assign current coefficient value: $\boldsymbol{\beta}\leftarrow\left(\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{X}_{\text{vlm}}\right)^{-1}\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{Z}$.
+    \item If $\ell(\boldsymbol{\beta})<\ell(\boldsymbol{\beta}_{-})$ try selecting the smallest value $h$ such that for $\boldsymbol{\beta}_{h}\leftarrow2^{-h}\left(\boldsymbol{\beta}+\boldsymbol{\beta}_{-}\right)$ the inequality $\ell(\boldsymbol{\beta}_{h})>\ell(\boldsymbol{\beta}_{-})$ holds if this is successful $\boldsymbol{\beta}\leftarrow\boldsymbol{\beta}_{h}$ else stop the algorithm.
+    \item If convergence is achieved end algorithm, else return to step 2.
+\end{enumerate}
+
 \hypertarget{avaiable-models}{%
 \subsection{Avaiable models}\label{avaiable-models}}
 
@@ -241,15 +353,15 @@ Here we limit ourselves to just listing the family functions:
     \end{cases}
     \end{equation*}
     \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y|Y>0]=\omega\mathmybb{1}_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y|Y>0].
+        \mathbb{P}^{\ast}[Y=y|Y>0]=\omega\mathcal{I}_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y|Y>0].
     \end{equation*}
     \item One-inflated zero-truncated (oizt) modifications distributions where the new probability $\mathbb{P}^{\ast}$ measure is defined as:
     \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y] = \omega \mathmybb{1}_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y],
+        \mathbb{P}^{\ast}[Y=y] = \omega \mathcal{I}_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y],
     \end{equation*}
     \begin{equation*}
         \mathbb{P}^{\ast}[Y=y|Y>0] = 
-        \omega\frac{\mathmybb{1}_{\{1\}}(y)}{1-(1-\omega)\mathbb{P}[Y=0]}+
+        \omega\frac{\mathcal{I}_{\{1\}}(y)}{1-(1-\omega)\mathbb{P}[Y=0]}+
         (1-\omega)\frac{\mathbb{P}[Y=y]}{1-(1-\omega)\mathbb{P}[Y=0]}.
     \end{equation*}
     \item Generalized Chao's and Zelterman's estimators via logistic regression on variable $Z$ defined as $Z=1$ if $Y=2$ and $Z=0$ if $Y=1$ with $Z\sim b(p)$ where $\text{logit}(p)=\ln(\lambda/2)$ for poisson parameter $\lambda$,
@@ -272,40 +384,113 @@ Here we limit ourselves to just listing the family functions:
         \end{cases}
     \end{equation*}
     \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y|Y>0]=\pi\mathmybb{1}_{\{1\}}(y)+
-        (1-\pi)\mathmybb{1}_{\mathbb{N}\setminus\{1\}}(y)\frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]}
+        \mathbb{P}^{\ast}[Y=y|Y>0]=\pi\mathcal{I}_{\{1\}}(y)+
+        (1-\pi)\mathcal{I}_{\mathbb{N}\setminus\{1\}}(y)\frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]}
     \end{equation*}
     \item The Hurdle zero truncarted (Hurdlezt) is defined as:
-    \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y]=\begin{cases}
+    \begin{align*}
+        \mathbb{P}^{\ast}[Y=y]&=\begin{cases}
         \pi & y=1, \\
         (1-\pi) \frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=1]} & y\neq1,
-        \end{cases}
-        \quad
-        \mathbb{P}^{\ast}[Y=y|Y>0]=\begin{cases}
+        \end{cases}\\
+        \mathbb{P}^{\ast}[Y=y|Y>0]&=\begin{cases}
             \pi\frac{1-\mathbb{P}[Y=1]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]} & y=1,\\
             (1-\pi)\frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]} & y>1.
         \end{cases}
-    \end{equation*}
+    \end{align*}
 \end{itemize}
 
 \hypertarget{structure-of-a-family-function}{%
-\subsubsection{Structure of a family
+\subsection{Structure of a family
 function}\label{structure-of-a-family-function}}
+
+\itemize{
+  \item \code{makeMinusLogLike} -- A factory function for creating the:
+  \begin{equation*}
+    \ell(\boldsymbol{\beta}), 
+    \frac{\partial\ell}{\partial\boldsymbol{\beta}},
+    \frac{\partial^{2}\ell}{\partial\boldsymbol{\beta}^{T}\partial\boldsymbol{\beta}}
+  \end{equation*}
+  functions from $\boldsymbol{y}$ vector and $\boldsymbol{X}_{vlm}$ the argument \code{deriv} with possible 
+  values in \code{c(0, 1, 2)} provides which derivative to return with the default \code{0} being just the minus log-likelihood.
+  \item \code{links} -- List with link functions.
+  \item \code{mu.eta, variance} -- Functions of linear predictors that return expected value and variance. There is a `type` argument with 2 possible values \code{"trunc"} and \code{"nontrunc"} that specifies whether to return $\mathbb{E}[Y|Y>0], \text{var}[Y|Y>0]$ or $\mathbb{E}[Y], \text{var}[Y]$ respectively, also the \code{deriv} argument with values in \code{c(0, 1, 2)} is used for indicating the derivative with respect to the linear predictors with is used for providing standard error in \code{predict} method.
+  \item \code{family} -- Character that specifies name of the model.
+  \item \code{valideta, validmu} -- For now only returns true. In near future will be used to check whether applied linear predictors are valid (i.e. are transformed into some elements of parameter space the subjected to inverse link function).
+  \item \code{funcZ, Wfun} -- Functions that create pseudo residuals and working weights used in IRLS algorithm.
+  \item \code{devResids} -- Function that given the linear predictors prior weights vector and response vector returns deviance residuals.
+  \item \code{pointEst, popVar} -- Functions that given prior weights linear predictors and in the later case also estimation of  $\text{cov}(\hat{\boldsymbol{\beta}})$ and $\boldsymbol{X_{vlm}}$ matrix return point estimate for population size and analytic estimation of its variance.There is a additional boolean parameter \code{contr} in the former function that if set to true returns contribution of each unit.
+  \item \code{etaNames} -- Names of linear predictors.
+  \item \code{densityFunction} -- A function that given linear predictors returns value of PMF at values \code{x}. Additional argument \code{type} specifies whether to return $\mathbb{P}[Y|Y>0]$ or $\mathbb{P}[Y]$.
+  \item \code{simulate} -- A function that generates values of dependent  vector given linear predictors.
+  \item \code{getStart} -- Expression for generating starting points.
+}
 
 \hypertarget{marginal-frequencies}{%
 \subsection{Marginal frequencies}\label{marginal-frequencies}}
 
 A popular method of testing the model fit in single source
 capture-recapture studies is comparing the fitted marginal frequencies
-\(\displaystyle\sum_{j=1}^{N_{obs}}\hat{\mathbb{P}}\left[Y_{j}=k|\boldsymbol{x}_{j}, Y_{k} > 0\right]\)
+\(\displaystyle\sum_{j=1}^{N_{obs}}\hat{\mathbb{P}}\left[Y_{j}=k|\boldsymbol{x}_{j}, Y_{j} > 0\right]\)
 with the observed marginal frequencies
-\(\displaystyle\sum_{j=1}^{N}\mathmybb{1}(Y_{k}=k)=\sum_{j=1}^{N_{obs}}\mathmybb{1}(Y_{k}=k)\)
-for \(k\geq1\).
+\(\displaystyle\sum_{j=1}^{N}\mathcal{I}_{\{k\}}(Y_{k})=\sum_{j=1}^{N_{obs}}\mathcal{I}_{\{k\}}(Y_{k})\)
+for \(k\geq1\). If a fitted model bears sufficient resemblance to the
+real data collection process these quantities should be quite close and
+both \(G\) and \(\chi^{2}\) tests may be employed in order to test the
+statistical significance of the discrepancy with the following
+\pkg{singleRcapture} syntax:
 
-If a fitted model bears sufficient resemblance to the real data
-collection process these quantities should be quite close.
+\begin{CodeChunk}
+\begin{CodeInput}
+R> (margFreq <- marginalFreq(basicModel))
+\end{CodeInput}
+\begin{CodeOutput}
+$table
+           0            1            2            3            4            5 
+1.081035e+04 1.612589e+03 2.337193e+02 3.013473e+01 3.242543e+00 2.908758e-01 
+           6 
+2.214773e-02 
 
+$y
+y
+   1    2    3    4    5    6 
+1645  183   37   13    1    1 
+
+$df
+[1] -3
+
+$name
+[1] "ztpoisson"
+
+attr(,"class")
+[1] "singleRmargin"
+\end{CodeOutput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> summary(margFreq, df = 1, dropl5 = "group")
+\end{CodeInput}
+\begin{CodeOutput}
+Test for Goodness of fit of a regression model:
+
+                 Test statistics df P(>X^2)
+Chi-squared test           50.06  1 1.5e-12
+G-test                     34.31  1 4.7e-09
+
+-------------------------------------------------------------- 
+Cells with fitted frequencies of < 5 have been grouped 
+Names of cells used in calculating test(s) statistic: 1 2 3  
+\end{CodeOutput}
+\end{CodeChunk}
+
+where the \texttt{dropl5} argument is used to indicate how to handle the
+cells with less than \(5\) fitted observations, note however that
+currently there is no continuity correction.
+
+\newpage
+
+\bibliography{refs.bib}
 
 
 
