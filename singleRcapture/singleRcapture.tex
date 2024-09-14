@@ -9,8 +9,8 @@
 \author{
 Piotr Chlebicki\\Stockholm University \And Maciej
 Beręsewicz~\orcidlink{0000-0002-8281-4301}\\Poznań University of
-Economics\\
-and Business
+Economics and Business\\
+Statistical Office in Poznań
 }
 \title{Single-Source Capture-Recapture Models With \pkg{singleRcapture}}
 
@@ -53,17 +53,23 @@ distributuons, count regression models, R}
     Piotr Chlebicki\\
     Stockholm University\\
     Matematiska institutionen\\
-106 91 Stockholm, Albano hus 1\\
+Albano hus 1\\
+106 91 Stockholm, Sweden\\
   E-mail: \email{piotr.chlebicki@math.su.se}\\
-  URL: \url{https://github.com/Kertoo}\\~\\
+  URL: \url{https://github.com/Kertoo},
+\url{https://www.su.se/profiles/pich3772}\\~\\
       Maciej Beręsewicz\\
-    Poznań University of Economics\\
-and Business\\
+    Poznań University of Economics and Business\\
+Statistical Office in Poznań\\
     Poznań University of Economics and Business\\
 Department of Statistics\\
 Institute of Informatics and Quantitative Economics\\
 Al. Niepodległosci 10\\
 61-875 Poznań, Poland\\
+\strut \\
+Statistical Office in Poznań\\
+ul. Wojska Polskiego 27/29\\
+60-624 Poznań, Poland\\
   E-mail: \email{maciej.beresewicz@ue.poznan.pl}\\
   
   }
@@ -120,71 +126,116 @@ to the seminal \cite{ztpoisson} paper in which the zero truncated
 poisson model was applied to study the size of population of irregular
 migrants in fours cities in Netherlands.
 
-\hypertarget{how-do-we-estimate-population-size-with-only-one-register}{%
-\subsection{How do we estimate population size with only one
-register?}\label{how-do-we-estimate-population-size-with-only-one-register}}
+\hypertarget{how-do-we-estimate-population-size-with-only-one-register-the-basics-of-sscr}{%
+\subsection{How do we estimate population size with only one register?
+The basics of
+SSCR}\label{how-do-we-estimate-population-size-with-only-one-register-the-basics-of-sscr}}
 
 Let \(Y_{k}\) represent the number of times \(k\)-th unit was observed
 in source data. Clearly, we don not know how often \(Y_{k}=0\) and to
 find the total population size \(N\) we need to estimate it. In general,
 we assume that conditional distribution of \(Y_{k}\) given
-a\textasciitilde vector of covariates \(\mathbf{x}_{k}\) follows some
-version of zero truncated count data distribution. Knowing the
+a\textasciitilde vector of covariates \(\boldsymbol{x}_{k}\) follows
+some version of zero truncated count data distribution. Knowing the
 parameters of the distribution we may estimate the population size using
 Horwitz-Thompson type estimator: \begin{equation*}
     \hat{N}=
-    \sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}[Y_{k}>0|\mathbf{x}_{k}]}=
-    \sum_{k=1}^{N_{obs}}\frac{1}{\mathbb{P}[Y_{k}>0|\mathbf{x}_{k}]},
+    \sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}[Y_{k}>0|\boldsymbol{X}_{k}]}=
+    \sum_{k=1}^{N_{obs}}\frac{1}{\mathbb{P}[Y_{k}>0|\boldsymbol{X}_{k}]},
 \end{equation*} where \(I_{k}:=\mathcal{I}_{\mathbb{N}}(Y_{k})\), and
 maximum likelihood estimate of \(N\) is obtained after substituting
-regression estimates for \(\mathbb{P}[Y_{k}>0|\mathbf{x}_{k}]\) into the
-equation above. Most of the methods relate to poisson processes.
+regression estimates for \(\mathbb{P}[Y_{k}>0|\boldsymbol{x}_{k}]\) into
+the equation above. Most of the methods relate to poisson processes.
 
 The analytic variance estimation is then done by computing two parts of
-the decomposition due to the law of total variance: \begin{equation*}
+the decomposition due to the law of total variance:
+\begin{equation}\label{law_of_total_variance_decomposition}
   \text{var}[\hat{N}]=
   \mathbb{E}\left[\text{var}
   \left[\hat{N}|I_{1},\dots,I_{n}\right]\right]+
-  \text{var}\left[\mathbb{E}[\hat{N}|I_{1},\dots,I_{n}]\right]
-\end{equation*} where the first addend is by the multivariate \(\delta\)
-method seen to be: \begin{equation*}
+  \text{var}\left[\mathbb{E}[\hat{N}|I_{1},\dots,I_{n}]\right],
+\end{equation} where the first addend is by the multivariate \(\delta\)
+method seen to be: \begin{equation}
   \mathbb{E}\left[\text{var}
   \left[\hat{N}|I_{1},\dots,I_{n}\right]\right]=
   \left.\left(\frac{\partial(N|I_1,\dots,I_N)}{\partial\boldsymbol{\beta}}\right)^{T}
   \text{cov}\left[\boldsymbol{\beta}\right]
   \left(\frac{\partial(N|I_1,\dots,I_N)}{\partial\boldsymbol{\beta}}\right)
-  \right|_{\boldsymbol{\beta}=\hat{\boldsymbol{\beta}}}
-\end{equation*} while the later part of the decomposition is under the
-assumption of independence of \(I_{k}\)'s optimally estimated via:
-\begin{align}
+  \right|_{\boldsymbol{\beta}=\hat{\boldsymbol{\beta}}},
+\end{equation} while the later part of the decomposition in
+\eqref{law_of_total_variance_decomposition} is under the assumption of
+independence of \(I_{k}\)'s and after some omitted simplifications one
+sees that this is optimally estimated via: \begin{align}
   \text{var}\left(\mathbb{E}(\hat{N}|I_{1},\dots,I_{n})\right)&=
   \text{var}\left(\sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}(Y_{k}>0)}\right)\nonumber\\
-  &=\sum_{k=1}^{N}\text{var}\left(\frac{I_{k}}{\mathbb{P}(Y_{k}>0)}\right)\nonumber\\
-  &=\sum_{k=1}^{N}\frac{1}{\mathbb{P}(Y_{k}>0)^{2}}\text{var}(I_{k})\nonumber\\
-  &=\sum_{k=1}^{N}\frac{1}{\mathbb{P}(Y_{k}>0)^{2}}\mathbb{P}(Y_{k}>0)(1-\mathbb{P}(Y_{k}>0))\nonumber\\
-  &=\sum_{k=1}^{N}\frac{1}{\mathbb{P}(Y_{k}>0)}(1-\mathbb{P}(Y_{k}>0))\nonumber\\
-  &\approx\sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}(Y_{k}>0)^{2}}(1-\mathbb{P}(Y_{k}>0))\nonumber\\
-  &=\sum_{k=1}^{N_{obs}}\frac{1-\mathbb{P}(Y_{k}>0)}{\mathbb{P}(Y_{k}>0)^{2}}
-\end{align}
+  &\approx\sum_{k=1}^{N_{obs}}\frac{1-\mathbb{P}(Y_{k}>0)}{\mathbb{P}(Y_{k}>0)^{2}},
+\end{align} which forms the basis of confidence interval creation.
+Confidence intervals are usually constructed under the assumption of
+(asymptotic) normality of \(\hat{N}\) or asymptotic normality of
+\(\ln(\hat{N}-N)\) (or log normality of \(\hat{N}\)). The latter of
+which is an attempt to address a common criticism of student type
+confidence intervals in SSCR, that is a possibly skewed distribution of
+\(\hat{N}\), and results in the confidence interval of the form (for
+confidence level of \(\alpha\)): \begin{equation*}
+  \left(N_{obs}+\frac{\hat{N}-N_{obs}}{G},N_{obs}+\left(\hat{N}-N_{obs}\right)G\right),
+\end{equation*} where: \begin{equation*}
+  G = \exp\left(z\left(1-\frac{\alpha}{2}\right)
+  \sqrt{\ln\left(1+\frac{\widehat{\text{Var}}(\hat{N})}{\left(\hat{N}-N_{obs}\right)^{2}}\right)}\right).
+\end{equation*}
 
-\subsection[Example with R code]{Example with \proglang{R}
+\hypertarget{existing-implementations}{%
+\subsubsection{Existing
+implementations}\label{existing-implementations}}
+
+There are some packages implementing zero truncated count data models
+such as \pkg{VGAM} and \pkg{countreg} and they can be integrated within
+the \pkg{singleRcapture} ecosystem by the lightweight extention
+\pkg{singleRcaptureExtra}.
+
+\hypertarget{basic-usage}{%
+\section{Basic usage}\label{basic-usage}}
+
+\subsection[The]{The \code{estimatePopsize}
+function}\label{estimatePopsize-function}
+
+The main function that \pkg{singleRcapture} is built around is
+\code{estimatePopsize}. The leading design principle was to make using
+\code{estimatePopsize} as close to standard \code{stats::glm} as
+possible. The most important arguments are:
+
+\begin{itemize}
+    \item \code{formula} -- the main formula (i.e for the Poisson $\lambda$ parameter),
+    \item \code{data} -- the \code{data.frame} (or \code{data.frame} coercible) object,
+    \item \code{model} -- either a function a string or a family class object specifying which model should be used possible values are listed in documentation. The supplied argument should have the form \code{model =  "ztpoisson"}, \code{model = ztpoisson} or \code{model = ztpoisson(lambdaLink = "log")} the third way is the only one where the user may (but doesn't have to) select a link function.
+    \item \code{method} -- numerical method used to fit regression \code{IRLS} or \code{optim},
+    \item \code{popVar} -- a method for estimating variance of $\hat{N}$ and confidence interval creation (either bootstrap, analytic or skipping the estimation entirely),
+    \item \code{controlMethod, controlModel, controlPopVar} -- control parameters for numerical fitting, specifying additional formulas (inflation, dispersion) and population size estimation respectively. We will tackle these arguments separately,
+    \item \code{offset} -- a matrix of offset values with number of columns matching the number of distribution parameters providing offset values to each of linear predictors.
+\end{itemize}
+
+With the \code{formula, data, model} being the three arguments which
+must be provided in \code{estimatePopsize} syntax.
+
+\subsubsection[Example with R code]{Example with \proglang{R}
 code}\label{r-code}
 
-Installation:
+The package should be installed from CRAN
+\url{https://cran.r-project.org/package=singleRcapture} with the usual
+code:
 
 \begin{CodeChunk}
 \begin{CodeInput}
 R> install.packages("singleRcapture")
-R> remotes::install_github(
-+   "https://github.com/ncn-foreigners/singleRcaptureExtra"
-+ )
 \end{CodeInput}
 \end{CodeChunk}
+
+To showcase the main function let us recreate the zero truncated Poisson
+model from \cite{ztpoisson} on the same data included in the package
+under the name \code{netherlandsimmigrant}:
 
 \begin{CodeChunk}
 \begin{CodeInput}
 R> library(singleRcapture)
-R> 
 R> head(netherlandsimmigrant)
 \end{CodeInput}
 \begin{CodeOutput}
@@ -197,6 +248,15 @@ R> head(netherlandsimmigrant)
 6       2   male <40yrs Other reason North Africa
 \end{CodeOutput}
 \end{CodeChunk}
+
+This data set contains information about immigrants in four cities
+(Amsterdam, Rotterdam, The Hague and Utrecht) in Netherlands that have
+been staying in the country illegally in 1995 and have appeared in
+police records that year. The number of times each individual appeared
+in the records is included in the \code{capture} variable with the
+available covariates being \code{gender, age, reason, nation} being
+respectively the persons gender and age, reason for being captured and
+region of the world from which each person comes:
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -220,6 +280,10 @@ R> summary(netherlandsimmigrant)
 \end{CodeOutput}
 \end{CodeChunk}
 
+The basic syntax is indeed vary similar to that of \code{glm} with the
+output of the summary method being also quite simmilar except for the
+additional results of the population size estimates:
+
 \begin{CodeChunk}
 \begin{CodeInput}
 R> basicModel <- estimatePopsize(
@@ -227,7 +291,6 @@ R> basicModel <- estimatePopsize(
 +   model   = ztpoisson(),
 +   data    = netherlandsimmigrant
 + )
-R> 
 R> summary(basicModel)
 \end{CodeInput}
 \begin{CodeOutput}
@@ -277,6 +340,156 @@ logNormal   9.534281   22.29793
 \end{CodeOutput}
 \end{CodeChunk}
 
+\hypertarget{the-implementation}{%
+\subsubsection{The implementation}\label{the-implementation}}
+
+\hypertarget{methods}{%
+\subsubsection{Methods}\label{methods}}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> (popEst <- popSizeEst(basicModel))
+\end{CodeInput}
+\begin{CodeOutput}
+Point estimate: 12690.35
+Variance: 7885812
+95% confidence intervals:
+          lowerBound upperBound
+normal      7186.444   18194.26
+logNormal   8431.275   19718.32
+\end{CodeOutput}
+\end{CodeChunk}
+
+the \code{popEst} object is of the \code{popSizeEstResults} class and
+\code{list} type and contains the following fields:
+
+\begin{itemize}
+  \item a
+\end{itemize}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> dfb <- dfbeta(basicModel)
+R> summary(dfb)
+\end{CodeInput}
+\begin{CodeOutput}
+  (Intercept)           gendermale           age>40yrs         
+ Min.   :-9.909e-03   Min.   :-9.053e-02   Min.   :-2.001e-02  
+ 1st Qu.:-1.533e-03   1st Qu.:-7.770e-04   1st Qu.: 1.793e-04  
+ Median : 1.906e-04   Median :-2.830e-04   Median : 3.789e-04  
+ Mean   :-8.000e-08   Mean   : 6.000e-08   Mean   :-7.100e-07  
+ 3rd Qu.: 5.209e-04   3rd Qu.: 1.017e-03   3rd Qu.: 6.910e-04  
+ Max.   : 8.662e-02   Max.   : 2.213e-02   Max.   : 1.601e-01  
+   nationAsia         nationNorth Africa   nationRest of Africa
+ Min.   :-9.556e-02   Min.   :-9.660e-02   Min.   :-9.450e-02  
+ 1st Qu.:-5.288e-04   1st Qu.:-8.418e-04   1st Qu.:-2.436e-04  
+ Median : 6.643e-05   Median :-1.768e-04   Median : 2.984e-05  
+ Mean   : 3.000e-08   Mean   : 3.000e-08   Mean   : 2.000e-08  
+ 3rd Qu.: 1.200e-04   3rd Qu.: 8.675e-05   3rd Qu.: 8.279e-05  
+ Max.   : 1.799e-01   Max.   : 3.126e-02   Max.   : 1.098e-01  
+ nationSurinam         nationTurkey       
+ Min.   :-0.0931396   Min.   :-0.0961982  
+ 1st Qu.:-0.0000662   1st Qu.:-0.0002200  
+ Median : 0.0000197   Median : 0.0000792  
+ Mean   :-0.0000047   Mean   : 0.0000004  
+ 3rd Qu.: 0.0000354   3rd Qu.: 0.0001428  
+ Max.   : 0.9933829   Max.   : 0.3209798  
+\end{CodeOutput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> dfp <- dfpopsize(basicModel, dfbeta = dfb)
+R> summary(dfp)
+\end{CodeInput}
+\begin{CodeOutput}
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+-4236.412     2.664     2.664     5.448    17.284   117.448 
+\end{CodeOutput}
+\end{CodeChunk}
+
+\hypertarget{marginal-frequencies}{%
+\subsection{Marginal frequencies}\label{marginal-frequencies}}
+
+A popular method of testing the model fit in single source
+capture-recapture studies is comparing the fitted marginal frequencies
+\(\displaystyle\sum_{j=1}^{N_{obs}}\hat{\mathbb{P}}\left[Y_{j}=k|\boldsymbol{x}_{j}, Y_{j} > 0\right]\)
+with the observed marginal frequencies
+\(\displaystyle\sum_{j=1}^{N}\mathcal{I}_{\{k\}}(Y_{k})=\sum_{j=1}^{N_{obs}}\mathcal{I}_{\{k\}}(Y_{k})\)
+for \(k\geq1\). If a fitted model bears sufficient resemblance to the
+real data collection process these quantities should be quite close and
+both \(G\) and \(\chi^{2}\) tests may be employed in order to test the
+statistical significance of the discrepancy with the following
+\pkg{singleRcapture} syntax:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> margFreq <- marginalFreq(basicModel)
+R> summary(margFreq, df = 1, dropl5 = "group")
+\end{CodeInput}
+\begin{CodeOutput}
+Test for Goodness of fit of a regression model:
+
+                 Test statistics df P(>X^2)
+Chi-squared test           50.06  1 1.5e-12
+G-test                     34.31  1 4.7e-09
+
+-------------------------------------------------------------- 
+Cells with fitted frequencies of < 5 have been grouped 
+Names of cells used in calculating test(s) statistic: 1 2 3  
+\end{CodeOutput}
+\end{CodeChunk}
+
+where the \code{dropl5} argument is used to indicate how to handle the
+cells with less than \(5\) fitted observations, note however that
+currently there is no continuity correction.
+
+\hypertarget{plots}{%
+\subsection{Plots}\label{plots}}
+
+The \code{singleRStaticCountData} class has a \code{plot} method
+implementing several types of quick demonstrative plots such as the
+rootogram \cite{rootogram} for comparing the fitted and marginal
+frequencies which we can get with the syntax:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> plot(basicModel, plotType = "rootogram")
+\end{CodeInput}
+
+
+\begin{center}\includegraphics{singleRcapture_files/figure-latex/unnamed-chunk-10-1} \end{center}
+
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> par(mar = c(2.5, 8.5, 4.1, 2.5), cex.main = .7, cex.lab = .6)
+R> plot(basicModel, plotType = "strata")
+\end{CodeInput}
+
+
+\begin{center}\includegraphics{singleRcapture_files/figure-latex/unnamed-chunk-11-1} \end{center}
+
+\begin{CodeInput}
+R> dev.off()
+\end{CodeInput}
+\begin{CodeOutput}
+null device 
+          1 
+\end{CodeOutput}
+\end{CodeChunk}
+
+The full list of plot types along with the list of optional arguments
+which may be passed from the call to the \code{plot} method down to base
+\proglang{R} and \pkg{graphics} functions is listed in the help file:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> ?plot.singleRStaticCountData
+\end{CodeInput}
+\end{CodeChunk}
+
 \hypertarget{detailed-information}{%
 \section{Detailed information}\label{detailed-information}}
 
@@ -288,8 +501,8 @@ modelling (linear) dependence on covariates of all parameters. To that
 end a modified IRLS algorithm is employed, full details are available in
 \cite{VGAM-main}. In order to employ the algorithm a modified model
 matrix is created \(\boldsymbol{X}_{\text{vlm}}\) at call to
-\texttt{estimatePopsize}. In the context of the models implemented in
-\pkg{singleRcapture} this matrix can be writen as:
+\code{estimatePopsize}. In the context of the models implemented in
+\pkg{singleRcapture} this matrix can be written as:
 
 \begin{equation}
   \boldsymbol{X}_{vlm}=
@@ -299,7 +512,8 @@ matrix is created \(\boldsymbol{X}_{\text{vlm}}\) at call to
     \vdots & \vdots & \ddots & \vdots\cr
     \boldsymbol{0} & \boldsymbol{0} &\dotso &\boldsymbol{X}_{p}
   \end{pmatrix}
-\end{equation}
+\end{equation} where each \(\boldsymbol{X}_{i}\) corresponds to a model
+matrix associated with user specified formula.
 
 In the context of multi-parameter families we have a matrix of linear
 predictors \(\boldsymbol{\eta}\) instead of a vector, with the number of
@@ -314,11 +528,11 @@ which is often just
 
 \begin{enumerate}
     \justifying
-    \item Initialize with $\texttt{converged} \leftarrow$ FALSE, $\texttt{iter}\leftarrow 1, \boldsymbol{\eta}\leftarrow\texttt{start}, \boldsymbol{W}\leftarrow I, \ell\leftarrow\ell(\boldsymbol{\beta})$.
+    \item Initialize with \code{iter}$\leftarrow 1, \boldsymbol{\eta}\leftarrow$\code{start}$, \boldsymbol{W}\leftarrow I, \ell\leftarrow\ell(\boldsymbol{\beta})$.
     \item Store values from the previous step: $\ell_{-}\leftarrow\ell, \boldsymbol{W}_{-}\leftarrow\boldsymbol{W}, \boldsymbol{\beta}_{-}\leftarrow\boldsymbol{\beta}$ (the last assignment is omitted during the first iteration), and assign values in current iteration $\displaystyle\boldsymbol{\eta}\leftarrow\boldsymbol{X}_{\text{vlm}}\boldsymbol{\beta}+\boldsymbol{o}, \boldsymbol{W}_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boldsymbol{\eta}_{(k)}^{T}\partial\boldsymbol{\eta}_{(k)}}\right], Z\leftarrow\boldsymbol{\eta}_{(k)}+\frac{\partial\ell}{\partial\boldsymbol{\eta}_{(k)}}\boldsymbol{W}_{(k)}^{-1}-\boldsymbol{o}_{(k)}$.
     \item Assign current coefficient value: $\boldsymbol{\beta}\leftarrow\left(\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{X}_{\text{vlm}}\right)^{-1}\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{Z}$.
     \item If $\ell(\boldsymbol{\beta})<\ell(\boldsymbol{\beta}_{-})$ try selecting the smallest value $h$ such that for $\boldsymbol{\beta}_{h}\leftarrow2^{-h}\left(\boldsymbol{\beta}+\boldsymbol{\beta}_{-}\right)$ the inequality $\ell(\boldsymbol{\beta}_{h})>\ell(\boldsymbol{\beta}_{-})$ holds if this is successful $\boldsymbol{\beta}\leftarrow\boldsymbol{\beta}_{h}$ else stop the algorithm.
-    \item If convergence is achieved end algorithm, else return to step 2.
+    \item If convergence is achieved or \code{iter} is higher than \code{maxiter} end algorithm, else \code{iter}$\leftarrow 1+$\code{iter} and return to step 2.
 \end{enumerate}
 
 \hypertarget{avaiable-models}{%
@@ -426,67 +640,65 @@ function}\label{structure-of-a-family-function}}
   \item \code{getStart} -- Expression for generating starting points.
 }
 
-\hypertarget{marginal-frequencies}{%
-\subsection{Marginal frequencies}\label{marginal-frequencies}}
+\subsubsection[Implementing custom singleRcapture family function]{Implementing
+custom \pkg{singleRcapture} family
+function}\label{implementing-custom-family-function}
 
-A popular method of testing the model fit in single source
-capture-recapture studies is comparing the fitted marginal frequencies
-\(\displaystyle\sum_{j=1}^{N_{obs}}\hat{\mathbb{P}}\left[Y_{j}=k|\boldsymbol{x}_{j}, Y_{j} > 0\right]\)
-with the observed marginal frequencies
-\(\displaystyle\sum_{j=1}^{N}\mathcal{I}_{\{k\}}(Y_{k})=\sum_{j=1}^{N_{obs}}\mathcal{I}_{\{k\}}(Y_{k})\)
-for \(k\geq1\). If a fitted model bears sufficient resemblance to the
-real data collection process these quantities should be quite close and
-both \(G\) and \(\chi^{2}\) tests may be employed in order to test the
-statistical significance of the discrepancy with the following
-\pkg{singleRcapture} syntax:
+\hypertarget{bootstrap-algorithms}{%
+\subsection{Bootstrap algorithms}\label{bootstrap-algorithms}}
 
-\begin{CodeChunk}
-\begin{CodeInput}
-R> (margFreq <- marginalFreq(basicModel))
-\end{CodeInput}
-\begin{CodeOutput}
-$table
-           0            1            2            3            4            5 
-1.081035e+04 1.612589e+03 2.337193e+02 3.013473e+01 3.242543e+00 2.908758e-01 
-           6 
-2.214773e-02 
+There are three types of bootstrap algorithms which the user may specify
+in \code{controlPopVar} controls with \code{bootType} argument which has
+three possible values
+\code{"parametric", "semiparametric", "nonparametric"} with the
+nonparametric being bootstrap being the usual bootstrap algorithm which
+as argued in \cite{norrpoll} and \cite{zwane}. The idea of
+semiparametric bootstrap is to modify the usual bootstrap to include the
+additional uncertainty due to the sample size being a random variable.
+This type of bootstrap can be in short described as:
 
-$y
-y
-   1    2    3    4    5    6 
-1645  183   37   13    1    1 
+\begin{enumerate}
+    \item Draw the sample size $N_{obs}'\sim\text{Be}\left(N', \frac{N'-N_{obs}}{N'}\right)$, where $N'=\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$.
+    \item Draw $N_{obs}'$ units from the data uniformly without replacement.
+    \item Obtain new population size estimate using bootstrap data.
+    \item Repeat $1-3$ $B$ times.
+\end{enumerate}
 
-$df
-[1] -3
+In other words we first draw the sample size and then the sample
+conditional on the sample size. Note that in using semi-parametric
+bootstrap one implicitly assumes that the population size estimate
+\(\hat{N}\) is accurate. The last implemented bootstrap type is the
+parametric algorithm which in short first draws the finite population of
+size \(\approx\hat{N}\) from the superpopulation model and then samples
+from this population according to the selected model:
 
-$name
-[1] "ztpoisson"
+\begin{enumerate}
+    \item Draw the number of covariates equal to $\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$ proportional to the estimated contribution $(\mathbb{P}\left[Y_{k}>0|\boldsymbol{x}_{k}\right])^{-1}$ with replacement.
+    \item Using the fitted model and regression coefficients $\hat{\boldsymbol{\beta}}$ draw for each covariate the $Y$ value from the corresponding probability measure on $\mathbb{N}\cup\{0\}$.
+    \item Truncate units with drawn $Y$ value equal to $0$.
+    \item Obtain population size estimate based on the truncated data.
+    \item Repeat $1-4$ $B$ times.
+\end{enumerate}
 
-attr(,"class")
-[1] "singleRmargin"
-\end{CodeOutput}
-\end{CodeChunk}
+Note however that for this type of algorithm to result in consistent
+standard error estimates it is imperative that the estimated model for
+the entire superpopulation probability space is consistent which may be
+much less realistic than semiparametric bootstrap. The parametric
+bootstrap algorithm is the default in \pkg{singleRcapture}.
 
-\begin{CodeChunk}
-\begin{CodeInput}
-R> summary(margFreq, df = 1, dropl5 = "group")
-\end{CodeInput}
-\begin{CodeOutput}
-Test for Goodness of fit of a regression model:
+Additional arguments accepted by the \code{contorlPopVar} function which
+are relevant to bootstrap are:
 
-                 Test statistics df P(>X^2)
-Chi-squared test           50.06  1 1.5e-12
-G-test                     34.31  1 4.7e-09
+\begin{itemize}
+  \item \code{alpha, B} -- significance level and number of bootstrap samples to be performed respectively with $0.05$ and $500$ being the default options.
+  \item \code{cores} -- number of process cores to use in bootstrap (1 by default) parallel computing is done via \pkg{doParallel, foreach, parallel} packages.
+  \item \code{keepbootStat} --  logical value indicating whether to keep a vector of statistics produced by bootstrap.
+  \item \code{traceBootstrapSize, bootstrapVisualTrace} --  logical values indicating whether sample and population size should be tracked (\code{FALSE} by default) these work only when \code{cores} = 1.
+    \item \code{fittingMethod, bootstrapFitcontrol} -- fitting method (by default the same as used in the original call) and control parameters (\code{controlMethod}) for model fitting in bootstrap.
+\end{itemize}
 
--------------------------------------------------------------- 
-Cells with fitted frequencies of < 5 have been grouped 
-Names of cells used in calculating test(s) statistic: 1 2 3  
-\end{CodeOutput}
-\end{CodeChunk}
-
-where the \texttt{dropl5} argument is used to indicate how to handle the
-cells with less than \(5\) fitted observations, note however that
-currently there is no continuity correction.
+\section[Integration with the]{Integration with the \pkg{VGAM, countreg}
+packages}\label{VGAMcountreg-packages}
 
 \newpage
 
