@@ -88,8 +88,7 @@ This work is supported by the National Science Center, OPUS 20 grant no. 2020\-/
 
 The subject of this workshop is the \pkg{singleRcapture} package and its lightweight extension that allows for integration with other \proglang{R} packages called \pkg{singleRcaptureExtra}.
 
-The package is available on CRAN:
-\url{CRAN.R-project.org/package=singleRcapture} while the extension is available on: \url{https://github.com/ncn-foreigners/singleRcaptureExtra}.
+The package is available on CRAN: \url{CRAN.R-project.org/package=singleRcapture} while the extension is available on: \url{https://github.com/ncn-foreigners/singleRcaptureExtra}.
 
 The \pkg{singleRcapture} package is an \proglang{R} language package that focuses on implementing state of the art methods for frequentist point and interval estimation of size of closed populations in single-source capture-recapture (SSCR) setting (e.g. estimation of the population size of irregular migrants at set time point in a given area). 
 
@@ -142,6 +141,9 @@ where:
   \sqrt{\ln\left(1+\frac{\widehat{\text{Var}}(\hat{N})}{\left(\hat{N}-N_{obs}\right)^{2}}\right)}\right).
 \end{equation*}
 
+
+<!-- missing not at random -->
+The estimator $\hat{N}$ is best interpreted as being an estimator for the total number of \underline{observable} units in the population since we have no means of estimating the number of units in the population for which the probability of being included in the data is $0$ cf. \cite{ztpoisson}.
 
 ### Existing implementations
 
@@ -216,9 +218,6 @@ modelInflated <- estimatePopsize(
 summary(modelInflated)
 ```
 
-
-### The implementation
-
 ### Methods
 
 ```{r, popsize_extract}
@@ -261,22 +260,60 @@ The \code{singleRStaticCountData} class has a \code{plot} method implementing se
 plot(basicModel, plotType = "rootogram")
 ```
 
-```{r, plot_set_up, echo=FALSE, include=FALSE}
-par(mar = c(2.5, 8.5, 4.1, 2.5), cex.main = .7, cex.lab = .6)
+The comparison of deletion effect on population size estimate and inverse probability weights:
+```{r, dfpopsize_plot}
+plot(basicModel, plotType = "dfpopContr", dfpop = dfp)
 ```
 
+and the plot that showcases stratisfied stimates:
 ```{r, strata_plot}
+par(mar = c(2.5, 8.5, 4.1, 2.5), cex.main = .7, cex.lab = .6)
 plot(basicModel, plotType = "strata")
 ```
 
-```{r, dev_off, echo=FALSE, include=FALSE}
+```{r, dev_off, include=FALSE}
 dev.off()
 ```
+the information which was supplied to the plot function above comes from the \code{stratifyPopsize} method:
+\small
+```{r}
+stratifyPopsize(basicModel)
+```
+\normalsize
 
 The full list of plot types along with the list of optional arguments which may be passed from the call to the \code{plot} method down to base \proglang{R} and \pkg{graphics} functions is listed in the help file:
 ```{r, eval=FALSE}
 ?plot.singleRStaticCountData
 ```
+
+### The \code{stratifyPopsize} method {short-title="The stratifyPopsize method"}
+
+As previously showcased the \code{stratifyPopsize} may be used to estimate the population sizes for different stratas using the same fitted regression model as previously computed using the call to the \code{estimatePopsize} function. The method for \code{singleRStaticCountData} class accepts three optional parameters \code{stratas, alpha, cov} which correspond to specification of sub populations, the significance levels and the covariance matrix that will be used to compute standard errors.
+
+The full call is of the type:
+\footnotesize
+```{r}
+library(sandwich)
+stratifyPopsize(
+  object  = basicModel,
+  stratas = ~ gender / (nation + age), 
+  alpha   = rep(c(.1, .2, .3, .4, .5), 
+                length.out = 18),
+  cov     = vcovHC(basicModel, type = "HC4")
+)
+```
+\normalsize
+where we used the \code{vcovHC} method for \code{singleRStaticCountData} class from the \pkg{sandwitch} package, different significance levels for confidence intervals in each strata and a formula to specify that we wanted estimates for both males and females subdivided by \code{nation} and \code{age}. The \code{stratas} parameter may be specified either as:
+
+\begin{itemize}
+\item a formula with empty left hand side which we have seen here,
+\item a logical vector with number of entries equal to number of rows in the dataset in which case only one strata will be created,
+\item a (named) list where each element is a logical vector, names of the list will be used to specify names variable in returned object,
+\item a vector of names of explanatory variables which will result in every level of explanatory variable having its own sub population for each variable specified,
+\item or not supplied at all in which case stratas will correspond to levels of each factor in the data without any interactions (string vectors will be converted to factors for the convenience of the user).
+\end{itemize}
+
+For plotting only the \code{logNormal} type of confidence interval is used since the studentized confidence intervals often result in negative lower bounds.
 
 # Detailed information
 
@@ -430,14 +467,16 @@ Here we limit ourselves to just listing the family functions:
     \end{align*}
 \end{itemize}
 
-### Takeaways of different models
+### Key takeaways of different models
 
 \begin{itemize}
-  \item The dispersion parameter in nb is often interpreted as indicating unobserved heterogeneity
-  \item Geometric is the light version of that
-  \item inflated models model inflation
-  \item Hurdle models can also model deflation as well as both inflation and deflation simultaneously so they are more flexible
-  \item By contrast the interpretation of the $\omega$ inflation parameter is more convenient that the interpretation of the $\pi$ probability parameter.
+  \item The dispersion parameter $\alpha$ in the negative binomial type models is often interpreted as measuring the severeness of unobserved heterogeneity in the underlying poisson process cf. \cite{ztnegbin}. When using any truncated negative binomial model the hope is that due to the class of models considered the consistency is not lost despite the lack of information.
+  \item While not discussed in the literature yet (to the best of the knowledge of the authors) the interpretation of $\alpha$ being heterogeneous across the population (specified in \code{controlModel}) would be that the unobserved heterogeneity affects the accuracy of the prediction for the dependent variable $Y$ more severely than others.
+  \item The geometric model (negative binomial with $\alpha=1$) is singled out in the package and often considered in the literature due to inherent computational issues with negative binomial models which are exasperated by the fact that data in SSCR is usually of somewhat low quality. Sparseness of the data is in particular a common issue in SSCR and a big issue for all numerical methods for fitting the (zero truncated) negative binomial model.
+  \item The extra mass $\omega$ in the inflated models is an important addition to the researcher's toolbox in SSCR since the inflation at $y=1$ is likely to occur in many types of applications. For example in estimating the number active people who committed criminal acts in a given time period being observed naturally induces a risk of no longer being able to be observed for all units with possibility of arrest. One constraint present in modelling via inflated models is that trying to include both the possibility of one inflation and one deflation leads to both numerical and theoritical problems since the parameter space (of $(\omega, \lambda)$ or $(\omega, \lambda, \alpha)$) is then a much more complicated set.
+  \item Hurdle models are another approach to modelling the one-inflation, they can also model deflation as well as both inflation and deflation simultaneously so they are more flexible and situationally the Hurdle zero truncated models seem to be more numerically stable.
+  \item Although interpretation of regression parameters tends to be somewhat overlooked in SSCR studies we should point out that interpretation of  of the $\omega$ inflation parameter is more convenient that the interpretation of the $\pi$ probability parameter. Additionally the interpretation of the $\lambda$ parameter in (one) inflated models conforms to the intuition that given that unit $k$ comes from the non-inflated part of the population then it follows a poisson distribution (respectively geometric or negative binomial) with the $\lambda$ parameter (or $\lambda,\alpha$), in hurdle models one loses that interpretation.
+  \item It is somewhat interesting is that the estimates from Hurdle zero truncated and one inflated zero truncated models are "usually" quite close to one another.
 \end{itemize}
 
 ## Structure of a family function
@@ -538,6 +577,11 @@ summary(modelVgamPop)
 \section*{Acknowledgements}
 
 The authors' work has been financed by the National Science Centre in Poland, OPUS 20, grant no. 2020/39/B/HS4/00941. Codes to reproduce simulations from the paper are available at ...
+
+<!--
+Appendix przed czy za bibliografią?
+Albo jako osobny file?
+-->
 
 \appendix
 
@@ -915,4 +959,4 @@ Where the link functions such as \code{singleRcapture:::singleRinternalcloglogLi
 singleRcapture:::singleRinternalcloglogLink
 ```
 \normalsize
-one might of course include code for cumputing them manually.
+one might of course include code for computing them manually.

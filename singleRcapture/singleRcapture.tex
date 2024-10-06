@@ -180,6 +180,12 @@ confidence level of \(\alpha\)): \begin{equation*}
   \sqrt{\ln\left(1+\frac{\widehat{\text{Var}}(\hat{N})}{\left(\hat{N}-N_{obs}\right)^{2}}\right)}\right).
 \end{equation*}
 
+The estimator \(\hat{N}\) is best interpreted as being an estimator for
+the total number of \underline{observable} units in the population since
+we have no means of estimating the number of units in the population for
+which the probability of being included in the data is \(0\)
+cf.~\cite{ztpoisson}.
+
 \subsubsection{Existing implementations}\label{existing-implementations}
 
 There are some packages implementing zero truncated count data models
@@ -438,8 +444,6 @@ lowerBound upperBound
 \end{CodeOutput}
 \end{CodeChunk}
 
-\subsubsection{The implementation}\label{the-implementation}
-
 \subsubsection{Methods}\label{methods}
 
 \begin{CodeChunk}
@@ -555,8 +559,24 @@ R> plot(basicModel, plotType = "rootogram")
 
 \end{CodeChunk}
 
+The comparison of deletion effect on population size estimate and
+inverse probability weights:
+
 \begin{CodeChunk}
 \begin{CodeInput}
+R> plot(basicModel, plotType = "dfpopContr", dfpop = dfp)
+\end{CodeInput}
+
+
+\begin{center}\includegraphics{singleRcapture_files/figure-latex/dfpopsize_plot-1} \end{center}
+
+\end{CodeChunk}
+
+and the plot that showcases stratisfied stimates:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> par(mar = c(2.5, 8.5, 4.1, 2.5), cex.main = .7, cex.lab = .6)
 R> plot(basicModel, plotType = "strata")
 \end{CodeInput}
 
@@ -564,6 +584,52 @@ R> plot(basicModel, plotType = "strata")
 \begin{center}\includegraphics{singleRcapture_files/figure-latex/strata_plot-1} \end{center}
 
 \end{CodeChunk}
+
+the information which was supplied to the plot function above comes from
+the \code{stratifyPopsize} method: \small
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> stratifyPopsize(basicModel)
+\end{CodeInput}
+\begin{CodeOutput}
+   Observed  Estimated ObservedPercentage  StdError normalLowerBound
+1       398  3811.0924          10.443200 1153.9749       1549.34322
+2      1482  8879.2613          16.690578 1812.0813       5327.64720
+3      1769 10506.8994          16.836556 2017.2314       6553.19848
+4       111  2183.4543           5.083688 1132.4512        -36.10932
+5       173   708.3688          24.422308  132.8183        448.04969
+6       284  2742.3147          10.356215  655.0929       1458.35623
+7      1023  3055.2033          33.483860  201.2387       2660.78263
+8       243  2058.1533          11.806701  493.2612       1091.37903
+9        64  2386.4544           2.681803 2380.1882      -2278.62875
+10       93  1739.8592           5.345260 1008.1794       -236.13602
+   normalUpperBound logNormalLowerBound logNormalUpperBound
+1         6072.8415           2189.0439            6902.140
+2        12430.8754           6090.7752           13354.889
+3        14460.6002           7359.4140           15426.465
+4         4403.0179            872.0130            5754.881
+5          968.6878            504.6086            1037.331
+6         4026.2732           1755.2548            4391.590
+7         3449.6240           2697.4900            3489.333
+8         3024.9276           1318.7466            3305.786
+9         7051.5375            505.2460           12288.008
+10        3715.8544            638.0497            5068.959
+                             name confLevel
+1                  gender==female      0.05
+2                    gender==male      0.05
+3                     age==<40yrs      0.05
+4                     age==>40yrs      0.05
+5  nation==American and Australia      0.05
+6                    nation==Asia      0.05
+7            nation==North Africa      0.05
+8          nation==Rest of Africa      0.05
+9                 nation==Surinam      0.05
+10                 nation==Turkey      0.05
+\end{CodeOutput}
+\end{CodeChunk}
+
+\normalsize
 
 The full list of plot types along with the list of optional arguments
 which may be passed from the call to the \code{plot} method down to base
@@ -574,6 +640,112 @@ which may be passed from the call to the \code{plot} method down to base
 R> ?plot.singleRStaticCountData
 \end{CodeInput}
 \end{CodeChunk}
+
+\subsubsection[The stratifyPopsize method]{The \code{stratifyPopsize}
+method}\label{the-method}
+
+As previously showcased the \code{stratifyPopsize} may be used to
+estimate the population sizes for different stratas using the same
+fitted regression model as previously computed using the call to the
+\code{estimatePopsize} function. The method for
+\code{singleRStaticCountData} class accepts three optional parameters
+\code{stratas, alpha, cov} which correspond to specification of sub
+populations, the significance levels and the covariance matrix that will
+be used to compute standard errors.
+
+The full call is of the type: \footnotesize
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> library(sandwich)
+R> stratifyPopsize(
++   object  = basicModel,
++   stratas = ~ gender / (nation + age), 
++   alpha   = rep(c(.1, .2, .3, .4, .5), 
++                 length.out = 18),
++   cov     = vcovHC(basicModel, type = "HC4")
++ )
+\end{CodeInput}
+\begin{CodeOutput}
+   Observed Estimated ObservedPercentage   StdError normalLowerBound
+1       398 3811.0924          10.443200 1282.10163       1702.22285
+2      1482 8879.2613          16.690578 1999.39536       6316.93303
+3        67  328.8780          20.372297   84.81957        240.96814
+4       106  379.4908          27.932167   83.91530        308.86588
+5        62  775.9054           7.990665  303.01257        571.52651
+6       222 1966.4093          11.289613  603.18021        974.26616
+7       169  644.0545          26.240014  116.46407        494.79982
+8       854 2411.1488          35.418801  172.33202       2232.53812
+9        65  682.1776           9.528310  218.28791        498.46186
+10      178 1375.9757          12.936275  369.03697       1127.06403
+11       20  931.4690           2.147146  985.54387       -689.60644
+12       44 1454.9854           3.024085 1520.27552       -493.32603
+13       15  448.6079           3.343677  300.30767        137.35901
+14       78 1291.2513           6.040652  733.06058        674.29194
+15      378 3169.8272          11.924940  937.42764       2537.54191
+16     1391 7337.0721          18.958516 1313.47365       5176.60023
+17       20  641.2651           3.118835  453.82545         59.66441
+18       91 1542.1892           5.900703  887.97956        621.85750
+   normalUpperBound logNormalLowerBound logNormalUpperBound
+1         5919.9619           2275.6410           6602.1678
+2        11441.5895           6745.5664          11877.8932
+3          416.7878            255.7692            430.3013
+4          450.1157            318.4739            458.0301
+5          980.2842            604.5269           1001.4205
+6         2958.5525           1225.6476           3253.9046
+7          793.3092            517.5628            816.4495
+8         2589.7594           2242.8856           2599.7970
+9          865.8933            527.2996            888.9423
+10        1624.8873           1155.7975           1645.7331
+11        2552.5444            234.3584           3895.6394
+12        3403.2969            502.1054           4389.8993
+13         759.8568            241.6446            844.5624
+14        1908.2106            836.6593           2018.2367
+15        3802.1126           2617.4719           3858.4185
+16        9497.5440           5543.4788           9905.3779
+17        1222.8658            288.7316           1456.2671
+18        2462.5208            899.8794           2694.5402
+                                        name confLevel
+1                             gender==female       0.1
+2                               gender==male       0.2
+3  genderfemale:nationAmerican and Australia       0.3
+4    gendermale:nationAmerican and Australia       0.4
+5                    genderfemale:nationAsia       0.5
+6                      gendermale:nationAsia       0.1
+7            genderfemale:nationNorth Africa       0.2
+8              gendermale:nationNorth Africa       0.3
+9          genderfemale:nationRest of Africa       0.4
+10           gendermale:nationRest of Africa       0.5
+11                genderfemale:nationSurinam       0.1
+12                  gendermale:nationSurinam       0.2
+13                 genderfemale:nationTurkey       0.3
+14                   gendermale:nationTurkey       0.4
+15                    genderfemale:age<40yrs       0.5
+16                      gendermale:age<40yrs       0.1
+17                    genderfemale:age>40yrs       0.2
+18                      gendermale:age>40yrs       0.3
+\end{CodeOutput}
+\end{CodeChunk}
+
+\normalsize
+
+where we used the \code{vcovHC} method for \code{singleRStaticCountData}
+class from the \pkg{sandwitch} package, different significance levels
+for confidence intervals in each strata and a formula to specify that we
+wanted estimates for both males and females subdivided by \code{nation}
+and \code{age}. The \code{stratas} parameter may be specified either as:
+
+\begin{itemize}
+\item a formula with empty left hand side which we have seen here,
+\item a logical vector with number of entries equal to number of rows in the dataset in which case only one strata will be created,
+\item a (named) list where each element is a logical vector, names of the list will be used to specify names variable in returned object,
+\item a vector of names of explanatory variables which will result in every level of explanatory variable having its own sub population for each variable specified,
+\item or not supplied at all in which case stratas will correspond to levels of each factor in the data without any interactions (string vectors will be converted to factors for the convenience of the user).
+\end{itemize}
+
+For plotting only the \code{logNormal} type of confidence interval is
+used since the studentized confidence intervals often result in negative
+lower bounds.
 
 \section{Detailed information}\label{detailed-information}
 
@@ -763,15 +935,17 @@ Here we limit ourselves to just listing the family functions:
     \end{align*}
 \end{itemize}
 
-\subsubsection{Takeaways of different
-models}\label{takeaways-of-different-models}
+\subsubsection{Key takeaways of different
+models}\label{key-takeaways-of-different-models}
 
 \begin{itemize}
-  \item The dispersion parameter in nb is often interpreted as indicating unobserved heterogeneity
-  \item Geometric is the light version of that
-  \item inflated models model inflation
-  \item Hurdle models can also model deflation as well as both inflation and deflation simultaneously so they are more flexible
-  \item By contrast the interpretation of the $\omega$ inflation parameter is more convenient that the interpretation of the $\pi$ probability parameter.
+  \item The dispersion parameter $\alpha$ in the negative binomial type models is often interpreted as measuring the severeness of unobserved heterogeneity in the underlying poisson process cf. \cite{ztnegbin}. When using any truncated negative binomial model the hope is that due to the class of models considered the consistency is not lost despite the lack of information.
+  \item While not discussed in the literature yet (to the best of the knowledge of the authors) the interpretation of $\alpha$ being heterogeneous across the population (specified in \code{controlModel}) would be that the unobserved heterogeneity affects the accuracy of the prediction for the dependent variable $Y$ more severely than others.
+  \item The geometric model (negative binomial with $\alpha=1$) is singled out in the package and often considered in the literature due to inherent computational issues with negative binomial models which are exasperated by the fact that data in SSCR is usually of somewhat low quality. Sparseness of the data is in particular a common issue in SSCR and a big issue for all numerical methods for fitting the (zero truncated) negative binomial model.
+  \item The extra mass $\omega$ in the inflated models is an important addition to the researcher's toolbox in SSCR since the inflation at $y=1$ is likely to occur in many types of applications. For example in estimating the number active people who committed criminal acts in a given time period being observed naturally induces a risk of no longer being able to be observed for all units with possibility of arrest. One constraint present in modelling via inflated models is that trying to include both the possibility of one inflation and one deflation leads to both numerical and theoritical problems since the parameter space (of $(\omega, \lambda)$ or $(\omega, \lambda, \alpha)$) is then a much more complicated set.
+  \item Hurdle models are another approach to modelling the one-inflation, they can also model deflation as well as both inflation and deflation simultaneously so they are more flexible and situationally the Hurdle zero truncated models seem to be more numerically stable.
+  \item Although interpretation of regression parameters tends to be somewhat overlooked in SSCR studies we should point out that interpretation of  of the $\omega$ inflation parameter is more convenient that the interpretation of the $\pi$ probability parameter. Additionally the interpretation of the $\lambda$ parameter in (one) inflated models conforms to the intuition that given that unit $k$ comes from the non-inflated part of the population then it follows a poisson distribution (respectively geometric or negative binomial) with the $\lambda$ parameter (or $\lambda,\alpha$), in hurdle models one loses that interpretation.
+  \item It is somewhat interesting is that the estimates from Hurdle zero truncated and one inflated zero truncated models are "usually" quite close to one another.
 \end{itemize}
 
 \subsection{Structure of a family
@@ -1478,14 +1652,14 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x12e556458>
+<bytecode: 0x1284c8958>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}
 
 \normalsize
 
-one might of course include code for cumputing them manually.
+one might of course include code for computing them manually.
 
 \bibliography{refs.bib}
 
