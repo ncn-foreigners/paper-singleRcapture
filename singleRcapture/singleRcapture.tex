@@ -467,6 +467,8 @@ the \code{popEst} object is of the \code{popSizeEstResults} class and
   \item \code{control} -- a \code{controlPopVar} object with controls used to obtained the object.
 \end{itemize}
 
+\small
+
 \begin{CodeChunk}
 \begin{CodeInput}
 R> dfb <- dfbeta(basicModel)
@@ -487,6 +489,8 @@ R> apply(dfb, 2, quantile)
 100%         1.097872e-01  9.933829e-01  3.209798e-01
 \end{CodeOutput}
 \end{CodeChunk}
+
+\normalsize
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -881,9 +885,14 @@ Loading required package: splines
 \begin{CodeInput}
 R> library(singleRcaptureExtra)
 R> modelVgam <- vgam(
-+   TOTAL_SUB ~ (s(log_size, df  = 3) + s(log_distance, df  = 2)) / C_TYPE,
++   TOTAL_SUB ~ (s(log_size, df  = 3) + 
++                  s(log_distance, df  = 2)) / C_TYPE,
 +   data = farmsubmission,
-+   family = posnegbinomial(lsize = negloglink)
++   # Using different link since
++   # VGAM uses parametrisation with 1/alpha
++   family = posnegbinomial(
++     lsize = negloglink
++   )
 + )
 \end{CodeInput}
 \end{CodeChunk}
@@ -897,6 +906,7 @@ R> modelVgamPop <- estimatePopsize(modelVgam)
 \end{CodeChunk}
 
 Compare with a simmilar linear model from base \pkg{singleRcapture}:
+\small
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1010,6 +1020,8 @@ s(log_size, df = 3):s(log_distance, df = 2):C_TYPE
 \end{CodeOutput}
 \end{CodeChunk}
 
+\normalsize
+
 \section*{Acknowledgements}
 
 The authors' work has been financed by the National Science Centre in
@@ -1034,6 +1046,8 @@ function in the \pkg{singleRcapture} which corresponds to the following
 on covariates. The following would be one way of implementing it, with
 \code{lambda, pi} in the code meaning
 \(\frac{1}{2}\lambda,\frac{1}{2}\pi\) in the equation above:
+
+\footnotesize
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1371,6 +1385,8 @@ R> myFamilyFunction <- function(lambdaLink = c("logit", "cloglog", "probit"),
 \end{CodeInput}
 \end{CodeChunk}
 
+\normalsize
+
 A quick tests shows us that this implementation in fact works:
 
 \begin{CodeChunk}
@@ -1386,10 +1402,9 @@ R> mm <- estimatePopsize(
 +     data = data.frame(Y = Y[Y > 0]),
 +     model = myFamilyFunction(lambdaLink = "logit", 
 +                              piLink = "logit"),
-+     controlPopVar = controlPopVar(
-+         # the usual observed information matrix is ill-suited for this distribution
-+         covType = "Fisher"
-+     )
++     # the usual observed information matrix 
++     # is ill-suited for this distribution
++     controlPopVar = controlPopVar(covType = "Fisher")
 + )
 R> summary(mm)
 \end{CodeInput}
@@ -1440,7 +1455,7 @@ Where the link functions such as
 \code{singleRcapture:::singleRinternalcloglogLink} are just internal
 functions in \pkg{singleRcapture} that compute link functions their
 inverses and derivatives of both links and inverse link up to third
-order:
+order: \small
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1463,10 +1478,12 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x123dab290>
+<bytecode: 0x12e556458>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}
+
+\normalsize
 
 one might of course include code for cumputing them manually.
 

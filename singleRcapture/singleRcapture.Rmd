@@ -201,7 +201,6 @@ table(netherlandsimmigrant$capture)
 
 Since there is a reasonable suspicion that the act of observing a unit in the dataset may led to undesirable consequences from the point of view of the subject of the observation (here possible deportation, detainment or similar). For those reason one should 
 
-
 ```{r, model_inflated_netherlands}
 set.seed(123456)
 modelInflated <- estimatePopsize(
@@ -234,10 +233,12 @@ the \code{popEst} object is of the \code{popSizeEstResults} class and \code{list
   \item \code{control} -- a \code{controlPopVar} object with controls used to obtained the object.
 \end{itemize}
 
+\small
 ```{r, dfbeta_basic_model}
 dfb <- dfbeta(basicModel)
 apply(dfb, 2, quantile)
 ```
+\normalsize
 
 ```{r, dfpopsize_basic_model}
 dfp <- dfpopsize(basicModel, dfbeta = dfb)
@@ -504,9 +505,14 @@ Using the fitted \code{zerotrunc, vglm, vgam} class objects in population size e
 library(VGAM)
 library(singleRcaptureExtra)
 modelVgam <- vgam(
-  TOTAL_SUB ~ (s(log_size, df  = 3) + s(log_distance, df  = 2)) / C_TYPE,
+  TOTAL_SUB ~ (s(log_size, df  = 3) + 
+                 s(log_distance, df  = 2)) / C_TYPE,
   data = farmsubmission,
-  family = posnegbinomial(lsize = negloglink)
+  # Using different link since
+  # VGAM uses parametrisation with 1/alpha
+  family = posnegbinomial(
+    lsize = negloglink
+  )
 )
 ```
 can be acomplished with the following syntax simple syntax:
@@ -515,6 +521,7 @@ modelVgamPop <- estimatePopsize(modelVgam)
 ```
 
 Compare with a simmilar linear model from base \pkg{singleRcapture}:
+\small
 ```{r, singleRcaptureExtra_compare}
 modelBase <- estimatePopsize(
   TOTAL_SUB ~ (log_size + log_distance) * C_TYPE,
@@ -524,7 +531,7 @@ modelBase <- estimatePopsize(
 summary(modelBase)
 summary(modelVgamPop)
 ```
-
+\normalsize
 
 
 
@@ -545,6 +552,8 @@ Suppose we want to implement a very specific zero truncated family function in t
   \end{cases}
 \end{equation}
 with $\lambda, \pi\in\left(0, 1\right)$ being dependent on covariates. The following would be one way of implementing it, with \code{lambda, pi} in the code meaning $\frac{1}{2}\lambda,\frac{1}{2}\pi$ in the equation above:
+
+\footnotesize
 ```{r, family_function}
 myFamilyFunction <- function(lambdaLink = c("logit", "cloglog", "probit"),
                              piLink     = c("logit", "cloglog", "probit"),
@@ -878,6 +887,7 @@ myFamilyFunction <- function(lambdaLink = c("logit", "cloglog", "probit"),
   )
 }
 ```
+\normalsize
 
 A quick tests shows us that this implementation in fact works:
 ```{r, family_function_showcase}
@@ -892,16 +902,17 @@ mm <- estimatePopsize(
     data = data.frame(Y = Y[Y > 0]),
     model = myFamilyFunction(lambdaLink = "logit", 
                              piLink = "logit"),
-    controlPopVar = controlPopVar(
-        # the usual observed information matrix is ill-suited for this distribution
-        covType = "Fisher"
-    )
+    # the usual observed information matrix 
+    # is ill-suited for this distribution
+    controlPopVar = controlPopVar(covType = "Fisher")
 )
 summary(mm)
 ```
 
 Where the link functions such as \code{singleRcapture:::singleRinternalcloglogLink} are just internal functions in \pkg{singleRcapture} that compute link functions their inverses and derivatives of both links and inverse link up to third order:
+\small
 ```{r, link_function}
 singleRcapture:::singleRinternalcloglogLink
 ```
+\normalsize
 one might of course include code for cumputing them manually.
