@@ -170,23 +170,23 @@ With the \code{formula, data, model} being the three arguments which must be pro
 ### Example with \proglang{R} code {short-title="Example with R code" #r-code}
 
 The package should be installed from CRAN \url{https://cran.r-project.org/package=singleRcapture} with the usual code:
-```{r, eval=FALSE}
+```{r, installation, eval=FALSE}
 install.packages("singleRcapture")
 ```
 
 To showcase the main function let us recreate the zero truncated Poisson model from \cite{ztpoisson} on the same data included in the package under the name \code{netherlandsimmigrant}:
-```{r}
+```{r, loading_singleRcapture}
 library(singleRcapture)
 head(netherlandsimmigrant)
 ```
 
 This data set contains information about immigrants in four cities (Amsterdam, Rotterdam, The Hague and Utrecht) in Netherlands that have been staying in the country illegally in 1995 and have appeared in police records that year. The number of times each individual appeared in the records is included in the \code{capture} variable with the available covariates being \code{gender, age, reason, nation} being respectively the persons gender and age, reason for being captured and region of the world from which each person comes:
-```{r}
+```{r, netherlandsimmigrant_summary}
 summary(netherlandsimmigrant)
 ```
 
 The basic syntax is indeed vary similar to that of \code{glm} with the output of the summary method being also quite simmilar except for the additional results of the population size estimates:
-```{r}
+```{r, basic_model_netherlands}
 basicModel <- estimatePopsize(
   formula = capture ~ gender + age + nation,
   model   = ztpoisson(),
@@ -195,14 +195,14 @@ basicModel <- estimatePopsize(
 summary(basicModel)
 ```
 One point which we should make while analysing this data set is that there is a disproportionate number of individuals who were observed only once (see table bellow):
-```{r}
+```{r, table_netherlands}
 table(netherlandsimmigrant$capture)
 ```
 
 Since there is a reasonable suspicion that the act of observing a unit in the dataset may led to undesirable consequences from the point of view of the subject of the observation (here possible deportation, detainment or similar). For those reason one should 
 
 
-```{r}
+```{r, model_inflated_netherlands}
 set.seed(123456)
 modelInflated <- estimatePopsize(
     formula = capture ~ nation,
@@ -222,7 +222,7 @@ summary(modelInflated)
 
 ### Methods
 
-```{r}
+```{r, popsize_extract}
 (popEst <- popSizeEst(basicModel))
 ```
 the \code{popEst} object is of the \code{popSizeEstResults} class and \code{list} type and contains the following fields:
@@ -234,12 +234,12 @@ the \code{popEst} object is of the \code{popSizeEstResults} class and \code{list
   \item \code{control} -- a \code{controlPopVar} object with controls used to obtained the object.
 \end{itemize}
 
-```{r}
+```{r, dfbeta_basic_model}
 dfb <- dfbeta(basicModel)
 apply(dfb, 2, quantile)
 ```
 
-```{r}
+```{r, dfpopsize_basic_model}
 dfp <- dfpopsize(basicModel, dfbeta = dfb)
 summary(dfp)
 ```
@@ -247,7 +247,7 @@ summary(dfp)
 ## Marginal frequencies
 
 A popular method of testing the model fit in single source capture-recapture studies is comparing the fitted marginal frequencies $\displaystyle\sum_{j=1}^{N_{obs}}\hat{\mathbb{P}}\left[Y_{j}=k|\bx_{j}, Y_{j} > 0\right]$ with the observed marginal frequencies $\displaystyle\sum_{j=1}^{N}\1_{\{k\}}(Y_{k})=\sum_{j=1}^{N_{obs}}\1_{\{k\}}(Y_{k})$ for $k\geq1$. If a fitted model bears sufficient resemblance to the real data collection process these quantities should be quite close and both $G$ and $\chi^{2}$ tests may be employed in order to test the statistical significance of the discrepancy with the following \pkg{singleRcapture} syntax:
-```{r}
+```{r, marginal_freq_basic_model}
 margFreq <- marginalFreq(basicModel)
 summary(margFreq, df = 1, dropl5 = "group")
 ```
@@ -256,19 +256,19 @@ where the \code{dropl5} argument is used to indicate how to handle the cells wit
 ## Plots
 
 The \code{singleRStaticCountData} class has a \code{plot} method implementing several types of quick demonstrative plots such as the rootogram \cite{rootogram} for comparing the fitted and marginal frequencies which we can get with the syntax:
-```{r}
+```{r, rootogram}
 plot(basicModel, plotType = "rootogram")
 ```
 
-```{r, echo=FALSE, include=FALSE}
+```{r, plot_set_up, echo=FALSE, include=FALSE}
 par(mar = c(2.5, 8.5, 4.1, 2.5), cex.main = .7, cex.lab = .6)
 ```
 
-```{r}
+```{r, strata_plot}
 plot(basicModel, plotType = "strata")
 ```
 
-```{r, echo=FALSE, include=FALSE}
+```{r, dev_off, echo=FALSE, include=FALSE}
 dev.off()
 ```
 
@@ -313,28 +313,21 @@ In the context of multi-parameter families we have a matrix of linear predictors
 \end{enumerate}
 
 ## The \code{estimatePopsizeFit} function {short-title="The" #estimatePopsizeFit-function}
-```{r}
+```{r, estimatePopsizeFit}
 X <- matrix(data = 0, nrow = 2 * NROW(farmsubmission), ncol = 7)
 X[1:NROW(farmsubmission), 1:4] <- model.matrix(
 ~ 1 + log_size + log_distance + C_TYPE, 
 farmsubmission
 )
-
-
 X[-(1:NROW(farmsubmission)), 5:7] <- X[1:NROW(farmsubmission), c(1, 3, 4)]
-
 # this attribute tells the function which elements of the design matrix 
 # correspond to which linear predictor 
 attr(X, "hwm") <- c(4, 3)
-
-# get starting points
-(start <- glm.fit(
+start <- glm.fit(# get starting points
   y = farmsubmission$TOTAL_SUB, 
   x = X[1:NROW(farmsubmission), 1:4], 
   family = poisson()
-)$coefficients)
-
-
+)$coefficients
 res <- estimatePopsizeFit(
   y            = farmsubmission$TOTAL_SUB, 
   X            = X, 
@@ -346,13 +339,9 @@ res <- estimatePopsizeFit(
   etaStart     = matrix(X %*% c(start, 0, 0, 0), ncol = 2),
   offset       = cbind(rep(0, NROW(farmsubmission)), 
                        rep(0, NROW(farmsubmission)))
-)
-
-# extract results
+)# extract results
 ll <- ztoigeom()$makeMinusLogLike(y = farmsubmission$TOTAL_SUB, X = X)
-
 print(c(res$beta, -ll(res$beta), res$iter))
-
 # Compare with optim call
 res2 <- estimatePopsizeFit(
   y = farmsubmission$TOTAL_SUB, 
@@ -363,8 +352,7 @@ res2 <- estimatePopsizeFit(
   coefStart = c(start, 0, 0, 0),
   control = controlMethod(silent = TRUE),
   offset = cbind(rep(0, NROW(farmsubmission)), rep(0, NROW(farmsubmission)))
-)
-# extract results
+)# extract results
 c(res2$beta, -ll(res2$beta), res2$iter)
 ```
 
@@ -475,11 +463,78 @@ Here we limit ourselves to just listing the family functions:
   \item \code{getStart} -- Expression for generating starting points.
 }
 
-### Implementing custom \pkg{singleRcapture} family function {short-title="Implementing custom singleRcapture family function"}
+## Bootstrap algorithms
 
-<!---
-Możliwe że poleci do appendixu.
--->
+There are three types of bootstrap algorithms which the user may specify in \code{controlPopVar} controls with \code{bootType} argument which has three possible values \code{"parametric", "semiparametric", "nonparametric"} with the nonparametric being bootstrap being the usual bootstrap algorithm which as argued in \cite{norrpoll} and \cite{zwane}. The idea of semiparametric bootstrap is to modify the usual bootstrap to include the additional uncertainty due to the sample size being a random variable. This type of bootstrap can be in short described as:
+\begin{enumerate}
+    \item Draw the sample size $N_{obs}'\sim\text{Be}\left(N', \frac{N'-N_{obs}}{N'}\right)$, where $N'=\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$.
+    \item Draw $N_{obs}'$ units from the data uniformly without replacement.
+    \item Obtain new population size estimate using bootstrap data.
+    \item Repeat $1-3$ $B$ times.
+\end{enumerate}
+In other words we first draw the sample size and then the sample conditional on the sample size. Note that in using semi-parametric bootstrap one implicitly assumes that the population size estimate $\hat{N}$ is accurate. The last implemented bootstrap type is the parametric algorithm which in short first draws the finite population of size $\approx\hat{N}$ from the superpopulation model and then samples from this population according to the selected model:
+\begin{enumerate}
+    \item Draw the number of covariates equal to $\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$ proportional to the estimated contribution $(\mathbb{P}\left[Y_{k}>0|\bx_{k}\right])^{-1}$ with replacement.
+    \item Using the fitted model and regression coefficients $\hat{\bbeta}$ draw for each covariate the $Y$ value from the corresponding probability measure on $\mathbb{N}\cup\{0\}$.
+    \item Truncate units with drawn $Y$ value equal to $0$.
+    \item Obtain population size estimate based on the truncated data.
+    \item Repeat $1-4$ $B$ times.
+\end{enumerate}
+Note however that for this type of algorithm to result in consistent standard error estimates it is imperative that the estimated model for the entire superpopulation probability space is consistent which may be much less realistic than semiparametric bootstrap. The parametric bootstrap algorithm is the default in \pkg{singleRcapture}.
+
+Additional arguments accepted by the \code{contorlPopVar} function which are relevant to bootstrap are:
+\begin{itemize}
+  \item \code{alpha, B} -- significance level and number of bootstrap samples to be performed respectively with $0.05$ and $500$ being the default options.
+  \item \code{cores} -- number of process cores to use in bootstrap (1 by default) parallel computing is done via \pkg{doParallel, foreach, parallel} packages.
+  \item \code{keepbootStat} -- 	logical value indicating whether to keep a vector of statistics produced by bootstrap.
+  \item \code{traceBootstrapSize, bootstrapVisualTrace} --  logical values indicating whether sample and population size should be tracked (\code{FALSE} by default) these work only when \code{cores} = 1.
+    \item \code{fittingMethod, bootstrapFitcontrol} -- fitting method (by default the same as used in the original call) and control parameters (\code{controlMethod}) for model fitting in bootstrap.
+\end{itemize}
+
+# Integration with the \pkg{VGAM, countreg} packages {short-title="Integration with the" #VGAMcountreg-packages}
+
+The \pkg{singleRcaptureExtra} extensions allows for converting objects created by \code{vglm, vgam, countreg} functions from packages \pkg{VGAM, countreg} to a \code{singleRStaticCountData} via the respective \code{estimatePopsize} methods for their classes. The help files for all the methods and all the controll functions are accessed by:
+```{r, eval=FALSE}
+?estimatePopsize.vgam
+?controlEstPopVgam
+```
+
+Using the fitted \code{zerotrunc, vglm, vgam} class objects in population size estimation such as the one additive models with smooth terms for dataset from \cite{chao}:
+```{r, modelVGAM}
+library(VGAM)
+library(singleRcaptureExtra)
+modelVgam <- vgam(
+  TOTAL_SUB ~ (s(log_size, df  = 3) + s(log_distance, df  = 2)) / C_TYPE,
+  data = farmsubmission,
+  family = posnegbinomial(lsize = negloglink)
+)
+```
+can be acomplished with the following syntax simple syntax:
+```{r, singleRcaptureExtra_showcase}
+modelVgamPop <- estimatePopsize(modelVgam)
+```
+
+Compare with a simmilar linear model from base \pkg{singleRcapture}:
+```{r, singleRcaptureExtra_compare}
+modelBase <- estimatePopsize(
+  TOTAL_SUB ~ (log_size + log_distance) * C_TYPE,
+  data = farmsubmission,
+  model = ztnegbin()
+)
+summary(modelBase)
+summary(modelVgamPop)
+```
+
+
+
+
+\section*{Acknowledgements}
+
+The authors' work has been financed by the National Science Centre in Poland, OPUS 20, grant no. 2020/39/B/HS4/00941. Codes to reproduce simulations from the paper are available at ...
+
+\appendix
+
+# Implementing custom \pkg{singleRcapture} family function {short-title="Implementing custom singleRcapture family function"}
 
 Suppose we want to implement a very specific zero truncated family function in the \pkg{singleRcapture} which corresponds to the following "untruncated" distribution:
 \begin{equation}
@@ -490,7 +545,7 @@ Suppose we want to implement a very specific zero truncated family function in t
   \end{cases}
 \end{equation}
 with $\lambda, \pi\in\left(0, 1\right)$ being dependent on covariates. The following would be one way of implementing it, with \code{lambda, pi} in the code meaning $\frac{1}{2}\lambda,\frac{1}{2}\pi$ in the equation above:
-```{r}
+```{r, family_function}
 myFamilyFunction <- function(lambdaLink = c("logit", "cloglog", "probit"),
                              piLink     = c("logit", "cloglog", "probit"),
                              ...) {
@@ -528,8 +583,8 @@ myFamilyFunction <- function(lambdaLink = c("logit", "cloglog", "probit"),
       switch (type,
         "nontrunc" = {
           matrix(c(2, 1) * c(
-            lambdaLink(eta[, 1], inverse = TRUE, deriv = 1),
-                piLink(eta[, 2], inverse = TRUE, deriv = 1)
+            lambdaLink(eta[, 1], inverse = TRUE, deriv = 1) / 2,
+                piLink(eta[, 2], inverse = TRUE, deriv = 1) / 2
           ), ncol = 2)
         },
         "trunc" = {
@@ -537,8 +592,8 @@ myFamilyFunction <- function(lambdaLink = c("logit", "cloglog", "probit"),
             pi / (pi + lambda) ^ 2,
             -lambda / (pi + lambda) ^ 2
           ) * c(
-            lambdaLink(eta[, 1], inverse = TRUE, deriv = 1),
-                piLink(eta[, 2], inverse = TRUE, deriv = 1)
+            lambdaLink(eta[, 1], inverse = TRUE, deriv = 1) / 2,
+                piLink(eta[, 2], inverse = TRUE, deriv = 1) / 2
           ), ncol = 2)
         }
       )
@@ -825,7 +880,7 @@ myFamilyFunction <- function(lambdaLink = c("logit", "cloglog", "probit"),
 ```
 
 A quick tests shows us that this implementation in fact works:
-```{r}
+```{r, family_function_showcase}
 set.seed(123)
 Y <- simulate(
     myFamilyFunction(lambdaLink = "logit", piLink = "logit"),
@@ -846,40 +901,7 @@ summary(mm)
 ```
 
 Where the link functions such as \code{singleRcapture:::singleRinternalcloglogLink} are just internal functions in \pkg{singleRcapture} that compute link functions their inverses and derivatives of both links and inverse link up to third order:
-```{r}
+```{r, link_function}
 singleRcapture:::singleRinternalcloglogLink
 ```
 one might of course include code for cumputing them manually.
-
-## Bootstrap algorithms
-
-There are three types of bootstrap algorithms which the user may specify in \code{controlPopVar} controls with \code{bootType} argument which has three possible values \code{"parametric", "semiparametric", "nonparametric"} with the nonparametric being bootstrap being the usual bootstrap algorithm which as argued in \cite{norrpoll} and \cite{zwane}. The idea of semiparametric bootstrap is to modify the usual bootstrap to include the additional uncertainty due to the sample size being a random variable. This type of bootstrap can be in short described as:
-\begin{enumerate}
-    \item Draw the sample size $N_{obs}'\sim\text{Be}\left(N', \frac{N'-N_{obs}}{N'}\right)$, where $N'=\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$.
-    \item Draw $N_{obs}'$ units from the data uniformly without replacement.
-    \item Obtain new population size estimate using bootstrap data.
-    \item Repeat $1-3$ $B$ times.
-\end{enumerate}
-In other words we first draw the sample size and then the sample conditional on the sample size. Note that in using semi-parametric bootstrap one implicitly assumes that the population size estimate $\hat{N}$ is accurate. The last implemented bootstrap type is the parametric algorithm which in short first draws the finite population of size $\approx\hat{N}$ from the superpopulation model and then samples from this population according to the selected model:
-\begin{enumerate}
-    \item Draw the number of covariates equal to $\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$ proportional to the estimated contribution $(\mathbb{P}\left[Y_{k}>0|\bx_{k}\right])^{-1}$ with replacement.
-    \item Using the fitted model and regression coefficients $\hat{\bbeta}$ draw for each covariate the $Y$ value from the corresponding probability measure on $\mathbb{N}\cup\{0\}$.
-    \item Truncate units with drawn $Y$ value equal to $0$.
-    \item Obtain population size estimate based on the truncated data.
-    \item Repeat $1-4$ $B$ times.
-\end{enumerate}
-Note however that for this type of algorithm to result in consistent standard error estimates it is imperative that the estimated model for the entire superpopulation probability space is consistent which may be much less realistic than semiparametric bootstrap. The parametric bootstrap algorithm is the default in \pkg{singleRcapture}.
-
-Additional arguments accepted by the \code{contorlPopVar} function which are relevant to bootstrap are:
-\begin{itemize}
-  \item \code{alpha, B} -- significance level and number of bootstrap samples to be performed respectively with $0.05$ and $500$ being the default options.
-  \item \code{cores} -- number of process cores to use in bootstrap (1 by default) parallel computing is done via \pkg{doParallel, foreach, parallel} packages.
-  \item \code{keepbootStat} -- 	logical value indicating whether to keep a vector of statistics produced by bootstrap.
-  \item \code{traceBootstrapSize, bootstrapVisualTrace} --  logical values indicating whether sample and population size should be tracked (\code{FALSE} by default) these work only when \code{cores} = 1.
-    \item \code{fittingMethod, bootstrapFitcontrol} -- fitting method (by default the same as used in the original call) and control parameters (\code{controlMethod}) for model fitting in bootstrap.
-\end{itemize}
-
-# Integration with the \pkg{VGAM, countreg} packages {short-title="Integration with the" #VGAMcountreg-packages}
-
-\newpage
-
