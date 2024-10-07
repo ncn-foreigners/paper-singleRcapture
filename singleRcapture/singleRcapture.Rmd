@@ -45,8 +45,8 @@ abstract: >
 
 keywords:
   # at least one keyword must be supplied
-  formatted: [population size estimation, truncated distributuons, count regression models, "\\proglang{R}"]
-  plain:     [population size estimation, truncated distributuons, count regression models, R]
+  formatted: [population size estimation, hidden populations, truncated distributuons, count regression models, "\\proglang{R}"]
+  plain:     [population size estimation, hidden populations, truncated distributuons, count regression models, R]
 preamble: >
   \usepackage{amsmath, amsthm, amssymb}
   \usepackage{calc, ragged2e}
@@ -76,26 +76,21 @@ options(prompt = 'R> ', continue = '+ ')
 
 # Introduction
 
+aaa
+
 <!---
 Maciej tutaj zostawiam tobie
+literatura: 
++ odwołania do capture-recapture
++ odwołania do badań społecznych ale też badan z zakresu biostatystyki
++ odwołania do prac Boheninga i jego książek 
++ ogólnie teoria od zero-truncated, przez rozszerzenia po ziot i inne
+\allowdisplaybreaks
 -->
 
-\allowdisplaybreaks
-## Literature review
-
-This work is supported by the National Science Center, OPUS 20 grant no. 2020\-/\-39/\-B/\-HS4/\-00941
-\textit{Towards census-like statistics for foreign-born populations -- quality, data integration and estimation}
-
-The subject of this workshop is the \pkg{singleRcapture} package and its lightweight extension that allows for integration with other \proglang{R} packages called \pkg{singleRcaptureExtra}.
-
-The package is available on CRAN: \url{CRAN.R-project.org/package=singleRcapture} while the extension is available on: \url{https://github.com/ncn-foreigners/singleRcaptureExtra}.
-
-The \pkg{singleRcapture} package is an \proglang{R} language package that focuses on implementing state of the art methods for frequentist point and interval estimation of size of closed populations in single-source capture-recapture (SSCR) setting (e.g. estimation of the population size of irregular migrants at set time point in a given area). 
-
-The beginning of inference in single source capture-recapture dates back to the seminal \cite{ztpoisson} paper in which the zero truncated poisson model was applied to study the size of population of irregular migrants in fours cities in Netherlands.
 
 
-## How do we estimate population size with only one register? The basics of SSCR
+## How do we estimate population size with a single register? 
 
 <!---
 Tu wydaje mi sie że wystarczy
@@ -145,10 +140,22 @@ where:
 <!-- missing not at random -->
 The estimator $\hat{N}$ is best interpreted as being an estimator for the total number of \underline{observable} units in the population since we have no means of estimating the number of units in the population for which the probability of being included in the data is $0$ cf. \cite{ztpoisson}.
 
-### Existing implementations
+## Software for capture-recapture 
+
+
+The package is available on CRAN: \url{CRAN.R-project.org/package=singleRcapture} while the extension is available on: \url{https://github.com/ncn-foreigners/singleRcaptureExtra}.
+
+The \pkg{singleRcapture} package is an \proglang{R} language package that focuses on implementing state of the art methods for frequentist point and interval estimation of size of closed populations in single-source capture-recapture (SSCR) setting (e.g. estimation of the population size of irregular migrants at set time point in a given area). 
+
+The beginning of inference in single source capture-recapture dates back to the seminal \cite{ztpoisson} paper in which the zero truncated poisson model was applied to study the size of population of irregular migrants in fours cities in Netherlands.
+
 
 <!---
-Maciej tutaj zostawiam tobie
++ jeden paragraf do capture-recapture / multiple system estimation
++ pakiety do zero-truncated
++ odwołania do kodów w literaturze
++ jakie są unikalne elementy pakietu singleRcapture
++ nie ma pakietów do single-source capture-recapture
 -->
 
 There are some packages implementing zero truncated count data models such as \pkg{VGAM} and \pkg{countreg} and they can be integrated within the \pkg{singleRcapture} ecosystem by the lightweight extention \pkg{singleRcaptureExtra}.
