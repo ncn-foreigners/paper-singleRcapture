@@ -12,10 +12,12 @@ Beręsewicz~\orcidlink{0000-0002-8281-4301}\\Poznań University of
 Economics and Business\\
 Statistical Office in Poznań
 }
-\title{Single-Source Capture-Recapture Models With \pkg{singleRcapture}}
+\title{\pkg{singleRcapture}: A Package for Single-Source
+Capture-Recapture Models}
 
 \Plainauthor{Piotr Chlebicki, Maciej Beręsewicz}
-\Plaintitle{Single-Source Capture-Recapture Models With singleRcapture}
+\Plaintitle{singleRcapture A Package for Single-Source Capture-Recapture
+Models}
 \Shorttitle{\pkg{singleRcapture}: Single-Source Capture-Recapture
 Models}
 
@@ -95,7 +97,44 @@ ul. Wojska Polskiego 27/29\\
 
 \section{Introduction}\label{introduction}
 
-aaa
+Population size estimation is a\textasciitilde critical methodological
+approach employed across multiple scientific disciplines, serving as
+a\textasciitilde fundamental basis for research, policy formulation, and
+decision-making processes. In the field of statistics, particularly
+official statistics, precise population estimates are essential for
+developing robust economic models, optimizing resource allocation, and
+informing evidence-based policy formulation. Social scientists utilize
+advanced population estimation techniques to investigate
+\textit{hard-to-reach} populations, such as homeless individuals or
+illicit drug users, thereby addressing the inherent limitations of
+conventional census methodologies. These techniques are crucial for
+obtaining accurate data on populations that are typically
+under-represented or difficult to access through traditional sampling
+methods. In ecology and epidemiology, researchers focus on estimating
+the size of specific species or disease-affected populations within
+defined geographical regions, which is vital for conservation efforts,
+ecosystem management, and public health interventions.
+
+Population size estimation can be approached through various
+methodologies, each with distinct advantages and limitations.
+Traditional approaches include full enumeration (e.g.~census operations)
+and comprehensive sample surveys, which, while providing detailed data,
+are often resource-intensive and may result in delayed estimates,
+particularly for human populations. Alternative methods leverage
+existing data sources, such as administrative registers or carefully
+designed small-scale studies in wildlife research. A more sophisticated
+approach, known as \textit{capture-recapture} or
+\textit{multiple system estimation}, utilizes data from multiple
+enumerations of the same population. This can be implemented using
+a\textasciitilde single source with repeated observations, two distinct
+sources, or multiple sources.
+
+In this paper we focus specifically on methods that utilize
+a\textasciitilde single data source with multiple enumerations of the
+same units. In human population studies, such data might be derived from
+police records, health system databases, or border control logs, while
+for non-human populations, veterinary records or specialized field data
+serve as analogous sources.
 
 \subsection{How do we estimate population size with a single
 register?}\label{how-do-we-estimate-population-size-with-a-single-register}
@@ -1656,7 +1695,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x134469c38>
+<bytecode: 0x1331c16d8>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}
