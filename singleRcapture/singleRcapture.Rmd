@@ -29,7 +29,7 @@ title:
   # If you use tex in the formatted title, also supply version without
   # For running headers, if needed
   formatted: "\\pkg{singleRcapture}: A Package for Single-Source Capture-Recapture Models"
-  plain:     "singleRcapture A Package for Single-Source Capture-Recapture Models"
+  plain:     "singleRcapture: A Package for Single-Source Capture-Recapture Models"
   short:     "\\pkg{singleRcapture}: Single-Source Capture-Recapture Models"
 abstract: >
   Estimating population size is an important issue in official statistics, social sciences and natural sciences. One way to approach  

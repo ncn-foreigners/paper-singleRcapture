@@ -1,4 +1,4 @@
-# Repo for the paper "Single-source capture-recapture models with `singleRcapture`"
+# Repo for the paper "`singleRcapture`: A Package for Single-Source Capture-Recapture Models"
 
 ## How to cite
 
