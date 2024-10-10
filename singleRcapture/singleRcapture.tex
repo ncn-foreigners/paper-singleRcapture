@@ -97,9 +97,9 @@ ul. Wojska Polskiego 27/29\\
 
 \section{Introduction}\label{introduction}
 
-Population size estimation is a\textasciitilde critical methodological
-approach employed across multiple scientific disciplines, serving as
-a\textasciitilde fundamental basis for research, policy formulation, and
+Population size estimation is a\textasciitilde methodological approach
+employed across multiple scientific disciplines, serving as
+a\textasciitilde basis for research, policy formulation, and
 decision-making processes. In the field of statistics, particularly
 official statistics, precise population estimates are essential for
 developing robust economic models, optimizing resource allocation, and
@@ -122,105 +122,142 @@ and comprehensive sample surveys, which, while providing detailed data,
 are often resource-intensive and may result in delayed estimates,
 particularly for human populations. Alternative methods leverage
 existing data sources, such as administrative registers or carefully
-designed small-scale studies in wildlife research. A more sophisticated
-approach, known as \textit{capture-recapture} or
-\textit{multiple system estimation}, utilizes data from multiple
-enumerations of the same population. This can be implemented using
-a\textasciitilde single source with repeated observations, two distinct
-sources, or multiple sources.
+designed small-scale studies in wildlife research. Application of these
+sources often comes with statistical methods, known as
+\textit{capture-recapture} or \textit{multiple system estimation}, that
+utilizes data from multiple enumerations of the same population. This
+can be implemented using a\textasciitilde single source with repeated
+observations, two, or multiple sources.
 
-In this paper we focus specifically on methods that utilize
-a\textasciitilde single data source with multiple enumerations of the
-same units. In human population studies, such data might be derived from
-police records, health system databases, or border control logs, while
-for non-human populations, veterinary records or specialized field data
-serve as analogous sources.
+In this paper we focus methods that utilize a\textasciitilde single data
+source with multiple enumerations of the same units. In human population
+studies, such data might be derived from police records, health system
+databases, or border control logs, while for non-human populations,
+veterinary records or specialized field data serve as analogous sources.
+These methods are often applied for hard-to-reach or hidden population
+where standard sampling methods may be inappropriate because of the
+costs or problems with identification of members of these populations.
+
+While methods for two or more sources is implemented in various
+open-source software the single-source capture-recapture (SSCR) methods
+are less available or partially implemented in existing packages. The
+goal of the paper is to bridge this gap by the \pkg{singleRcapture} and
+\pkg{singleRcaptureExtra} packages which implements state-of-the-art
+methods in SSCR and provides user friendly API which mimics existing R
+software. In the next subsections we briefly describe the main approach
+used in SSCR and the available software that tan be used for estimating
+population size based on SSCR methods.
 
 \subsection{How do we estimate population size with a single
 register?}\label{how-do-we-estimate-population-size-with-a-single-register}
 
 Let \(Y_{k}\) represent the number of times \(k\)-th unit was observed
-in source data. Clearly, we don not know how often \(Y_{k}=0\) and to
-find the total population size \(N\) we need to estimate it. In general,
-we assume that conditional distribution of \(Y_{k}\) given
+in a\textasciitilde register. Clearly, we only observe \(Y_{k}>\) and we
+do not know how many units are missed (i.e.~\(Y_{k}=0\)) and to find the
+population size denoted by \(N\) we need to estimate it. In general, we
+assume that conditional distribution of \(Y_{k}\) given
 a\textasciitilde vector of covariates \(\boldsymbol{x}_{k}\) follows
-some version of zero truncated count data distribution. Knowing the
-parameters of the distribution we may estimate the population size using
-Horwitz-Thompson type estimator: \begin{equation*}
+some version of zero-truncated count data distribution (and its
+extensions). Knowing the parameters of the distribution we may estimate
+the population size using Horowitz-Thompson type estimator given by
+
+\begin{equation}
     \hat{N}=
     \sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}[Y_{k}>0|\boldsymbol{X}_{k}]}=
     \sum_{k=1}^{N_{obs}}\frac{1}{\mathbb{P}[Y_{k}>0|\boldsymbol{X}_{k}]},
-\end{equation*} where \(I_{k}:=\mathcal{I}_{\mathbb{N}}(Y_{k})\), and
-maximum likelihood estimate of \(N\) is obtained after substituting
-regression estimates for \(\mathbb{P}[Y_{k}>0|\boldsymbol{x}_{k}]\) into
-the equation above. Most of the methods relate to poisson processes.
+    \label{eq-ht-estimator}
+\end{equation}
+
+where \(I_{k}:=\mathcal{I}_{\mathbb{N}}(Y_{k})\), and maximum likelihood
+estimate of \(N\) is obtained after substituting regression estimates
+for \(\mathbb{P}[Y_{k}>0|\boldsymbol{x}_{k}]\) into
+\eqref{eq-ht-estimator}.
 
 The analytic variance estimation is then done by computing two parts of
-the decomposition due to the law of total variance:
-\begin{equation}\label{law_of_total_variance_decomposition}
+the decomposition due to the law of total variance given by
+
+\begin{equation}
   \text{var}[\hat{N}]=
   \mathbb{E}\left[\text{var}
   \left[\hat{N}|I_{1},\dots,I_{n}\right]\right]+
   \text{var}\left[\mathbb{E}[\hat{N}|I_{1},\dots,I_{n}]\right],
-\end{equation} where the first addend is by the multivariate \(\delta\)
-method seen to be: \begin{equation}
+  \label{eq-law_of_total_variance_decomposition}
+\end{equation}
+
+where the first part can be estimated using the multivariate \(\delta\)
+method given by
+
+\begin{equation}
   \mathbb{E}\left[\text{var}
   \left[\hat{N}|I_{1},\dots,I_{n}\right]\right]=
   \left.\left(\frac{\partial(N|I_1,\dots,I_N)}{\partial\boldsymbol{\beta}}\right)^{T}
   \text{cov}\left[\boldsymbol{\beta}\right]
   \left(\frac{\partial(N|I_1,\dots,I_N)}{\partial\boldsymbol{\beta}}\right)
   \right|_{\boldsymbol{\beta}=\hat{\boldsymbol{\beta}}},
-\end{equation} while the later part of the decomposition in
-\eqref{law_of_total_variance_decomposition} is under the assumption of
-independence of \(I_{k}\)'s and after some omitted simplifications one
-sees that this is optimally estimated via: \begin{align}
-  \text{var}\left(\mathbb{E}(\hat{N}|I_{1},\dots,I_{n})\right)&=
-  \text{var}\left(\sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}(Y_{k}>0)}\right)\nonumber\\
-  &\approx\sum_{k=1}^{N_{obs}}\frac{1-\mathbb{P}(Y_{k}>0)}{\mathbb{P}(Y_{k}>0)^{2}},
-\end{align} which forms the basis of confidence interval creation.
-Confidence intervals are usually constructed under the assumption of
-(asymptotic) normality of \(\hat{N}\) or asymptotic normality of
-\(\ln(\hat{N}-N)\) (or log normality of \(\hat{N}\)). The latter of
-which is an attempt to address a common criticism of student type
-confidence intervals in SSCR, that is a possibly skewed distribution of
-\(\hat{N}\), and results in the confidence interval of the form (for
-confidence level of \(\alpha\)): \begin{equation*}
+\end{equation}
+
+while the second part of the decomposition in
+\eqref{eq-law_of_total_variance_decomposition} is under the assumption
+of independence of \(I_{k}\)'s and after some omitted simplifications
+one sees that this is optimally estimated by
+
+\begin{equation}
+  \text{var}\left(\mathbb{E}(\hat{N}|I_{1},\dots,I_{n})\right)=
+  \text{var}\left(\sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}(Y_{k}>0)}\right)
+  \approx\sum_{k=1}^{N_{obs}}\frac{1-\mathbb{P}(Y_{k}>0)}{\mathbb{P}(Y_{k}>0)^{2}},
+\end{equation}
+
+which forms the basis for the interval estimation. Confidence intervals
+are usually constructed under the assumption of (asymptotic) normality
+of \(\hat{N}\) or asymptotic normality of \(\ln(\hat{N}-N)\) (or log
+normality of \(\hat{N}\)). The latter of which is an attempt to address
+a common criticism of student type confidence intervals in SSCR, that is
+a possibly skewed distribution of \(\hat{N}\), and results in the
+\(1-\alpha\) confidence interval given by
+
+\begin{equation*}
   \left(N_{obs}+\frac{\hat{N}-N_{obs}}{G},N_{obs}+\left(\hat{N}-N_{obs}\right)G\right),
-\end{equation*} where: \begin{equation*}
+\end{equation*}
+
+where: \begin{equation*}
   G = \exp\left(z\left(1-\frac{\alpha}{2}\right)
   \sqrt{\ln\left(1+\frac{\widehat{\text{Var}}(\hat{N})}{\left(\hat{N}-N_{obs}\right)^{2}}\right)}\right).
 \end{equation*}
 
-The estimator \(\hat{N}\) is best interpreted as being an estimator for
-the total number of \underline{observable} units in the population since
-we have no means of estimating the number of units in the population for
-which the probability of being included in the data is \(0\)
-cf.~\cite{ztpoisson}.
+where \(z\) is standardized normal distribution. The estimator
+\(\hat{N}\) is best interpreted as being an estimator for the total
+number of \underline{observable} units in the population since we have
+no means of estimating the number of units in the population for which
+the probability of being included in the data is \(0\)
+\citep[cf.][]{ztpoisson}.
 
 \subsection{Software for
 capture-recapture}\label{software-for-capture-recapture}
 
-The package is available on CRAN:
-\url{CRAN.R-project.org/package=singleRcapture} while the extension is
-available on:
-\url{https://github.com/ncn-foreigners/singleRcaptureExtra}.
+While population size estimation based on two or more source have many
+implementations in R (cf.~) and other languages (cf.~) methods for SSCR
+are only partially covered. For instance, \pkg{countreg} or \pkg{VGAM}
+covers selected number of truncated distributions and (pkg for
+distributions, e.g.~distributions3). More advanced methods are not
+widely available and need to be implemented from scratch. Moreover,
+estimation of variance or diagnistics are not widely available in
+open-source software which limits possibilities of easy usage of these
+methods in comparison to multiple source capture-recapture methods.
 
-The \pkg{singleRcapture} package is an \proglang{R} language package
-that focuses on implementing state of the art methods for frequentist
-point and interval estimation of size of closed populations in
-single-source capture-recapture (SSCR) setting (e.g.~estimation of the
-population size of irregular migrants at set time point in a given
-area).
+Therefore, the goal of the \pkg{singleRcapture} is \proglang{R} language
+is to bridge this gap to provide scientists tool for estimation of
+population size based on SSCR methods. The package implements
+state-of-the-art methods such as \ldots. and its extensions (full list
+of available methods is presented in section \ldots). The package
+implements variance estimation based on various methods as well as
+diagnostics plots (e.g.~rootograms) with parameters estimated using a
+modified IRLS algorithm implemented by us to for estimation stability.
+Furthermore, as many R users are familiar with \pkg{countreg} or
+\pkg{VGAM} we have implemented a\textasciitilde lightweight extension
+\pkg{singleRcaptureExtra} available through Github
+(\url{https://github.com/ncn-foreigners/singleRcaptureExtra}).
 
-The beginning of inference in single source capture-recapture dates back
-to the seminal \cite{ztpoisson} paper in which the zero truncated
-poisson model was applied to study the size of population of irregular
-migrants in fours cities in Netherlands.
-
-There are some packages implementing zero truncated count data models
-such as \pkg{VGAM} and \pkg{countreg} and they can be integrated within
-the \pkg{singleRcapture} ecosystem by the lightweight extention
-\pkg{singleRcaptureExtra}.
+The remaning part of the paper is as follows
 
 \section{Basic usage}\label{basic-usage}
 
@@ -1695,7 +1732,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x1331c16d8>
+<bytecode: 0x15bb3c5e0>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}
