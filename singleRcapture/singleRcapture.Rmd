@@ -26,10 +26,10 @@ author:
       | ul. Wojska Polskiego 27/29
       | 60-624 Poznań, Poland
 title:
-  formatted: "\\pkg{singleRcapture}: A Package for Single-Source Capture-Recapture Models"
   # If you use tex in the formatted title, also supply version without
-  plain:     "singleRcapture A Package for Single-Source Capture-Recapture Models"
   # For running headers, if needed
+  formatted: "\\pkg{singleRcapture}: A Package for Single-Source Capture-Recapture Models"
+  plain:     "singleRcapture A Package for Single-Source Capture-Recapture Models"
   short:     "\\pkg{singleRcapture}: Single-Source Capture-Recapture Models"
 abstract: >
   Estimating population size is an important issue in official statistics, social sciences and natural sciences. One way to approach  
@@ -40,9 +40,6 @@ abstract: >
   one-inflated zero-truncated models). The software is intended for users interested in estimating the size of populations,
   particularly those that are difficult to reach or for which information is available from only one source and dual/multiple system
   estimation cannot be used. 
-
-# In this paper, we focus on the former group, i.e. single-source capture-recapture (SSCR). SSCR models assume that observed counts follow truncated count distributions (e.g. zero-truncated Poisson, one-inflated zero-truncated geometric), and this assumption is used to estimate missing (hidden) zero counts. The literature includes applications of SSCR methods for estimating the number of undocumented migrants, cases of domestic violence or homeless people.
-
 keywords:
   # at least one keyword must be supplied
   formatted: [population size estimation, hidden populations, truncated distributuons, count regression models, "\\proglang{R}"]
@@ -52,16 +49,23 @@ preamble: >
   \usepackage{calc, ragged2e}
   \DeclareMathAlphabet{\mathmybb}{U}{bbold}{m}{n}
   \newcommand{\1}{\mathcal{I}}
+  \newcommand{\bZero}{\boldsymbol{0}}
   \newcommand{\bx}{\boldsymbol{x}}
   \newcommand{\bX}{\boldsymbol{X}}
   \newcommand{\bbeta}{\boldsymbol{\beta}}
   \newcommand{\boeta}{\boldsymbol{\eta}}
+  \newcommand{\bW}{\boldsymbol{W}}
+  \newcommand{\bo}{\boldsymbol{o}}
+  
 output:
   rticles::jss_article:
     number_sections: TRUE
     citation_package: natbib
 bibliography: refs.bib
 biblio-style: jss
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r, setup, include=FALSE}
@@ -76,42 +80,105 @@ options(prompt = 'R> ', continue = '+ ')
 
 # Introduction
 
-Population size estimation is a~methodological approach employed across multiple scientific disciplines, serving as a~basis for research, policy formulation, and decision-making processes. In the field of statistics, particularly official statistics, precise population estimates are essential for developing robust economic models, optimizing resource allocation, and informing evidence-based policy formulation. Social scientists utilize advanced population estimation techniques to investigate \textit{hard-to-reach} populations, such as homeless individuals or illicit drug users, thereby addressing the inherent limitations of conventional census methodologies. These techniques are crucial for obtaining accurate data on populations that are typically under-represented or difficult to access through traditional sampling methods. In ecology and epidemiology, researchers focus on estimating the size of specific species or disease-affected populations within defined geographical regions, which is vital for conservation efforts, ecosystem management, and public health interventions. 
+Population size estimation is a\~methodological approach employed across
+multiple scientific disciplines, serving as a\~basis for research,
+policy formulation, and decision-making processes. In the field of
+statistics, particularly official statistics, precise population
+estimates are essential for developing robust economic models,
+optimizing resource allocation, and informing evidence-based policy
+formulation. Social scientists utilize advanced population estimation
+techniques to investigate \textit{hard-to-reach} populations, such as
+homeless individuals or illicit drug users, thereby addressing the
+inherent limitations of conventional census methodologies. These
+techniques are crucial for obtaining accurate data on populations that
+are typically under-represented or difficult to access through
+traditional sampling methods. In ecology and epidemiology, researchers
+focus on estimating the size of specific species or disease-affected
+populations within defined geographical regions, which is vital for
+conservation efforts, ecosystem management, and public health
+interventions.
 
-Population size estimation can be approached through various methodologies, each with distinct advantages and limitations. Traditional approaches include full enumeration (e.g. census operations) and comprehensive sample surveys, which, while providing detailed data, are often resource-intensive and may result in delayed estimates, particularly for human populations. Alternative methods leverage existing data sources, such as administrative registers or carefully designed small-scale studies in wildlife research. Application of these sources often comes with statistical methods, known as \textit{capture-recapture} or \textit{multiple system estimation}, that utilizes data from multiple enumerations of the same population. This can be implemented using a~single source with repeated observations, two, or multiple sources.  
+Population size estimation can be approached through various
+methodologies, each with distinct advantages and limitations.
+Traditional approaches include full enumeration (e.g. census operations)
+and comprehensive sample surveys, which, while providing detailed data,
+are often resource-intensive and may result in delayed estimates,
+particularly for human populations. Alternative methods leverage
+existing data sources, such as administrative registers or carefully
+designed small-scale studies in wildlife research. Application of these
+sources often comes with statistical methods, known as
+\textit{capture-recapture} or \textit{multiple system estimation}, that
+utilizes data from multiple enumerations of the same population. This
+can be implemented using a\~single source with repeated observations,
+two, or multiple sources.
 
-In this paper we focus methods that utilize a~single data source with multiple enumerations of the same units. In human population studies, such data might be derived from police records, health system databases, or border control logs, while for non-human populations, veterinary records or specialized field data serve as analogous sources. These methods are often applied for hard-to-reach or hidden population where standard sampling methods may be inappropriate because of the costs or problems with identification of members of these populations. 
+In this paper we focus methods that utilize a\~single data source with
+multiple enumerations of the same units. In human population studies,
+such data might be derived from police records, health system databases,
+or border control logs, while for non-human populations, veterinary
+records or specialized field data serve as analogous sources. These
+methods are often applied for hard-to-reach or hidden population where
+standard sampling methods may be inappropriate because of the costs or
+problems with identification of members of these populations.
 
-While methods for two or more sources is implemented in various open-source software the single-source capture-recapture (SSCR) methods are less available or partially implemented in existing packages. The goal of the paper is to bridge this gap by the 
-\pkg{singleRcapture} and \pkg{singleRcaptureExtra} packages which implements state-of-the-art methods in SSCR and provides user friendly API which mimics existing R software. In the next subsections we briefly describe the main approach used in SSCR and the available software that tan be used for estimating population size based on SSCR methods.
+While methods for two or more sources is implemented in various
+open-source software the single-source capture-recapture (SSCR) methods
+are less available or partially implemented in existing packages. The
+goal of the paper is to bridge this gap by the \pkg{singleRcapture} and
+\pkg{singleRcaptureExtra} packages which implements state-of-the-art
+methods in SSCR and provides user friendly API which mimics existing R
+software. In the next subsections we briefly describe the main approach
+used in SSCR and the available software that tan be used for estimating
+population size based on SSCR methods.
 
+```{=html}
 <!---
 dodać odwołania do literatury
 dodać informacje o tym że opisujemy pakiet singleRcapture, który zgodnie z naszą wiedzą jest jedyny
 \allowdisplaybreaks
 -->
+```
+## How do we estimate population size with a single register?
 
-
-## How do we estimate population size with a single register? 
-
+```{=html}
 <!---
 Tu wydaje mi sie że wystarczy
 -->
+```
+Let $Y_{k}$ represent the number of times $k$-th unit was observed in
+a\~register. Clearly, we only observe $Y_{k}>$ and we do not know how
+many units are missed (i.e. $Y_{k}=0$) and to find the population size
+denoted by $N$ we need to estimate it. In general, we assume that
+conditional distribution of $Y_{k}$ given a\~vector of covariates
+$\bx_{k}$ follows some version of zero-truncated count data distribution
+(and its extensions). Knowing the parameters of the distribution we may
+estimate the population size using Horowitz-Thompson type estimator
+given by
 
-Let $Y_{k}$ represent the number of times $k$-th unit was observed in a~register. Clearly, we only observe  $Y_{k}>$ and we do not know how many units are missed (i.e. $Y_{k}=0$) and to find the population size denoted by $N$ we need to estimate it. In general, we assume that conditional distribution of $Y_{k}$ given a~vector of covariates $\bx_{k}$ follows some version of zero-truncated count data distribution (and its extensions). Knowing the parameters of the distribution we may estimate the population size using Horowitz-Thompson type estimator given by 
-
+```{=tex}
 \begin{equation}
     \hat{N}=
     \sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}[Y_{k}>0|\bX_{k}]}=
     \sum_{k=1}^{N_{obs}}\frac{1}{\mathbb{P}[Y_{k}>0|\bX_{k}]},
     \label{eq-ht-estimator}
 \end{equation}
+```
+where $I_{k}:=\1_{\mathbb{N}}(Y_{k})$, and maximum likelihood estimate
+of $N$ is obtained after substituting regression estimates for
+$\mathbb{P}[Y_{k}>0|\bx_{k}]$ into \eqref{eq-ht-estimator}.
 
+<!-- about assumptions and how they are relaxed with other approaches -->
 
-where $I_{k}:=\1_{\mathbb{N}}(Y_{k})$, and maximum likelihood estimate of $N$ is obtained after substituting regression estimates for $\mathbb{P}[Y_{k}>0|\bx_{k}]$ into \eqref{eq-ht-estimator}. 
+The basic SSCR assumes independence between counts which may be rather naive as the first capture may significantly influence the behaviour of a given unit or limit possibilities of further captures (e.g. due to incarceration). Recently, ... introduced one-inflated distributions that explicitly model probability of the singletons given by ...
 
-The analytic variance estimation is then done by computing two parts of the decomposition due to the law of total variance given by
+<!-- add general formula for the one-inflation -->
 
+which can be further plug-in in the estimator \eqref{eq-ht-estimator}. 
+
+The analytic variance estimation is then done by computing two parts of
+the decomposition due to the law of total variance given by
+
+```{=tex}
 \begin{equation}
   \text{var}[\hat{N}]=
   \mathbb{E}\left[\text{var}
@@ -119,51 +186,90 @@ The analytic variance estimation is then done by computing two parts of the deco
   \text{var}\left[\mathbb{E}[\hat{N}|I_{1},\dots,I_{n}]\right],
   \label{eq-law_of_total_variance_decomposition}
 \end{equation}
+```
+where the first part can be estimated using the multivariate $\delta$
+method given by
 
-where the first part can be estimated using the multivariate $\delta$ method given by
-
+```{=tex}
 \begin{equation}
   \mathbb{E}\left[\text{var}
   \left[\hat{N}|I_{1},\dots,I_{n}\right]\right]=
-  \left.\left(\frac{\partial(N|I_1,\dots,I_N)}{\partial\boldsymbol{\beta}}\right)^{T}
-  \text{cov}\left[\boldsymbol{\beta}\right]
-  \left(\frac{\partial(N|I_1,\dots,I_N)}{\partial\boldsymbol{\beta}}\right)
-  \right|_{\boldsymbol{\beta}=\hat{\boldsymbol{\beta}}},
+  \left.\left(\frac{\partial(N|I_1,\dots,I_N)}{\partial\bbeta}\right)^\top
+  \text{cov}\left[\bbeta\right]
+  \left(\frac{\partial(N|I_1,\dots,I_N)}{\partial\bbeta}\right)
+  \right|_{\bbeta=\hat{\bbeta}},
 \end{equation}
+```
+while the second part of the decomposition in
+\eqref{eq-law_of_total_variance_decomposition} is under the assumption
+of independence of $I_{k}$'s and after some omitted simplifications one
+sees that this is optimally estimated by
 
-while the second part of the decomposition in \eqref{eq-law_of_total_variance_decomposition} is under the assumption of independence of $I_{k}$'s and after some omitted simplifications one sees that this is optimally estimated by
-
+```{=tex}
 \begin{equation}
   \text{var}\left(\mathbb{E}(\hat{N}|I_{1},\dots,I_{n})\right)=
   \text{var}\left(\sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}(Y_{k}>0)}\right)
   \approx\sum_{k=1}^{N_{obs}}\frac{1-\mathbb{P}(Y_{k}>0)}{\mathbb{P}(Y_{k}>0)^{2}},
 \end{equation}
+```
+which forms the basis for the interval estimation. Confidence intervals
+are usually constructed under the assumption of (asymptotic) normality
+of $\hat{N}$ or asymptotic normality of $\ln(\hat{N}-N)$ (or log
+normality of $\hat{N}$). The latter of which is an attempt to address a
+common criticism of student type confidence intervals in SSCR, that is a
+possibly skewed distribution of $\hat{N}$, and results in the $1-\alpha$
+confidence interval given by
 
-which forms the basis for the interval estimation. Confidence intervals are usually constructed under the assumption of (asymptotic) normality of $\hat{N}$ or asymptotic normality of $\ln(\hat{N}-N)$ (or log normality of $\hat{N}$). The latter of which is an attempt to address a common criticism of student type confidence intervals in SSCR, that is a possibly skewed distribution of $\hat{N}$, and results in the $1-\alpha$ confidence interval given by
-
+```{=tex}
 \begin{equation*}
   \left(N_{obs}+\frac{\hat{N}-N_{obs}}{G},N_{obs}+\left(\hat{N}-N_{obs}\right)G\right),
 \end{equation*}
+```
+where: 
 
-where:
 \begin{equation*}
   G = \exp\left(z\left(1-\frac{\alpha}{2}\right)
   \sqrt{\ln\left(1+\frac{\widehat{\text{Var}}(\hat{N})}{\left(\hat{N}-N_{obs}\right)^{2}}\right)}\right).
 \end{equation*}
 
-
 <!-- missing not at random -->
 
-where $z$ is standardized normal distribution. The estimator $\hat{N}$ is best interpreted as being an estimator for the total number of \underline{observable} units in the population since we have no means of estimating the number of units in the population for which the probability of being included in the data is $0$ \citep[cf.][]{ztpoisson}.
+where $z$ is standardized normal distribution. The estimator $\hat{N}$
+is best interpreted as being an estimator for the total number of
+\underline{observable} units in the population since we have no means of
+estimating the number of units in the population for which the
+probability of being included in the data is $0$
+\citep[cf.][]{ztpoisson}.
 
-## Software for capture-recapture for single and multiple sources 
+## Software for capture-recapture for single and multiple sources
 
-While population size estimation based on two or more source have many implementations in R (cf. ) and other languages (cf. ) methods for SSCR are only partially covered. For instance, \pkg{countreg} or \pkg{VGAM} covers selected number of truncated distributions and (pkg for distributions, e.g. distributions3). More advanced methods are not widely available and need to be implemented from scratch. Moreover, estimation of variance or diagnistics are not widely available in open-source software which limits possibilities of easy usage of these methods in comparison to multiple source capture-recapture methods. 
+While population size estimation based on two or more source have many
+implementations in R (cf. ) and other languages (cf. ) methods for SSCR
+are only partially covered. For instance, \pkg{countreg} or \pkg{VGAM}
+covers selected number of truncated distributions and (pkg for
+distributions, e.g. distributions3). More advanced methods are not
+widely available and need to be implemented from scratch. Moreover,
+estimation of variance or diagnostics are not widely available in
+open-source software which limits possibilities of easy usage of these
+methods in comparison to multiple source capture-recapture methods.
 
-Therefore, the goal of the \pkg{singleRcapture} is \proglang{R} language is to bridge this gap to provide scientists tool for estimation of population size based on SSCR methods. The package implements state-of-the-art methods such as .... and its extensions (full list of available methods is presented in section ...). The package implements variance estimation based on various methods as well as diagnostics plots (e.g. rootograms) with parameters estimated using a modified IRLS algorithm implemented by us to for estimation stability. Furthermore, as many R users are familiar with \pkg{countreg} or \pkg{VGAM} we have implemented a~lightweight extension \pkg{singleRcaptureExtra} available through Github (\url{https://github.com/ncn-foreigners/singleRcaptureExtra}).
+Therefore, the goal of the \pkg{singleRcapture} is \proglang{R} language
+is to bridge this gap to provide scientists tool for estimation of
+population size based on SSCR methods. The package implements
+state-of-the-art methods such as .... and its extensions (full list of
+available methods is presented in section ...). The package implements
+variance estimation based on various methods as well as diagnostics
+plots (e.g. rootograms) with parameters estimated using a modified IRLS
+algorithm implemented by us to for estimation stability. Furthermore, as
+many R users are familiar with \pkg{countreg} or \pkg{VGAM} we have
+implemented a\~lightweight extension \pkg{singleRcaptureExtra} available
+through Github
+(\url{https://github.com/ncn-foreigners/singleRcaptureExtra}).
 
-The remaning part of the paper is as follows
+The remaining part of the paper is as follows. In Section
+\@ref(sec-basic-usage) introduces the package main functionalities, covers main S3 methods as well as implemented diagnostics and useful functions. Section \@ref(sec-details) provides information on the fitting methods, the \code{estimatePopsizeFit} function for estimating population size with more control and presents information on the available methods. Section \@ref(sec-integration) covers integration with \pkg{countreg} and \pkg{VGAM} packages through \pkg{singleRcaptureExtra} package. The paper ends with conclusions and an appendix that 
 
+```{=html}
 <!---
 The \pkg{singleRcapture} package is an \proglang{R} language package that focuses on implementing state of the art methods for frequentist point and interval estimation of size of closed populations in single-source capture-recapture (SSCR) setting (e.g. estimation of the population size of irregular migrants at set time point in a given area). 
 
@@ -181,13 +287,16 @@ a z różnic jest to że Yee używa do obliczania macierzy informacji fishera sy
 + jakie są unikalne elementy pakietu singleRcapture
 + nie ma pakietów do single-source capture-recapture
 -->
+```
+# Basic usage {#sec-basic}
 
+## The \code{estimatePopsize} function {#estimatePopsize-function short-title="The"}
 
-# Basic usage
+The main function that \pkg{singleRcapture} is built around is
+\code{estimatePopsize}. The leading design principle was to make using
+\code{estimatePopsize} as close to standard \code{stats::glm} as
+possible. The most important arguments are:
 
-## The \code{estimatePopsize} function {short-title="The" #estimatePopsize-function}
-
-The main function that \pkg{singleRcapture} is built around is \code{estimatePopsize}. The leading design principle was to make using \code{estimatePopsize} as close to standard \code{stats::glm} as possible. The most important arguments are:
 \begin{itemize}
     \item \code{formula} -- the main formula (i.e for the Poisson $\lambda$ parameter),
     \item \code{data} -- the \code{data.frame} (or \code{data.frame} coercible) object,
@@ -197,27 +306,46 @@ The main function that \pkg{singleRcapture} is built around is \code{estimatePop
     \item \code{controlMethod, controlModel, controlPopVar} -- control parameters for numerical fitting, specifying additional formulas (inflation, dispersion) and population size estimation respectively. We will tackle these arguments separately,
     \item \code{offset} -- a matrix of offset values with number of columns matching the number of distribution parameters providing offset values to each of linear predictors.
 \end{itemize}
-With the \code{formula, data, model} being the three arguments which must be provided in \code{estimatePopsize} syntax.
 
-### Example with \proglang{R} code {short-title="Example with R code" #r-code}
+With the \code{formula, data, model} being the three arguments which
+must be provided in \code{estimatePopsize} syntax.
 
-The package should be installed from CRAN \url{https://cran.r-project.org/package=singleRcapture} with the usual code:
+### Example with \proglang{R} code {#r-code short-title="Example with R code"}
+
+The package should be installed from CRAN
+\url{https://cran.r-project.org/package=singleRcapture} with the usual
+code:
+
 ```{r, installation, eval=FALSE}
 install.packages("singleRcapture")
 ```
 
-To showcase the main function let us recreate the zero truncated Poisson model from \cite{ztpoisson} on the same data included in the package under the name \code{netherlandsimmigrant}:
+To showcase the main function let us recreate the zero truncated Poisson
+model from \cite{ztpoisson} on the same data included in the package
+under the name \code{netherlandsimmigrant}:
+
 ```{r, loading_singleRcapture}
 library(singleRcapture)
 head(netherlandsimmigrant)
 ```
 
-This data set contains information about immigrants in four cities (Amsterdam, Rotterdam, The Hague and Utrecht) in Netherlands that have been staying in the country illegally in 1995 and have appeared in police records that year. The number of times each individual appeared in the records is included in the \code{capture} variable with the available covariates being \code{gender, age, reason, nation} being respectively the persons gender and age, reason for being captured and region of the world from which each person comes:
+This data set contains information about immigrants in four cities
+(Amsterdam, Rotterdam, The Hague and Utrecht) in Netherlands that have
+been staying in the country illegally in 1995 and have appeared in
+police records that year. The number of times each individual appeared
+in the records is included in the \code{capture} variable with the
+available covariates being \code{gender, age, reason, nation} being
+respectively the persons gender and age, reason for being captured and
+region of the world from which each person comes:
+
 ```{r, netherlandsimmigrant_summary}
 summary(netherlandsimmigrant)
 ```
 
-The basic syntax is indeed vary similar to that of \code{glm} with the output of the summary method being also quite simmilar except for the additional results of the population size estimates:
+The basic syntax is indeed vary similar to that of \code{glm} with the
+output of the summary method being also quite simmilar except for the
+additional results of the population size estimates:
+
 ```{r, basic_model_netherlands}
 basicModel <- estimatePopsize(
   formula = capture ~ gender + age + nation,
@@ -226,12 +354,19 @@ basicModel <- estimatePopsize(
 )
 summary(basicModel)
 ```
-One point which we should make while analysing this data set is that there is a disproportionate number of individuals who were observed only once (see table bellow):
+
+One point which we should make while analysing this data set is that
+there is a disproportionate number of individuals who were observed only
+once (see table bellow):
+
 ```{r, table_netherlands}
 table(netherlandsimmigrant$capture)
 ```
 
-Since there is a reasonable suspicion that the act of observing a unit in the dataset may led to undesirable consequences from the point of view of the subject of the observation (here possible deportation, detainment or similar). For those reason one should 
+Since there is a reasonable suspicion that the act of observing a unit
+in the dataset may led to undesirable consequences from the point of
+view of the subject of the observation (here possible deportation,
+detainment or similar). For those reason one should
 
 ```{r, model_inflated_netherlands}
 set.seed(123456)
@@ -253,7 +388,11 @@ summary(modelInflated)
 ```{r, popsize_extract}
 (popEst <- popSizeEst(basicModel))
 ```
-the \code{popEst} object is of the \code{popSizeEstResults} class and \code{list} type and contains the following fields:
+
+the \code{popEst} object is of the \code{popSizeEstResults} class and
+\code{list} type and contains the following fields:
+
+```{=tex}
 \begin{itemize}
   \item \code{pointEstimate}, \code{variance} -- numerics containing point estimate and variance of this estimate.
   \item \code{confidenceInterval} -- a \code{data.frame} with confidence intervals.
@@ -261,12 +400,14 @@ the \code{popEst} object is of the \code{popSizeEstResults} class and \code{list
   a character vector with value \code{"No bootstrap performed"} otherwise.
   \item \code{control} -- a \code{controlPopVar} object with controls used to obtained the object.
 \end{itemize}
-
+```
 \small
+
 ```{r, dfbeta_basic_model}
 dfb <- dfbeta(basicModel)
 apply(dfb, 2, quantile)
 ```
+
 \normalsize
 
 ```{r, dfpopsize_basic_model}
@@ -276,26 +417,46 @@ summary(dfp)
 
 ## Marginal frequencies
 
-A popular method of testing the model fit in single source capture-recapture studies is comparing the fitted marginal frequencies $\displaystyle\sum_{j=1}^{N_{obs}}\hat{\mathbb{P}}\left[Y_{j}=k|\bx_{j}, Y_{j} > 0\right]$ with the observed marginal frequencies $\displaystyle\sum_{j=1}^{N}\1_{\{k\}}(Y_{k})=\sum_{j=1}^{N_{obs}}\1_{\{k\}}(Y_{k})$ for $k\geq1$. If a fitted model bears sufficient resemblance to the real data collection process these quantities should be quite close and both $G$ and $\chi^{2}$ tests may be employed in order to test the statistical significance of the discrepancy with the following \pkg{singleRcapture} syntax:
+A popular method of testing the model fit in single source
+capture-recapture studies is comparing the fitted marginal frequencies
+$\displaystyle\sum_{j=1}^{N_{obs}}\hat{\mathbb{P}}\left[Y_{j}=k|\bx_{j}, Y_{j} > 0\right]$
+with the observed marginal frequencies
+$\displaystyle\sum_{j=1}^{N}\1_{\{k\}}(Y_{k})=\sum_{j=1}^{N_{obs}}\1_{\{k\}}(Y_{k})$
+for $k\geq1$. If a fitted model bears sufficient resemblance to the real
+data collection process these quantities should be quite close and both
+$G$ and $\chi^{2}$ tests may be employed in order to test the
+statistical significance of the discrepancy with the following
+\pkg{singleRcapture} syntax:
+
 ```{r, marginal_freq_basic_model}
 margFreq <- marginalFreq(basicModel)
 summary(margFreq, df = 1, dropl5 = "group")
 ```
-where the \code{dropl5} argument is used to indicate how to handle the cells with less than $5$ fitted observations, note however that currently there is no continuity correction.
+
+where the \code{dropl5} argument is used to indicate how to handle the
+cells with less than $5$ fitted observations, note however that
+currently there is no continuity correction.
 
 ## Plots
 
-The \code{singleRStaticCountData} class has a \code{plot} method implementing several types of quick demonstrative plots such as the rootogram \cite{rootogram} for comparing the fitted and marginal frequencies which we can get with the syntax:
+The \code{singleRStaticCountData} class has a \code{plot} method
+implementing several types of quick demonstrative plots such as the
+rootogram \cite{rootogram} for comparing the fitted and marginal
+frequencies which we can get with the syntax:
+
 ```{r, rootogram}
 plot(basicModel, plotType = "rootogram")
 ```
 
-The comparison of deletion effect on population size estimate and inverse probability weights:
+The comparison of deletion effect on population size estimate and
+inverse probability weights:
+
 ```{r, dfpopsize_plot}
 plot(basicModel, plotType = "dfpopContr", dfpop = dfp)
 ```
 
 and the plot that showcases stratisfied stimates:
+
 ```{r, strata_plot}
 par(mar = c(2.5, 8.5, 4.1, 2.5), cex.main = .7, cex.lab = .6)
 plot(basicModel, plotType = "strata")
@@ -304,24 +465,37 @@ plot(basicModel, plotType = "strata")
 ```{r, dev_off, include=FALSE}
 dev.off()
 ```
-the information which was supplied to the plot function above comes from the \code{stratifyPopsize} method:
-\small
+
+the information which was supplied to the plot function above comes from
+the \code{stratifyPopsize} method: \small
+
 ```{r}
 stratifyPopsize(basicModel)
 ```
+
 \normalsize
 
-The full list of plot types along with the list of optional arguments which may be passed from the call to the \code{plot} method down to base \proglang{R} and \pkg{graphics} functions is listed in the help file:
+The full list of plot types along with the list of optional arguments
+which may be passed from the call to the \code{plot} method down to base
+\proglang{R} and \pkg{graphics} functions is listed in the help file:
+
 ```{r, eval=FALSE}
 ?plot.singleRStaticCountData
 ```
 
 ### The \code{stratifyPopsize} method {short-title="The stratifyPopsize method"}
 
-As previously showcased the \code{stratifyPopsize} may be used to estimate the population sizes for different stratas using the same fitted regression model as previously computed using the call to the \code{estimatePopsize} function. The method for \code{singleRStaticCountData} class accepts three optional parameters \code{stratas, alpha, cov} which correspond to specification of sub populations, the significance levels and the covariance matrix that will be used to compute standard errors.
+As previously showcased the \code{stratifyPopsize} may be used to
+estimate the population sizes for different stratas using the same
+fitted regression model as previously computed using the call to the
+\code{estimatePopsize} function. The method for
+\code{singleRStaticCountData} class accepts three optional parameters
+\code{stratas, alpha, cov} which correspond to specification of sub
+populations, the significance levels and the covariance matrix that will
+be used to compute standard errors.
 
-The full call is of the type:
-\footnotesize
+The full call is of the type: \footnotesize
+
 ```{r}
 library(sandwich)
 stratifyPopsize(
@@ -332,9 +506,16 @@ stratifyPopsize(
   cov     = vcovHC(basicModel, type = "HC4")
 )
 ```
-\normalsize
-where we used the \code{vcovHC} method for \code{singleRStaticCountData} class from the \pkg{sandwitch} package, different significance levels for confidence intervals in each strata and a formula to specify that we wanted estimates for both males and females subdivided by \code{nation} and \code{age}. The \code{stratas} parameter may be specified either as:
 
+\normalsize
+
+where we used the \code{vcovHC} method for \code{singleRStaticCountData}
+class from the \pkg{sandwitch} package, different significance levels
+for confidence intervals in each strata and a formula to specify that we
+wanted estimates for both males and females subdivided by \code{nation}
+and \code{age}. The \code{stratas} parameter may be specified either as:
+
+```{=tex}
 \begin{itemize}
 \item a formula with empty left hand side which we have seen here,
 \item a logical vector with number of entries equal to number of rows in the dataset in which case only one strata will be created,
@@ -342,45 +523,64 @@ where we used the \code{vcovHC} method for \code{singleRStaticCountData} class f
 \item a vector of names of explanatory variables which will result in every level of explanatory variable having its own sub population for each variable specified,
 \item or not supplied at all in which case stratas will correspond to levels of each factor in the data without any interactions (string vectors will be converted to factors for the convenience of the user).
 \end{itemize}
+```
+For plotting only the \code{logNormal} type of confidence interval is
+used since the studentized confidence intervals often result in negative
+lower bounds.
 
-For plotting only the \code{logNormal} type of confidence interval is used since the studentized confidence intervals often result in negative lower bounds.
-
-# Detailed information
+# Detailed information {#sec-details}
 
 ## Fitting method
 
-As previously showcased the \pkg{singleRcapture} package supports modelling (linear) dependence on covariates of all parameters. To that end a modified IRLS algorithm is employed, full details are available in \cite{VGAM-main}. In order to employ the algorithm a modified model matrix is created $\boldsymbol{X}_{\text{vlm}}$ at call to \code{estimatePopsize}. In the context of the models implemented in \pkg{singleRcapture} this matrix can be written as:
-\begin{equation}\label{X_vlm-definition}
-  \boldsymbol{X}_{vlm}=
+As previously showcased the \pkg{singleRcapture} package supports
+modelling (linear) dependence on covariates of all parameters. To that
+end a modified IRLS algorithm is employed, full details are available in
+\cite{VGAM-main}. In order to employ the algorithm a modified model
+matrix is created $\bX_{\text{vlm}}$ at call to \code{estimatePopsize}.
+In the context of the models implemented in \pkg{singleRcapture} this
+matrix can be written as: \begin{equation}\label{X_vlm-definition}
+  \bX_{vlm}=
   \begin{pmatrix}
-    \boldsymbol{X}_{1} & \boldsymbol{0} &\dotso &\boldsymbol{0}\cr
-    \boldsymbol{0} & \boldsymbol{X}_{2} &\dotso &\boldsymbol{0}\cr
+    \bX_{1} & \bZero &\dotso &\bZero\cr
+    \bZero & \bX_{2} &\dotso &\bZero\cr
     \vdots & \vdots & \ddots & \vdots\cr
-    \boldsymbol{0} & \boldsymbol{0} &\dotso &\boldsymbol{X}_{p}
+    \bZero & \bZero &\dotso &\bX_{p}
   \end{pmatrix}
-\end{equation}
-where each $\bX_{i}$ corresponds to a model matrix associated with user specified formula.
+\end{equation} where each $\bX_{i}$ corresponds to a model matrix
+associated with user specified formula.
 
-In the context of multi-parameter families we have a matrix of linear predictors $\boeta$ instead of a vector, with the number of columns matching the number of parameters in the distribution. "Weights" are then modified to be information matrices $\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boeta_{(k)}^{T}\partial\boeta_{(k)}}\right]$ where $\boeta_{(k)}$ is the $k$'th row of $\boeta$, while in the usual IRLS they are scalars $\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\eta_{k}^{2}}\right]$ which is often just $\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}$.
+In the context of multi-parameter families we have a matrix of linear
+predictors $\boeta$ instead of a vector, with the number of columns
+matching the number of parameters in the distribution. "Weights" are
+then modified to be information matrices
+$\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boeta_{(k)}^\top\partial\boeta_{(k)}}\right]$
+where $\boeta_{(k)}$ is the $k$'th row of $\boeta$, while in the usual
+IRLS they are scalars
+$\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\eta_{k}^{2}}\right]$
+which is often just
+$\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}$.
 
+```{=tex}
 \begin{enumerate}
     \justifying
     \item Initialize with \code{iter}$\leftarrow 1, \boeta\leftarrow$\code{start}
-    $, \boldsymbol{W}\leftarrow I, \ell\leftarrow\ell(\bbeta)$.
+    $, \bW\leftarrow I, \ell\leftarrow\ell(\bbeta)$.
     \item Store values from the previous step: 
-    $\ell_{-}\leftarrow\ell, \boldsymbol{W}_{-}\leftarrow\boldsymbol{W}, \bbeta_{-}\leftarrow\bbeta$ 
+    $\ell_{-}\leftarrow\ell, \bW_{-}\leftarrow\bW, \bbeta_{-}\leftarrow\bbeta$ 
     (the last assignment is omitted during the first iteration), and assign values in current iteration 
-    $\displaystyle\boeta\leftarrow\boldsymbol{X}_{\text{vlm}}\bbeta+\boldsymbol{o}, \boldsymbol{W}_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boeta_{(k)}^{T}\partial\boeta_{(k)}}\right], Z\leftarrow\boeta_{(k)}+\frac{\partial\ell}{\partial\boeta_{(k)}}\boldsymbol{W}_{(k)}^{-1}-\boldsymbol{o}_{(k)}$.
+    $\displaystyle\boeta\leftarrow\bX_{\text{vlm}}\bbeta+\bo, \bW_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boeta_{(k)}^\top\partial\boeta_{(k)}}\right], Z\leftarrow\boeta_{(k)}+\frac{\partial\ell}{\partial\boeta_{(k)}}\bW_{(k)}^{-1}-\bo_{(k)}$.
     \item Assign current coefficient value: 
-    $\bbeta\leftarrow\left(\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{X}_{\text{vlm}}\right)^{-1}\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{Z}$.
+    $\bbeta\leftarrow\left(\bX_{\text{vlm}}\bW\bX_{\text{vlm}}\right)^{-1}\bX_{\text{vlm}}\bW\boldsymbol{Z}$.
     \item If $\ell(\bbeta)<\ell(\bbeta_{-})$ try selecting the smallest value $h$ such that for
     $\bbeta_{h}\leftarrow2^{-h}\left(\bbeta+\bbeta_{-}\right)$ the inequality $\ell(\bbeta_{h})>\ell(\bbeta_{-})$ 
     holds if this is successful $\bbeta\leftarrow\bbeta_{h}$ else stop the algorithm.
     \item If convergence is achieved or \code{iter} is higher than \code{maxiter} end algorithm, 
     else \code{iter}$\leftarrow 1+$\code{iter} and return to step 2.
 \end{enumerate}
+```
 
-## The \code{estimatePopsizeFit} function {short-title="The" #estimatePopsizeFit-function}
+## The \code{estimatePopsizeFit} function {#estimatePopsizeFit-function short-title="The"}
+
 ```{r, estimatePopsizeFit}
 X <- matrix(data = 0, nrow = 2 * NROW(farmsubmission), ncol = 7)
 X[1:NROW(farmsubmission), 1:4] <- model.matrix(
@@ -426,13 +626,17 @@ c(res2$beta, -ll(res2$beta), res2$iter)
 
 ## Avaiable models
 
-The full list of implemented models in \pkg{singleRcapture} along with the expressions for probability density functions and point estimates is found in the collective help file for all family functions:
+The full list of implemented models in \pkg{singleRcapture} along with
+the expressions for probability density functions and point estimates is
+found in the collective help file for all family functions:
+
 ```{r, eval=FALSE}
 ?ztpoisson
 ```
 
 Here we limit ourselves to just listing the family functions:
 
+```{=tex}
 \begin{itemize}
     \item Zero-truncated and zero-one-truncated Poisson, geometric, NB type II regression where the untruncated distribution is parameterized as:
     \begin{equation*}
@@ -496,9 +700,10 @@ Here we limit ourselves to just listing the family functions:
         \end{cases}
     \end{align*}
 \end{itemize}
-
+```
 ### Key takeaways of different models
 
+```{=tex}
 \begin{itemize}
   \item The dispersion parameter $\alpha$ in the negative binomial type models is often interpreted as measuring the severeness of unobserved heterogeneity in the underlying poisson process cf. \cite{ztnegbin}. When using any truncated negative binomial model the hope is that due to the class of models considered the consistency is not lost despite the lack of information.
   \item While not discussed in the literature yet (to the best of the knowledge of the authors) the interpretation of $\alpha$ being heterogeneous across the population (specified in \code{controlModel}) would be that the unobserved heterogeneity affects the accuracy of the prediction for the dependent variable $Y$ more severely than others.
@@ -508,17 +713,18 @@ Here we limit ourselves to just listing the family functions:
   \item Although interpretation of regression parameters tends to be somewhat overlooked in SSCR studies we should point out that interpretation of  of the $\omega$ inflation parameter is more convenient that the interpretation of the $\pi$ probability parameter. Additionally the interpretation of the $\lambda$ parameter in (one) inflated models conforms to the intuition that given that unit $k$ comes from the non-inflated part of the population then it follows a poisson distribution (respectively geometric or negative binomial) with the $\lambda$ parameter (or $\lambda,\alpha$), in hurdle models one loses that interpretation.
   \item It is somewhat interesting is that the estimates from Hurdle zero truncated and one inflated zero truncated models are "usually" quite close to one another.
 \end{itemize}
-
+```
 ## Structure of a family function
 
+```{=tex}
 \itemize{
   \item \code{makeMinusLogLike} -- A factory function for creating the:
   \begin{equation*}
-    \ell(\boldsymbol{\beta}), 
-    \frac{\partial\ell}{\partial\boldsymbol{\beta}},
-    \frac{\partial^{2}\ell}{\partial\boldsymbol{\beta}^{T}\partial\boldsymbol{\beta}}
+    \ell(\bbeta), 
+    \frac{\partial\ell}{\partial\bbeta},
+    \frac{\partial^{2}\ell}{\partial\bbeta^\top\partial\bbeta}
   \end{equation*}
-  functions from $\boldsymbol{y}$ vector and $\boldsymbol{X}_{vlm}$ the argument \code{deriv} with possible 
+  functions from $\boldsymbol{y}$ vector and $\bX_{vlm}$ the argument \code{deriv} with possible 
   values in \code{c(0, 1, 2)} provides which derivative to return with the default \code{0} being just the minus log-likelihood.
   \item \code{links} -- List with link functions.
   \item \code{mu.eta, variance} -- Functions of linear predictors that return expected value and variance. There is a `type` argument with 2 possible values \code{"trunc"} and \code{"nontrunc"} that specifies whether to return $\mathbb{E}[Y|Y>0], \text{var}[Y|Y>0]$ or $\mathbb{E}[Y], \text{var}[Y]$ respectively, also the \code{deriv} argument with values in \code{c(0, 1, 2)} is used for indicating the derivative with respect to the linear predictors with is used for providing standard error in \code{predict} method.
@@ -526,23 +732,42 @@ Here we limit ourselves to just listing the family functions:
   \item \code{valideta, validmu} -- For now only returns true. In near future will be used to check whether applied linear predictors are valid (i.e. are transformed into some elements of parameter space the subjected to inverse link function).
   \item \code{funcZ, Wfun} -- Functions that create pseudo residuals and working weights used in IRLS algorithm.
   \item \code{devResids} -- Function that given the linear predictors prior weights vector and response vector returns deviance residuals.
-  \item \code{pointEst, popVar} -- Functions that given prior weights linear predictors and in the later case also estimation of  $\text{cov}(\hat{\boldsymbol{\beta}})$ and $\boldsymbol{X_{vlm}}$ matrix return point estimate for population size and analytic estimation of its variance.There is a additional boolean parameter \code{contr} in the former function that if set to true returns contribution of each unit.
+  \item \code{pointEst, popVar} -- Functions that given prior weights linear predictors and in the later case also estimation of  $\text{cov}(\hat{\bbeta})$ and $\boldsymbol{X_{vlm}}$ matrix return point estimate for population size and analytic estimation of its variance.There is a additional boolean parameter \code{contr} in the former function that if set to true returns contribution of each unit.
   \item \code{etaNames} -- Names of linear predictors.
   \item \code{densityFunction} -- A function that given linear predictors returns value of PMF at values \code{x}. Additional argument \code{type} specifies whether to return $\mathbb{P}[Y|Y>0]$ or $\mathbb{P}[Y]$.
   \item \code{simulate} -- A function that generates values of dependent  vector given linear predictors.
   \item \code{getStart} -- Expression for generating starting points.
 }
-
+```
 ## Bootstrap algorithms
 
-There are three types of bootstrap algorithms which the user may specify in \code{controlPopVar} controls with \code{bootType} argument which has three possible values \code{"parametric", "semiparametric", "nonparametric"} with the nonparametric being bootstrap being the usual bootstrap algorithm which as argued in \cite{norrpoll} and \cite{zwane}. The idea of semiparametric bootstrap is to modify the usual bootstrap to include the additional uncertainty due to the sample size being a random variable. This type of bootstrap can be in short described as:
+There are three types of bootstrap algorithms which the user may specify
+in \code{controlPopVar} controls with \code{bootType} argument which has
+three possible values
+\code{"parametric", "semiparametric", "nonparametric"} with the
+nonparametric being bootstrap being the usual bootstrap algorithm which
+as argued in \cite{norrpoll} and \cite{zwane}. The idea of
+semiparametric bootstrap is to modify the usual bootstrap to include the
+additional uncertainty due to the sample size being a random variable.
+This type of bootstrap can be in short described as:
+
+```{=tex}
 \begin{enumerate}
     \item Draw the sample size $N_{obs}'\sim\text{Be}\left(N', \frac{N'-N_{obs}}{N'}\right)$, where $N'=\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$.
     \item Draw $N_{obs}'$ units from the data uniformly without replacement.
     \item Obtain new population size estimate using bootstrap data.
     \item Repeat $1-3$ $B$ times.
 \end{enumerate}
-In other words we first draw the sample size and then the sample conditional on the sample size. Note that in using semi-parametric bootstrap one implicitly assumes that the population size estimate $\hat{N}$ is accurate. The last implemented bootstrap type is the parametric algorithm which in short first draws the finite population of size $\approx\hat{N}$ from the superpopulation model and then samples from this population according to the selected model:
+```
+In other words we first draw the sample size and then the sample
+conditional on the sample size. Note that in using semi-parametric
+bootstrap one implicitly assumes that the population size estimate
+$\hat{N}$ is accurate. The last implemented bootstrap type is the
+parametric algorithm which in short first draws the finite population of
+size $\approx\hat{N}$ from the superpopulation model and then samples
+from this population according to the selected model:
+
+```{=tex}
 \begin{enumerate}
     \item Draw the number of covariates equal to $\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$ proportional to the estimated contribution $(\mathbb{P}\left[Y_{k}>0|\bx_{k}\right])^{-1}$ with replacement.
     \item Using the fitted model and regression coefficients $\hat{\bbeta}$ draw for each covariate the $Y$ value from the corresponding probability measure on $\mathbb{N}\cup\{0\}$.
@@ -550,26 +775,43 @@ In other words we first draw the sample size and then the sample conditional on 
     \item Obtain population size estimate based on the truncated data.
     \item Repeat $1-4$ $B$ times.
 \end{enumerate}
-Note however that for this type of algorithm to result in consistent standard error estimates it is imperative that the estimated model for the entire superpopulation probability space is consistent which may be much less realistic than semiparametric bootstrap. The parametric bootstrap algorithm is the default in \pkg{singleRcapture}.
+```
+Note however that for this type of algorithm to result in consistent
+standard error estimates it is imperative that the estimated model for
+the entire superpopulation probability space is consistent which may be
+much less realistic than semiparametric bootstrap. The parametric
+bootstrap algorithm is the default in \pkg{singleRcapture}.
 
-Additional arguments accepted by the \code{contorlPopVar} function which are relevant to bootstrap are:
+Additional arguments accepted by the \code{contorlPopVar} function which
+are relevant to bootstrap are:
+
+```{=tex}
 \begin{itemize}
   \item \code{alpha, B} -- significance level and number of bootstrap samples to be performed respectively with $0.05$ and $500$ being the default options.
   \item \code{cores} -- number of process cores to use in bootstrap (1 by default) parallel computing is done via \pkg{doParallel, foreach, parallel} packages.
-  \item \code{keepbootStat} -- 	logical value indicating whether to keep a vector of statistics produced by bootstrap.
+  \item \code{keepbootStat} --  logical value indicating whether to keep a vector of statistics produced by bootstrap.
   \item \code{traceBootstrapSize, bootstrapVisualTrace} --  logical values indicating whether sample and population size should be tracked (\code{FALSE} by default) these work only when \code{cores} = 1.
     \item \code{fittingMethod, bootstrapFitcontrol} -- fitting method (by default the same as used in the original call) and control parameters (\code{controlMethod}) for model fitting in bootstrap.
 \end{itemize}
+```
+# Integration with the \pkg{VGAM, countreg} packages {#VGAMcountreg-packages short-title="Integration with the"}
 
-# Integration with the \pkg{VGAM, countreg} packages {short-title="Integration with the" #VGAMcountreg-packages}
+The \pkg{singleRcaptureExtra} extensions allows for converting objects
+created by \code{vglm, vgam, countreg} functions from packages
+\pkg{VGAM, countreg} to a \code{singleRStaticCountData} via the
+respective \code{estimatePopsize} methods for their classes. The help
+files for all the methods and all the controll functions are accessed
+by:
 
-The \pkg{singleRcaptureExtra} extensions allows for converting objects created by \code{vglm, vgam, countreg} functions from packages \pkg{VGAM, countreg} to a \code{singleRStaticCountData} via the respective \code{estimatePopsize} methods for their classes. The help files for all the methods and all the controll functions are accessed by:
 ```{r, eval=FALSE}
 ?estimatePopsize.vgam
 ?controlEstPopVgam
 ```
 
-Using the fitted \code{zerotrunc, vglm, vgam} class objects in population size estimation such as the one additive models with smooth terms for dataset from \cite{chao}:
+Using the fitted \code{zerotrunc, vglm, vgam} class objects in
+population size estimation such as the one additive models with smooth
+terms for dataset from \cite{chao}:
+
 ```{r, modelVGAM}
 library(VGAM)
 library(singleRcaptureExtra)
@@ -584,13 +826,16 @@ modelVgam <- vgam(
   )
 )
 ```
+
 can be acomplished with the following syntax simple syntax:
+
 ```{r, singleRcaptureExtra_showcase}
 modelVgamPop <- estimatePopsize(modelVgam)
 ```
 
 Compare with a simmilar linear model from base \pkg{singleRcapture}:
 \small
+
 ```{r, singleRcaptureExtra_compare}
 modelBase <- estimatePopsize(
   TOTAL_SUB ~ (log_size + log_distance) * C_TYPE,
@@ -600,34 +845,44 @@ modelBase <- estimatePopsize(
 summary(modelBase)
 summary(modelVgamPop)
 ```
+
 \normalsize
 
-
+\section{Conclusions}
 
 \section*{Acknowledgements}
 
-The authors' work has been financed by the National Science Centre in Poland, OPUS 20, grant no. 2020/39/B/HS4/00941. Codes to reproduce simulations from the paper are available at ...
+The authors' work has been financed by the National Science Centre in
+Poland, OPUS 20, grant no. 2020/39/B/HS4/00941. 
 
+```{=html}
 <!--
 Appendix przed czy za bibliografią?
+po literaturze
 Albo jako osobny file?
 -->
+```
 
 \appendix
 
+
 # Implementing custom \pkg{singleRcapture} family function {short-title="Implementing custom singleRcapture family function"}
 
-Suppose we want to implement a very specific zero truncated family function in the \pkg{singleRcapture} which corresponds to the following "untruncated" distribution:
-\begin{equation}
+Suppose we want to implement a very specific zero truncated family
+function in the \pkg{singleRcapture} which corresponds to the following
+"untruncated" distribution: \begin{equation}
   \mathbb{P}[Y=y|\lambda, \pi] = \begin{cases}
     1 - \frac{1}{2}\lambda - \frac{1}{2}\pi & \text{when: } y=0\\
     \frac{1}{2}\pi & \text{when: } y=1\\
     \frac{1}{2}\lambda & \text{when: } y=2,
   \end{cases}
-\end{equation}
-with $\lambda, \pi\in\left(0, 1\right)$ being dependent on covariates. The following would be one way of implementing it, with \code{lambda, pi} in the code meaning $\frac{1}{2}\lambda,\frac{1}{2}\pi$ in the equation above:
+\end{equation} with $\lambda, \pi\in\left(0, 1\right)$ being dependent
+on covariates. The following would be one way of implementing it, with
+\code{lambda, pi} in the code meaning
+$\frac{1}{2}\lambda,\frac{1}{2}\pi$ in the equation above:
 
 \footnotesize
+
 ```{r, family_function}
 myFamilyFunction <- function(lambdaLink = c("logit", "cloglog", "probit"),
                              piLink     = c("logit", "cloglog", "probit"),
@@ -961,9 +1216,11 @@ myFamilyFunction <- function(lambdaLink = c("logit", "cloglog", "probit"),
   )
 }
 ```
+
 \normalsize
 
 A quick tests shows us that this implementation in fact works:
+
 ```{r, family_function_showcase}
 set.seed(123)
 Y <- simulate(
@@ -983,10 +1240,16 @@ mm <- estimatePopsize(
 summary(mm)
 ```
 
-Where the link functions such as \code{singleRcapture:::singleRinternalcloglogLink} are just internal functions in \pkg{singleRcapture} that compute link functions their inverses and derivatives of both links and inverse link up to third order:
-\small
+Where the link functions such as
+\code{singleRcapture:::singleRinternalcloglogLink} are just internal
+functions in \pkg{singleRcapture} that compute link functions their
+inverses and derivatives of both links and inverse link up to third
+order: \small
+
 ```{r, link_function}
 singleRcapture:::singleRinternalcloglogLink
 ```
+
 \normalsize
+
 one might of course include code for computing them manually.

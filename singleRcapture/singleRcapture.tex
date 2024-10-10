@@ -87,9 +87,11 @@ ul. Wojska Polskiego 27/29\\
 \usepackage{amsmath, amsthm, amssymb} \usepackage{calc, ragged2e}
 
 \DeclareMathAlphabet{\mathmybb}{U}{bbold}{m}{n}
-\newcommand{\1}{\mathcal{I}} \newcommand{\bx}{\boldsymbol{x}}
-\newcommand{\bX}{\boldsymbol{X}} \newcommand{\bbeta}{\boldsymbol{\beta}}
-\newcommand{\boeta}{\boldsymbol{\eta}}
+\newcommand{\1}{\mathcal{I}} \newcommand{\bZero}{\boldsymbol{0}}
+\newcommand{\bx}{\boldsymbol{x}} \newcommand{\bX}{\boldsymbol{X}}
+\newcommand{\bbeta}{\boldsymbol{\beta}}
+\newcommand{\boeta}{\boldsymbol{\eta}} \newcommand{\bW}{\boldsymbol{W}}
+\newcommand{\bo}{\boldsymbol{o}}
 
 \begin{document}
 
@@ -163,8 +165,8 @@ the population size using Horowitz-Thompson type estimator given by
 
 \begin{equation}
     \hat{N}=
-    \sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}[Y_{k}>0|\boldsymbol{X}_{k}]}=
-    \sum_{k=1}^{N_{obs}}\frac{1}{\mathbb{P}[Y_{k}>0|\boldsymbol{X}_{k}]},
+    \sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}[Y_{k}>0|\bX_{k}]}=
+    \sum_{k=1}^{N_{obs}}\frac{1}{\mathbb{P}[Y_{k}>0|\bX_{k}]},
     \label{eq-ht-estimator}
 \end{equation}
 
@@ -190,10 +192,10 @@ method given by
 \begin{equation}
   \mathbb{E}\left[\text{var}
   \left[\hat{N}|I_{1},\dots,I_{n}\right]\right]=
-  \left.\left(\frac{\partial(N|I_1,\dots,I_N)}{\partial\boldsymbol{\beta}}\right)^{T}
-  \text{cov}\left[\boldsymbol{\beta}\right]
-  \left(\frac{\partial(N|I_1,\dots,I_N)}{\partial\boldsymbol{\beta}}\right)
-  \right|_{\boldsymbol{\beta}=\hat{\boldsymbol{\beta}}},
+  \left.\left(\frac{\partial(N|I_1,\dots,I_N)}{\partial\bbeta}\right)^\top
+  \text{cov}\left[\bbeta\right]
+  \left(\frac{\partial(N|I_1,\dots,I_N)}{\partial\bbeta}\right)
+  \right|_{\bbeta=\hat{\bbeta}},
 \end{equation}
 
 while the second part of the decomposition in
@@ -219,7 +221,9 @@ a possibly skewed distribution of \(\hat{N}\), and results in the
   \left(N_{obs}+\frac{\hat{N}-N_{obs}}{G},N_{obs}+\left(\hat{N}-N_{obs}\right)G\right),
 \end{equation*}
 
-where: \begin{equation*}
+where:
+
+\begin{equation*}
   G = \exp\left(z\left(1-\frac{\alpha}{2}\right)
   \sqrt{\ln\left(1+\frac{\widehat{\text{Var}}(\hat{N})}{\left(\hat{N}-N_{obs}\right)^{2}}\right)}\right).
 \end{equation*}
@@ -231,8 +235,8 @@ no means of estimating the number of units in the population for which
 the probability of being included in the data is \(0\)
 \citep[cf.][]{ztpoisson}.
 
-\subsection{Software for
-capture-recapture}\label{software-for-capture-recapture}
+\subsection{Software for capture-recapture for single and multiple
+sources}\label{software-for-capture-recapture-for-single-and-multiple-sources}
 
 While population size estimation based on two or more source have many
 implementations in R (cf.~) and other languages (cf.~) methods for SSCR
@@ -257,9 +261,17 @@ Furthermore, as many R users are familiar with \pkg{countreg} or
 \pkg{singleRcaptureExtra} available through Github
 (\url{https://github.com/ncn-foreigners/singleRcaptureExtra}).
 
-The remaning part of the paper is as follows
+The remaining part of the paper is as follows. In Section
+@ref(sec-basic-usage) introduces the package main functionalities,
+covers main S3 methods as well as implemented diagnostics and useful
+functions. Section @ref(sec-details) provides information on the fitting
+methods, the \code{estimatePopsizeFit} function for estimating
+population size with more control and presents information on the
+available methods. Section @ref(sec-integration) covers integration with
+\pkg{countreg} and \pkg{VGAM} packages through \pkg{singleRcaptureExtra}
+package. The paper ends with conclusions and an appendix that
 
-\section{Basic usage}\label{basic-usage}
+\section{Basic usage}\label{sec-basic}
 
 \subsection[The]{The \code{estimatePopsize}
 function}\label{estimatePopsize-function}
@@ -824,7 +836,7 @@ For plotting only the \code{logNormal} type of confidence interval is
 used since the studentized confidence intervals often result in negative
 lower bounds.
 
-\section{Detailed information}\label{detailed-information}
+\section{Detailed information}\label{sec-details}
 
 \subsection{Fitting method}\label{fitting-method}
 
@@ -838,10 +850,10 @@ matrix is created \(\boldsymbol{X}_{\text{vlm}}\) at call to
 \begin{equation}\label{X_vlm-definition}
   \boldsymbol{X}_{vlm}=
   \begin{pmatrix}
-    \boldsymbol{X}_{1} & \boldsymbol{0} &\dotso &\boldsymbol{0}\cr
-    \boldsymbol{0} & \boldsymbol{X}_{2} &\dotso &\boldsymbol{0}\cr
+    \boldsymbol{X}_{1} & \boldsymbol{0}&\dotso &\boldsymbol{0}\cr
+    \boldsymbol{0}& \boldsymbol{X}_{2} &\dotso &\boldsymbol{0}\cr
     \vdots & \vdots & \ddots & \vdots\cr
-    \boldsymbol{0} & \boldsymbol{0} &\dotso &\boldsymbol{X}_{p}
+    \boldsymbol{0}& \boldsymbol{0}&\dotso &\boldsymbol{X}_{p}
   \end{pmatrix}
 \end{equation} where each \(\boldsymbol{X}_{i}\) corresponds to a model
 matrix associated with user specified formula.
@@ -850,7 +862,7 @@ In the context of multi-parameter families we have a matrix of linear
 predictors \(\boldsymbol{\eta}\) instead of a vector, with the number of
 columns matching the number of parameters in the distribution.
 ``Weights'' are then modified to be information matrices
-\(\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boldsymbol{\eta}_{(k)}^{T}\partial\boldsymbol{\eta}_{(k)}}\right]\)
+\(\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boldsymbol{\eta}_{(k)}^\top\partial\boldsymbol{\eta}_{(k)}}\right]\)
 where \(\boldsymbol{\eta}_{(k)}\) is the \(k\)'th row of
 \(\boldsymbol{\eta}\), while in the usual IRLS they are scalars
 \(\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\eta_{k}^{2}}\right]\)
@@ -859,17 +871,17 @@ which is often just
 
 \begin{enumerate}
     \justifying
-    \item Initialize with \code{iter}$\leftarrow 1, \boldsymbol{\eta}\leftarrow$\code{start}
-    $, \boldsymbol{W}\leftarrow I, \ell\leftarrow\ell(\boldsymbol{\beta})$.
+    \item Initialize with \code{iter}$\leftarrow 1, \boeta\leftarrow$\code{start}
+    $, \bW\leftarrow I, \ell\leftarrow\ell(\bbeta)$.
     \item Store values from the previous step: 
-    $\ell_{-}\leftarrow\ell, \boldsymbol{W}_{-}\leftarrow\boldsymbol{W}, \boldsymbol{\beta}_{-}\leftarrow\boldsymbol{\beta}$ 
+    $\ell_{-}\leftarrow\ell, \bW_{-}\leftarrow\bW, \bbeta_{-}\leftarrow\bbeta$ 
     (the last assignment is omitted during the first iteration), and assign values in current iteration 
-    $\displaystyle\boldsymbol{\eta}\leftarrow\boldsymbol{X}_{\text{vlm}}\boldsymbol{\beta}+\boldsymbol{o}, \boldsymbol{W}_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boldsymbol{\eta}_{(k)}^{T}\partial\boldsymbol{\eta}_{(k)}}\right], Z\leftarrow\boldsymbol{\eta}_{(k)}+\frac{\partial\ell}{\partial\boldsymbol{\eta}_{(k)}}\boldsymbol{W}_{(k)}^{-1}-\boldsymbol{o}_{(k)}$.
+    $\displaystyle\boeta\leftarrow\bX_{\text{vlm}}\bbeta+\bo, \bW_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boeta_{(k)}^\top\partial\boeta_{(k)}}\right], Z\leftarrow\boeta_{(k)}+\frac{\partial\ell}{\partial\boeta_{(k)}}\bW_{(k)}^{-1}-\bo_{(k)}$.
     \item Assign current coefficient value: 
-    $\boldsymbol{\beta}\leftarrow\left(\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{X}_{\text{vlm}}\right)^{-1}\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{Z}$.
-    \item If $\ell(\boldsymbol{\beta})<\ell(\boldsymbol{\beta}_{-})$ try selecting the smallest value $h$ such that for
-    $\boldsymbol{\beta}_{h}\leftarrow2^{-h}\left(\boldsymbol{\beta}+\boldsymbol{\beta}_{-}\right)$ the inequality $\ell(\boldsymbol{\beta}_{h})>\ell(\boldsymbol{\beta}_{-})$ 
-    holds if this is successful $\boldsymbol{\beta}\leftarrow\boldsymbol{\beta}_{h}$ else stop the algorithm.
+    $\bbeta\leftarrow\left(\bX_{\text{vlm}}\bW\bX_{\text{vlm}}\right)^{-1}\bX_{\text{vlm}}\bW\boldsymbol{Z}$.
+    \item If $\ell(\bbeta)<\ell(\bbeta_{-})$ try selecting the smallest value $h$ such that for
+    $\bbeta_{h}\leftarrow2^{-h}\left(\bbeta+\bbeta_{-}\right)$ the inequality $\ell(\bbeta_{h})>\ell(\bbeta_{-})$ 
+    holds if this is successful $\bbeta\leftarrow\bbeta_{h}$ else stop the algorithm.
     \item If convergence is achieved or \code{iter} is higher than \code{maxiter} end algorithm, 
     else \code{iter}$\leftarrow 1+$\code{iter} and return to step 2.
 \end{enumerate}
@@ -965,26 +977,26 @@ Here we limit ourselves to just listing the family functions:
     \end{cases}
     \end{equation*}
     \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y|Y>0]=\omega\mathcal{I}_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y|Y>0].
+        \mathbb{P}^{\ast}[Y=y|Y>0]=\omega\1_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y|Y>0].
     \end{equation*}
     \item One-inflated zero-truncated (oizt) modifications distributions where the new probability $\mathbb{P}^{\ast}$ measure is defined as:
     \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y] = \omega \mathcal{I}_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y],
+        \mathbb{P}^{\ast}[Y=y] = \omega \1_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y],
     \end{equation*}
     \begin{equation*}
         \mathbb{P}^{\ast}[Y=y|Y>0] = 
-        \omega\frac{\mathcal{I}_{\{1\}}(y)}{1-(1-\omega)\mathbb{P}[Y=0]}+
+        \omega\frac{\1_{\{1\}}(y)}{1-(1-\omega)\mathbb{P}[Y=0]}+
         (1-\omega)\frac{\mathbb{P}[Y=y]}{1-(1-\omega)\mathbb{P}[Y=0]}.
     \end{equation*}
     \item Generalized Chao's and Zelterman's estimators via logistic regression on variable $Z$ defined as $Z=1$ if $Y=2$ and $Z=0$ if $Y=1$ with $Z\sim b(p)$ where $\text{logit}(p)=\ln(\lambda/2)$ for poisson parameter $\lambda$,
     \begin{align}
         \hat{N} &= N_{obs}+
         \sum_{k=1}^{\boldsymbol{f}_{1}+\boldsymbol{f}_{2}}
-        \left(2\exp\left(\boldsymbol{x}_{k}\hat{\boldsymbol{\beta}}\right)+
-        2\exp\left(2\boldsymbol{x}_{k}\hat{\boldsymbol{\beta}}\right)\right)^{-1},
+        \left(2\exp\left(\bx_{k}\hat{\bbeta}\right)+
+        2\exp\left(2\bx_{k}\hat{\bbeta}\right)\right)^{-1},
         \tag{\text{Chao's estimator}}\\
         \hat{N}&=\sum_{k=1}^{N_{obs}}
-        \left(1-\exp\left(-2\exp\left(\boldsymbol{x}_{k}\hat{\boldsymbol{\beta}}\right)\right)\right)^{-1}.
+        \left(1-\exp\left(-2\exp\left(\bx_{k}\hat{\bbeta}\right)\right)\right)^{-1}.
         \tag{\text{Zelterman's estimator}}
     \end{align}
     \item Alternative approaches to modelling one-inflation that mimic hurdle models where the first type zero truncated hurdle model (ztHurdle) is defined as:
@@ -996,8 +1008,8 @@ Here we limit ourselves to just listing the family functions:
         \end{cases}
     \end{equation*}
     \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y|Y>0]=\pi\mathcal{I}_{\{1\}}(y)+
-        (1-\pi)\mathcal{I}_{\mathbb{N}\setminus\{1\}}(y)\frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]}
+        \mathbb{P}^{\ast}[Y=y|Y>0]=\pi\1_{\{1\}}(y)+
+        (1-\pi)\1_{\mathbb{N}\setminus\{1\}}(y)\frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]}
     \end{equation*}
     \item The Hurdle zero truncarted (Hurdlezt) is defined as:
     \begin{align*}
@@ -1031,11 +1043,11 @@ function}\label{structure-of-a-family-function}
 \itemize{
   \item \code{makeMinusLogLike} -- A factory function for creating the:
   \begin{equation*}
-    \ell(\boldsymbol{\beta}), 
-    \frac{\partial\ell}{\partial\boldsymbol{\beta}},
-    \frac{\partial^{2}\ell}{\partial\boldsymbol{\beta}^{T}\partial\boldsymbol{\beta}}
+    \ell(\bbeta), 
+    \frac{\partial\ell}{\partial\bbeta},
+    \frac{\partial^{2}\ell}{\partial\bbeta^\top\partial\bbeta}
   \end{equation*}
-  functions from $\boldsymbol{y}$ vector and $\boldsymbol{X}_{vlm}$ the argument \code{deriv} with possible 
+  functions from $\boldsymbol{y}$ vector and $\bX_{vlm}$ the argument \code{deriv} with possible 
   values in \code{c(0, 1, 2)} provides which derivative to return with the default \code{0} being just the minus log-likelihood.
   \item \code{links} -- List with link functions.
   \item \code{mu.eta, variance} -- Functions of linear predictors that return expected value and variance. There is a `type` argument with 2 possible values \code{"trunc"} and \code{"nontrunc"} that specifies whether to return $\mathbb{E}[Y|Y>0], \text{var}[Y|Y>0]$ or $\mathbb{E}[Y], \text{var}[Y]$ respectively, also the \code{deriv} argument with values in \code{c(0, 1, 2)} is used for indicating the derivative with respect to the linear predictors with is used for providing standard error in \code{predict} method.
@@ -1043,7 +1055,7 @@ function}\label{structure-of-a-family-function}
   \item \code{valideta, validmu} -- For now only returns true. In near future will be used to check whether applied linear predictors are valid (i.e. are transformed into some elements of parameter space the subjected to inverse link function).
   \item \code{funcZ, Wfun} -- Functions that create pseudo residuals and working weights used in IRLS algorithm.
   \item \code{devResids} -- Function that given the linear predictors prior weights vector and response vector returns deviance residuals.
-  \item \code{pointEst, popVar} -- Functions that given prior weights linear predictors and in the later case also estimation of  $\text{cov}(\hat{\boldsymbol{\beta}})$ and $\boldsymbol{X_{vlm}}$ matrix return point estimate for population size and analytic estimation of its variance.There is a additional boolean parameter \code{contr} in the former function that if set to true returns contribution of each unit.
+  \item \code{pointEst, popVar} -- Functions that given prior weights linear predictors and in the later case also estimation of  $\text{cov}(\hat{\bbeta})$ and $\boldsymbol{X_{vlm}}$ matrix return point estimate for population size and analytic estimation of its variance.There is a additional boolean parameter \code{contr} in the former function that if set to true returns contribution of each unit.
   \item \code{etaNames} -- Names of linear predictors.
   \item \code{densityFunction} -- A function that given linear predictors returns value of PMF at values \code{x}. Additional argument \code{type} specifies whether to return $\mathbb{P}[Y|Y>0]$ or $\mathbb{P}[Y]$.
   \item \code{simulate} -- A function that generates values of dependent  vector given linear predictors.
@@ -1078,8 +1090,8 @@ size \(\approx\hat{N}\) from the superpopulation model and then samples
 from this population according to the selected model:
 
 \begin{enumerate}
-    \item Draw the number of covariates equal to $\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$ proportional to the estimated contribution $(\mathbb{P}\left[Y_{k}>0|\boldsymbol{x}_{k}\right])^{-1}$ with replacement.
-    \item Using the fitted model and regression coefficients $\hat{\boldsymbol{\beta}}$ draw for each covariate the $Y$ value from the corresponding probability measure on $\mathbb{N}\cup\{0\}$.
+    \item Draw the number of covariates equal to $\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$ proportional to the estimated contribution $(\mathbb{P}\left[Y_{k}>0|\bx_{k}\right])^{-1}$ with replacement.
+    \item Using the fitted model and regression coefficients $\hat{\bbeta}$ draw for each covariate the $Y$ value from the corresponding probability measure on $\mathbb{N}\cup\{0\}$.
     \item Truncate units with drawn $Y$ value equal to $0$.
     \item Obtain population size estimate based on the truncated data.
     \item Repeat $1-4$ $B$ times.
@@ -1275,6 +1287,8 @@ s(log_size, df = 3):s(log_distance, df = 2):C_TYPE
 \end{CodeChunk}
 
 \normalsize
+
+\section{Conclusions}
 
 \section*{Acknowledgements}
 
@@ -1732,7 +1746,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x15bb3c5e0>
+<bytecode: 0x1112b4e90>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}
