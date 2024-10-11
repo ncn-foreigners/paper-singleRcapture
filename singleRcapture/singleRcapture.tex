@@ -16,8 +16,8 @@ Statistical Office in Poznań
 Capture-Recapture Models}
 
 \Plainauthor{Piotr Chlebicki, Maciej Beręsewicz}
-\Plaintitle{singleRcapture A Package for Single-Source Capture-Recapture
-Models}
+\Plaintitle{singleRcapture: A Package for Single-Source
+Capture-Recapture Models}
 \Shorttitle{\pkg{singleRcapture}: Single-Source Capture-Recapture
 Models}
 
@@ -102,20 +102,22 @@ ul. Wojska Polskiego 27/29\\
 Population size estimation is a\textasciitilde methodological approach
 employed across multiple scientific disciplines, serving as
 a\textasciitilde basis for research, policy formulation, and
-decision-making processes. In the field of statistics, particularly
-official statistics, precise population estimates are essential for
-developing robust economic models, optimizing resource allocation, and
-informing evidence-based policy formulation. Social scientists utilize
+decision-making processes \citep{bohning2018capture}. In the field of
+statistics, particularly official statistics, precise population
+estimates are essential for developing robust economic models,
+optimizing resource allocation, and informing evidence-based policy
+formulation \citep[cf.][]{baffour-awuah2009}. Social scientists utilize
 advanced population estimation techniques to investigate
 \textit{hard-to-reach} populations, such as homeless individuals or
 illicit drug users, thereby addressing the inherent limitations of
 conventional census methodologies. These techniques are crucial for
 obtaining accurate data on populations that are typically
 under-represented or difficult to access through traditional sampling
-methods. In ecology and epidemiology, researchers focus on estimating
-the size of specific species or disease-affected populations within
-defined geographical regions, which is vital for conservation efforts,
-ecosystem management, and public health interventions.
+methods \citep{vincent2022estimating}. In ecology and epidemiology,
+researchers focus on estimating the size of specific species or
+disease-affected populations within defined geographical regions, which
+is vital for conservation efforts, ecosystem management, and public
+health interventions.
 
 Population size estimation can be approached through various
 methodologies, each with distinct advantages and limitations.
@@ -124,56 +126,65 @@ and comprehensive sample surveys, which, while providing detailed data,
 are often resource-intensive and may result in delayed estimates,
 particularly for human populations. Alternative methods leverage
 existing data sources, such as administrative registers or carefully
-designed small-scale studies in wildlife research. Application of these
+designed small-scale studies in wildlife research or census coverage
+surveys \citep{wolter1986some, zhang2019note}. Application of these
 sources often comes with statistical methods, known as
 \textit{capture-recapture} or \textit{multiple system estimation}, that
-utilizes data from multiple enumerations of the same population. This
-can be implemented using a\textasciitilde single source with repeated
-observations, two, or multiple sources.
+utilizes data from multiple enumerations of the same population
+\citep[cf.][]{dunne2024system}. This can be implemented using
+a\textasciitilde single source with repeated observations, two, or
+multiple sources.
 
 In this paper we focus methods that utilize a\textasciitilde single data
-source with multiple enumerations of the same units. In human population
-studies, such data might be derived from police records, health system
-databases, or border control logs, while for non-human populations,
-veterinary records or specialized field data serve as analogous sources.
-These methods are often applied for hard-to-reach or hidden population
-where standard sampling methods may be inappropriate because of the
-costs or problems with identification of members of these populations.
+source with multiple enumerations of the same units
+\citep[cf.][]{ztpoisson}. In human population studies, such data might
+be derived from police records, health system databases, or border
+control logs, while for non-human populations, veterinary records or
+specialized field data serve as analogous sources. These methods are
+often applied for hard-to-reach or hidden population where standard
+sampling methods may be inappropriate because of the costs or problems
+with identification of members of these populations.
 
 While methods for two or more sources is implemented in various
-open-source software the single-source capture-recapture (SSCR) methods
-are less available or partially implemented in existing packages. The
-goal of the paper is to bridge this gap by the \pkg{singleRcapture} and
+open-source software \citep[e.g.,][]{baillargeon2007rcapture} the
+single-source capture-recapture (SSCR) methods are less available or
+partially implemented in existing packages. The goal of the paper is to
+bridge this gap by the \pkg{singleRcapture} and
 \pkg{singleRcaptureExtra} packages which implements state-of-the-art
 methods in SSCR and provides user friendly API which mimics existing R
-software. In the next subsections we briefly describe the main approach
-used in SSCR and the available software that tan be used for estimating
-population size based on SSCR methods.
+functions (e.g., \texttt{glm}). In the next subsection the available
+software that tan be used for estimating population size based on SSCR
+methods.
 
 \subsection{Software for capture-recapture for single and multiple
 sources}\label{software-for-capture-recapture-for-single-and-multiple-sources}
 
-While population size estimation based on two or more source have many
-implementations in R (cf.~) and other languages (cf.~) methods for SSCR
-are only partially covered. For instance, \pkg{countreg} or \pkg{VGAM}
-covers selected number of truncated distributions and (pkg for
-distributions, e.g.~distributions3). More advanced methods are not
-widely available and need to be implemented from scratch. Moreover,
-estimation of variance or diagnostics are not widely available in
-open-source software which limits possibilities of easy usage of these
-methods in comparison to multiple source capture-recapture methods.
+Majority of SSCR methods assume zero-truncated distributions or their
+extensions (e.g., inclusion of one-inflation). The \pkg{countreg}
+\citep{countreg}, \pkg{VGAM} \citep{VGAM-main} or \pkg{distributions3}
+\citep{distributions3} implement selected number of truncated
+distributions and the more complex distributions such as Generally
+Altered, Inflated, Truncated and Deflated (GAITD) can be found in the
+\pkg{VGAM}. However, estimation of parameters of a given truncated (and
+possibly inflated) distribution is just a first step (similarly as in
+log-linear models in capture-recapture with two sources) and to best of
+hour knowledge there is no open-source software that allows to estimate
+population size based on SSCR method, including variance estimator or
+diagnostics.
 
 Therefore, the goal of the \pkg{singleRcapture} is \proglang{R} language
 is to bridge this gap to provide scientists tool for estimation of
 population size based on SSCR methods. The package implements
-state-of-the-art methods such as \ldots. and its extensions (full list
-of available methods is presented in section \ldots). The package
-implements variance estimation based on various methods as well as
-diagnostics plots (e.g.~rootograms) with parameters estimated using a
-modified IRLS algorithm implemented by us to for estimation stability.
-Furthermore, as many R users are familiar with \pkg{countreg} or
-\pkg{VGAM} we have implemented a\textasciitilde lightweight extension
-\pkg{singleRcaptureExtra} available through Github
+state-of-the-art methods as recently described by
+\citet{bohning2018capture} or \citet{bohning2024one} and its extensions
+(e.g., inclusion of covariates, different treatment of one-inflation)
+that we will cover in detail in Section 1. The package implements
+variance estimation based on various methods as well as diagnostics
+plots (e.g.~rootograms) with parameters estimated using a modified IRLS
+algorithm implemented by us to for estimation stability. Furthermore, as
+many R users are familiar with \pkg{countreg} or \pkg{VGAM} we have
+implemented a lightweight extension \pkg{singleRcaptureExtra} available
+through Github
 (\url{https://github.com/ncn-foreigners/singleRcaptureExtra}).
 
 The remaining part of the paper is as follows. In Section
@@ -371,6 +382,54 @@ models}\label{key-takeaways-of-different-models}
   \item Although interpretation of regression parameters tends to be somewhat overlooked in SSCR studies we should point out that interpretation of  of the $\omega$ inflation parameter is more convenient that the interpretation of the $\pi$ probability parameter. Additionally the interpretation of the $\lambda$ parameter in (one) inflated models conforms to the intuition that given that unit $k$ comes from the non-inflated part of the population then it follows a poisson distribution (respectively geometric or negative binomial) with the $\lambda$ parameter (or $\lambda,\alpha$), in hurdle models one loses that interpretation.
   \item It is somewhat interesting is that the estimates from Hurdle zero truncated and one inflated zero truncated models are "usually" quite close to one another.
 \end{itemize}
+
+\subsection{Fitting method}\label{fitting-method}
+
+As previously showcased the \pkg{singleRcapture} package supports
+modelling (linear) dependence on covariates of all parameters. To that
+end a modified IRLS algorithm is employed, full details are available in
+\cite{VGAM-main}. In order to employ the algorithm a modified model
+matrix is created \(\boldsymbol{X}_{\text{vlm}}\) at call to
+\code{estimatePopsize}. In the context of the models implemented in
+\pkg{singleRcapture} this matrix can be written as:
+\begin{equation}\label{X_vlm-definition}
+  \boldsymbol{X}_{vlm}=
+  \begin{pmatrix}
+    \boldsymbol{X}_{1} & \boldsymbol{0}&\dotso &\boldsymbol{0}\cr
+    \boldsymbol{0}& \boldsymbol{X}_{2} &\dotso &\boldsymbol{0}\cr
+    \vdots & \vdots & \ddots & \vdots\cr
+    \boldsymbol{0}& \boldsymbol{0}&\dotso &\boldsymbol{X}_{p}
+  \end{pmatrix}
+\end{equation} where each \(\boldsymbol{X}_{i}\) corresponds to a model
+matrix associated with user specified formula.
+
+In the context of multi-parameter families we have a matrix of linear
+predictors \(\boldsymbol{\eta}\) instead of a vector, with the number of
+columns matching the number of parameters in the distribution.
+``Weights'' are then modified to be information matrices
+\(\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boldsymbol{\eta}_{(k)}^\top\partial\boldsymbol{\eta}_{(k)}}\right]\)
+where \(\boldsymbol{\eta}_{(k)}\) is the \(k\)'th row of
+\(\boldsymbol{\eta}\), while in the usual IRLS they are scalars
+\(\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\eta_{k}^{2}}\right]\)
+which is often just
+\(\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}\).
+
+\begin{enumerate}
+    \justifying
+    \item Initialize with \code{iter}$\leftarrow 1, \boeta\leftarrow$\code{start}
+    $, \bW\leftarrow I, \ell\leftarrow\ell(\bbeta)$.
+    \item Store values from the previous step: 
+    $\ell_{-}\leftarrow\ell, \bW_{-}\leftarrow\bW, \bbeta_{-}\leftarrow\bbeta$ 
+    (the last assignment is omitted during the first iteration), and assign values in current iteration 
+    $\displaystyle\boeta\leftarrow\bX_{\text{vlm}}\bbeta+\bo, \bW_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boeta_{(k)}^\top\partial\boeta_{(k)}}\right], Z\leftarrow\boeta_{(k)}+\frac{\partial\ell}{\partial\boeta_{(k)}}\bW_{(k)}^{-1}-\bo_{(k)}$.
+    \item Assign current coefficient value: 
+    $\bbeta\leftarrow\left(\bX_{\text{vlm}}\bW\bX_{\text{vlm}}\right)^{-1}\bX_{\text{vlm}}\bW\boldsymbol{Z}$.
+    \item If $\ell(\bbeta)<\ell(\bbeta_{-})$ try selecting the smallest value $h$ such that for
+    $\bbeta_{h}\leftarrow2^{-h}\left(\bbeta+\bbeta_{-}\right)$ the inequality $\ell(\bbeta_{h})>\ell(\bbeta_{-})$ 
+    holds if this is successful $\bbeta\leftarrow\bbeta_{h}$ else stop the algorithm.
+    \item If convergence is achieved or \code{iter} is higher than \code{maxiter} end algorithm, 
+    else \code{iter}$\leftarrow 1+$\code{iter} and return to step 2.
+\end{enumerate}
 
 \subsection{Bootstrap algorithms}\label{bootstrap-algorithms}
 
@@ -991,54 +1050,6 @@ lower bounds.
 
 \section{Detailed information}\label{sec-details}
 
-\subsection{Fitting method}\label{fitting-method}
-
-As previously showcased the \pkg{singleRcapture} package supports
-modelling (linear) dependence on covariates of all parameters. To that
-end a modified IRLS algorithm is employed, full details are available in
-\cite{VGAM-main}. In order to employ the algorithm a modified model
-matrix is created \(\boldsymbol{X}_{\text{vlm}}\) at call to
-\code{estimatePopsize}. In the context of the models implemented in
-\pkg{singleRcapture} this matrix can be written as:
-\begin{equation}\label{X_vlm-definition}
-  \boldsymbol{X}_{vlm}=
-  \begin{pmatrix}
-    \boldsymbol{X}_{1} & \boldsymbol{0}&\dotso &\boldsymbol{0}\cr
-    \boldsymbol{0}& \boldsymbol{X}_{2} &\dotso &\boldsymbol{0}\cr
-    \vdots & \vdots & \ddots & \vdots\cr
-    \boldsymbol{0}& \boldsymbol{0}&\dotso &\boldsymbol{X}_{p}
-  \end{pmatrix}
-\end{equation} where each \(\boldsymbol{X}_{i}\) corresponds to a model
-matrix associated with user specified formula.
-
-In the context of multi-parameter families we have a matrix of linear
-predictors \(\boldsymbol{\eta}\) instead of a vector, with the number of
-columns matching the number of parameters in the distribution.
-``Weights'' are then modified to be information matrices
-\(\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boldsymbol{\eta}_{(k)}^\top\partial\boldsymbol{\eta}_{(k)}}\right]\)
-where \(\boldsymbol{\eta}_{(k)}\) is the \(k\)'th row of
-\(\boldsymbol{\eta}\), while in the usual IRLS they are scalars
-\(\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\eta_{k}^{2}}\right]\)
-which is often just
-\(\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}\).
-
-\begin{enumerate}
-    \justifying
-    \item Initialize with \code{iter}$\leftarrow 1, \boeta\leftarrow$\code{start}
-    $, \bW\leftarrow I, \ell\leftarrow\ell(\bbeta)$.
-    \item Store values from the previous step: 
-    $\ell_{-}\leftarrow\ell, \bW_{-}\leftarrow\bW, \bbeta_{-}\leftarrow\bbeta$ 
-    (the last assignment is omitted during the first iteration), and assign values in current iteration 
-    $\displaystyle\boeta\leftarrow\bX_{\text{vlm}}\bbeta+\bo, \bW_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boeta_{(k)}^\top\partial\boeta_{(k)}}\right], Z\leftarrow\boeta_{(k)}+\frac{\partial\ell}{\partial\boeta_{(k)}}\bW_{(k)}^{-1}-\bo_{(k)}$.
-    \item Assign current coefficient value: 
-    $\bbeta\leftarrow\left(\bX_{\text{vlm}}\bW\bX_{\text{vlm}}\right)^{-1}\bX_{\text{vlm}}\bW\boldsymbol{Z}$.
-    \item If $\ell(\bbeta)<\ell(\bbeta_{-})$ try selecting the smallest value $h$ such that for
-    $\bbeta_{h}\leftarrow2^{-h}\left(\bbeta+\bbeta_{-}\right)$ the inequality $\ell(\bbeta_{h})>\ell(\bbeta_{-})$ 
-    holds if this is successful $\bbeta\leftarrow\bbeta_{h}$ else stop the algorithm.
-    \item If convergence is achieved or \code{iter} is higher than \code{maxiter} end algorithm, 
-    else \code{iter}$\leftarrow 1+$\code{iter} and return to step 2.
-\end{enumerate}
-
 \subsection[The]{The \code{estimatePopsizeFit}
 function}\label{estimatePopsizeFit-function}
 
@@ -1300,7 +1311,7 @@ s(log_size, df = 3):s(log_distance, df = 2):C_TYPE
 
 \section{Conclusions}
 
-\section*{Acknowledgements}
+\textbackslash section*\{Acknowledgements\}
 
 The authors' work has been financed by the National Science Centre in
 Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
@@ -1755,7 +1766,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x11ce9c9b0>
+<bytecode: 0x140d6fe00>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}
