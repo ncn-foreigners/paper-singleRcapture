@@ -99,15 +99,14 @@ ul. Wojska Polskiego 27/29\\
 
 \section{Introduction}\label{introduction}
 
-Population size estimation is a\textasciitilde methodological approach
-employed across multiple scientific disciplines, serving as
-a\textasciitilde basis for research, policy formulation, and
-decision-making processes \citep{bohning2018capture}. In the field of
-statistics, particularly official statistics, precise population
-estimates are essential for developing robust economic models,
-optimizing resource allocation, and informing evidence-based policy
-formulation \citep[cf.][]{baffour-awuah2009}. Social scientists utilize
-advanced population estimation techniques to investigate
+Population size estimation is a methodological approach employed across
+multiple scientific disciplines, serving as a basis for research, policy
+formulation, and decision-making processes \citep{bohning2018capture}.
+In the field of statistics, particularly official statistics, precise
+population estimates are essential for developing robust economic
+models, optimizing resource allocation, and informing evidence-based
+policy formulation \citep[cf.][]{baffour-awuah2009}. Social scientists
+utilize advanced population estimation techniques to investigate
 \textit{hard-to-reach} populations, such as homeless individuals or
 illicit drug users, thereby addressing the inherent limitations of
 conventional census methodologies. These techniques are crucial for
@@ -131,19 +130,18 @@ surveys \citep{wolter1986some, zhang2019note}. Application of these
 sources often comes with statistical methods, known as
 \textit{capture-recapture} or \textit{multiple system estimation}, that
 utilizes data from multiple enumerations of the same population
-\citep[cf.][]{dunne2024system}. This can be implemented using
-a\textasciitilde single source with repeated observations, two, or
-multiple sources.
+\citep[cf.][]{dunne2024system}. This can be implemented using a single
+source with repeated observations, two, or multiple sources.
 
-In this paper we focus methods that utilize a\textasciitilde single data
-source with multiple enumerations of the same units
-\citep[cf.][]{ztpoisson}. In human population studies, such data might
-be derived from police records, health system databases, or border
-control logs, while for non-human populations, veterinary records or
-specialized field data serve as analogous sources. These methods are
-often applied for hard-to-reach or hidden population where standard
-sampling methods may be inappropriate because of the costs or problems
-with identification of members of these populations.
+In this paper we focus methods that utilize a single data source with
+multiple enumerations of the same units \citep[cf.][]{ztpoisson}. In
+human population studies, such data might be derived from police
+records, health system databases, or border control logs, while for
+non-human populations, veterinary records or specialized field data
+serve as analogous sources. These methods are often applied for
+hard-to-reach or hidden population where standard sampling methods may
+be inappropriate because of the costs or problems with identification of
+members of these populations.
 
 While methods for two or more sources is implemented in various
 open-source software \citep[e.g.,][]{baillargeon2007rcapture} the
@@ -179,23 +177,24 @@ state-of-the-art methods as recently described by
 \citet{bohning2018capture} or \citet{bohning2024one} and its extensions
 (e.g., inclusion of covariates, different treatment of one-inflation)
 that we will cover in detail in Section 1. The package implements
-variance estimation based on various methods as well as diagnostics
-plots (e.g.~rootograms) with parameters estimated using a modified IRLS
-algorithm implemented by us to for estimation stability. Furthermore, as
-many R users are familiar with \pkg{countreg} or \pkg{VGAM} we have
-implemented a lightweight extension \pkg{singleRcaptureExtra} available
-through Github
+variance estimation based on various methods, allows for implementing
+custom modelsas well as diagnostics plots (e.g.~rootograms) with
+parameters estimated using a modified IRLS algorithm implemented by us
+to for estimation stability. Furthermore, as many R users are familiar
+with \pkg{countreg} or \pkg{VGAM} we have implemented a lightweight
+extension \pkg{singleRcaptureExtra} available through Github
 (\url{https://github.com/ncn-foreigners/singleRcaptureExtra}).
 
 The remaining part of the paper is as follows. In Section
-@ref(sec-basic-usage) introduces the package main functionalities,
+\ref{sec-basic-usage} introduces the package main functionalities,
 covers main S3 methods as well as implemented diagnostics and useful
-functions. Section @ref(sec-details) provides information on the fitting
+functions. Section \ref{sec-details} provides information on the fitting
 methods, the \code{estimatePopsizeFit} function for estimating
 population size with more control and presents information on the
-available methods. Section @ref(sec-integration) covers integration with
+available methods. Section \ref{sec-integration} covers integration with
 \pkg{countreg} and \pkg{VGAM} packages through \pkg{singleRcaptureExtra}
-package. The paper ends with conclusions and an appendix that
+package. The paper ends with conclusions and an appendix that shows how
+to a implement custom model.
 
 \section{Theoretical background}\label{theoretical-background}
 
@@ -203,14 +202,14 @@ package. The paper ends with conclusions and an appendix that
 register?}\label{how-do-we-estimate-population-size-with-a-single-register}
 
 Let \(Y_{k}\) represent the number of times \(k\)-th unit was observed
-in a\textasciitilde register. Clearly, we only observe \(Y_{k}>\) and we
-do not know how many units are missed (i.e.~\(Y_{k}=0\)) and to find the
-population size denoted by \(N\) we need to estimate it. In general, we
-assume that conditional distribution of \(Y_{k}\) given
-a\textasciitilde vector of covariates \(\boldsymbol{x}_{k}\) follows
-some version of zero-truncated count data distribution (and its
-extensions). Knowing the parameters of the distribution we may estimate
-the population size using Horowitz-Thompson type estimator given by
+in a register. Clearly, we only observe \(Y_{k}>\) and we do not know
+how many units are missed (i.e.~\(Y_{k}=0\)) and to find the population
+size denoted by \(N\) we need to estimate it. In general, we assume that
+conditional distribution of \(Y_{k}\) given a vector of covariates
+\(\boldsymbol{x}_{k}\) follows some version of zero-truncated count data
+distribution (and its extensions). Knowing the parameters of the
+distribution we may estimate the population size using Horowitz-Thompson
+type estimator given by
 
 \begin{equation}
     \hat{N}=
@@ -227,10 +226,15 @@ for \(\mathbb{P}[Y_{k}>0|\boldsymbol{x}_{k}]\) into
 The basic SSCR assumes independence between counts which may be rather
 naive as the first capture may significantly influence the behaviour of
 a given unit or limit possibilities of further captures (e.g.~due to
-incarceration). Recently, \ldots{} introduced one-inflated distributions
-that explicitly model probability of the singletons given by \ldots{}
+incarceration). Therefore, \citet{godwin2017estimation} and
+\citet{ztoi-oizt-poisson} introduced one-inflated distributions that
+explicitly model probability of the singletons by giving additional mass
+for singletons as presented below
 
-which can be further plug-in in the estimator \eqref{eq-ht-estimator}.
+\[
+\mathbb{P}^{\ast}[Y=y|Y>0]=\omega\mathcal{I}_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y|Y>0],
+\] where \ldots{} which can be further plug-in in the estimator
+\eqref{eq-ht-estimator}. For recent review see \citet{bohning2024one}.
 
 The analytic variance estimation is then done by computing two parts of
 the decomposition due to the law of total variance given by
@@ -1766,7 +1770,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x140d6fe00>
+<bytecode: 0x1501b7670>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}
