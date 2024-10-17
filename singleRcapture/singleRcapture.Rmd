@@ -48,6 +48,7 @@ keywords:
 preamble: >
   \usepackage{amsmath, amsthm, amssymb}
   \usepackage{calc, ragged2e}
+  \usepackage[ruled]{algorithm2e}
   \DeclareMathAlphabet{\mathmybb}{U}{bbold}{m}{n}
   \newcommand{\1}{\mathcal{I}}
   \newcommand{\bZero}{\boldsymbol{0}}
@@ -302,7 +303,7 @@ For the sake of simplicity we limit ourselves to just listing the family functio
         \left(\frac{\alpha^{-1}}{\alpha^{-1}+\lambda}\right)^{\alpha^{-1}}
         \left(\frac{\lambda}{\lambda + \alpha^{-1}}\right)^{y}.
     \end{equation*}
-    \item Zero-truncated one-inflated (\code{ztoi}) modifications distributions where the new probability $\mathbb{P}^{\ast}$ measure is defined in terms of count data measure $\mathbb{P}$ with support on $\mathbb{N}\cup\{0\}$ as
+    \item Zero-truncated one-inflated (\code{ztoi*}) modifications distributions where the new probability $\mathbb{P}^{\ast}$ measure is defined in terms of count data measure $\mathbb{P}$ with support on $\mathbb{N}\cup\{0\}$ as
     \begin{equation*}
     \mathbb{P}^{\ast}[Y=y]=
     \begin{cases}
@@ -323,7 +324,7 @@ For the sake of simplicity we limit ourselves to just listing the family functio
         \omega\frac{\1_{\{1\}}(y)}{1-(1-\omega)\mathbb{P}[Y=0]}+
         (1-\omega)\frac{\mathbb{P}[Y=y]}{1-(1-\omega)\mathbb{P}[Y=0]}.
     \end{equation*}
-    Note that \code{ztoi} and \code{oizt} distributions are equivalent as shown by \cite{bohning2023equivalence} but population size estimators are different.
+    Note that \code{ztoi} and \code{oizt*} distributions are equivalent as shown by \cite{bohning2023equivalence} but population size estimators are different.
 \end{itemize}
     
 In addition, we have provided two new approaches that allow modelling singletons in a similar was as in Hurdle models. In particular we have proposed the following
@@ -362,7 +363,7 @@ The extra mass $\omega$ in the one-inflated models is an important extension to 
 
 Hurdle models are another approach to modelling the one-inflation, they can also model deflation as well as both inflation and deflation simultaneously so they are more flexible and situationally the Hurdle zero-truncated models seem to be more numerically stable.
 
-Although interpretation of regression parameters tends to be somewhat overlooked in the SSCR studies we should point out that interpretation of the $\omega$ inflation parameter (in \code{ziot} or \code{oizt}) is more convenient that the interpretation of the $\pi$ probability parameter (in Hurdle models). Additionally the interpretation of the $\lambda$ parameter in (one) inflated models conforms to the intuition that given that unit $k$ comes from the non-inflated part of the population then it follows a poisson distribution (respectively geometric or negative binomial) with the $\lambda$ parameter (or $\lambda,\alpha$), in hurdle models one loses that interpretation. It is somewhat interesting is that the estimates from Hurdle zero-truncated and one-inflated zero-truncated models are "usually" quite close to one another, this however require more studies.
+Although interpretation of regression parameters tends to be somewhat overlooked in the SSCR studies we should point out that interpretation of the $\omega$ inflation parameter (in \code{ziot*} or \code{oizt*}) is more convenient that the interpretation of the $\pi$ probability parameter (in Hurdle models). Additionally the interpretation of the $\lambda$ parameter in (one) inflated models conforms to the intuition that given that unit $k$ comes from the non-inflated part of the population then it follows a poisson distribution (respectively geometric or negative binomial) with the $\lambda$ parameter (or $\lambda,\alpha$), in hurdle models one loses that interpretation. It is somewhat interesting is that the estimates from Hurdle zero-truncated and one-inflated zero-truncated models are "usually" quite close to one another, this however require more studies.
 
 ## Fitting method
 
@@ -399,40 +400,46 @@ which is often just
 $\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}$.
 
 
-\begin{enumerate}
-\justifying
-  \item Initialize with \code{iter}$\leftarrow 1, \boeta\leftarrow$\code{start}
-    $, \bW\leftarrow I, \ell\leftarrow\ell(\bbeta)$.
-    \item Store values from the previous step: 
+\begin{algorithm}[ht!]
+\small
+\caption{A modified IRLS algorithm used in the \pkg{singleRcapture} package}
+\label{algo-estimation}\DontPrintSemicolon
+\nlset{1} Initialize with \code{iter}$\leftarrow 1, \boeta\leftarrow$\code{start}
+    $, \bW\leftarrow I, \ell\leftarrow\ell(\bbeta)$.\;
+\nlset{2} Store values from the previous step: 
     $\ell_{-}\leftarrow\ell, \bW_{-}\leftarrow\bW, \bbeta_{-}\leftarrow\bbeta$ 
     (the last assignment is omitted during the first iteration), and assign values in current iteration 
-    $\displaystyle\boeta\leftarrow\bX_{\text{vlm}}\bbeta+\bo, \bW_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boeta_{(k)}^\top\partial\boeta_{(k)}}\right], Z\leftarrow\boeta_{(k)}+\frac{\partial\ell}{\partial\boeta_{(k)}}\bW_{(k)}^{-1}-\bo_{(k)}$.
-    \item Assign current coefficient value: 
-    $\bbeta\leftarrow\left(\bX_{\text{vlm}}\bW\bX_{\text{vlm}}\right)^{-1}\bX_{\text{vlm}}\bW\boldsymbol{Z}$.
-    \item If $\ell(\bbeta)<\ell(\bbeta_{-})$ try selecting the smallest value $h$ such that for
+    $\displaystyle\boeta\leftarrow\bX_{\text{vlm}}\bbeta+\bo, \bW_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boeta_{(k)}^\top\partial\boeta_{(k)}}\right], Z\leftarrow\boeta_{(k)}+\frac{\partial\ell}{\partial\boeta_{(k)}}\bW_{(k)}^{-1}-\bo_{(k)}$.\;
+\nlset{3} Assign current coefficient value: 
+    $\bbeta\leftarrow\left(\bX_{\text{vlm}}\bW\bX_{\text{vlm}}\right)^{-1}\bX_{\text{vlm}}\bW\boldsymbol{Z}$.\;
+\nlset{4} If $\ell(\bbeta)<\ell(\bbeta_{-})$ try selecting the smallest value $h$ such that for
     $\bbeta_{h}\leftarrow2^{-h}\left(\bbeta+\bbeta_{-}\right)$ the inequality $\ell(\bbeta_{h})>\ell(\bbeta_{-})$ 
-    holds if this is successful $\bbeta\leftarrow\bbeta_{h}$ else stop the algorithm.
-    \item If convergence is achieved or \code{iter} is higher than \code{maxiter} end algorithm, 
+    holds if this is successful $\bbeta\leftarrow\bbeta_{h}$ else stop the algorithm.\;
+\nlset{5} If convergence is achieved or \code{iter} is higher than \code{maxiter} end algorithm, 
     else \code{iter}$\leftarrow 1+$\code{iter} and return to step 2.
-\end{enumerate}
+\end{algorithm}
+
 
 
 \subsection{Variance estimation using bootstrap}\label{sec-boostrap}
 
-We have implemented three types of bootstrap algorithms: parametric, semiparametric and nonparametric with the
+We have implemented three types of bootstrap algorithms: parametric, semi-parametric and nonparametric with the
 nonparametric being bootstrap being the usual bootstrap algorithm which
 as argued in \cite{norrpoll} and \cite{zwane}. 
 
-The idea of semiparametric bootstrap is to modify the usual bootstrap to include the
+The idea of semi-parametric bootstrap is to modify the usual bootstrap to include the
 additional uncertainty due to the sample size being a random variable.
-This type of bootstrap can be in short described as:
+This type of bootstrap can be in short described as in the Algorithm \ref{algo-semipar-boot}.
 
-\begin{enumerate}
-    \item Draw the sample size $N_{obs}'\sim\text{Be}\left(N', \frac{N'-N_{obs}}{N'}\right)$, where $N'=\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$.
-    \item Draw $N_{obs}'$ units from the data uniformly without replacement.
-    \item Obtain new population size estimate using bootstrap data.
-    \item Repeat $1-3$ $B$ times.
-\end{enumerate}
+\begin{algorithm}[ht!]
+\small
+\caption{Semi-parametric bootstrap}
+\label{algo-semipar-boot}\DontPrintSemicolon
+\nlset{1} Draw the sample size $N_{obs}'\sim\text{Be}\left(N', \frac{N'-N_{obs}}{N'}\right)$, where $N'=\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$.\;
+\nlset{2} Draw $N_{obs}'$ units from the data uniformly without replacement.\;
+\nlset{3} Obtain new population size estimate $N_b$ using bootstrap data.\;
+\nlset{4} Repeat $1-3$ $B$ times.
+\end{algorithm}
 
 In other words, we first draw the sample size and then the sample
 conditional on the sample size. Note that in using semi-parametric
@@ -440,22 +447,23 @@ bootstrap one implicitly assumes that the population size estimate
 $\hat{N}$ is accurate. The last implemented bootstrap type is the
 parametric algorithm which in short first draws the finite population of
 size $\approx\hat{N}$ from the superpopulation model and then samples
-from this population according to the selected model:
+from this population according to the selected model as described in Algorithm \ref{algo-semipar-boot}.
 
-
-\begin{enumerate}
-    \item Draw the number of covariates equal to $\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$ proportional to the estimated contribution $(\mathbb{P}\left[Y_{k}>0|\bx_{k}\right])^{-1}$ with replacement.
-    \item Using the fitted model and regression coefficients $\hat{\bbeta}$ draw for each covariate the $Y$ value from the corresponding probability measure on $\mathbb{N}\cup\{0\}$.
-    \item Truncate units with drawn $Y$ value equal to $0$.
-    \item Obtain population size estimate based on the truncated data.
-    \item Repeat $1-4$ $B$ times.
-\end{enumerate}
-
+\begin{algorithm}[ht!]
+\small
+\caption{Parametric bootstrap}
+\label{algo-semipar-boot}\DontPrintSemicolon
+\nlset{1} Draw the number of covariates equal to $\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$ proportional to the estimated contribution $(\mathbb{P}\left[Y_{k}>0|\bx_{k}\right])^{-1}$ with replacement.\;
+\nlset{2} Using the fitted model and regression coefficients $\hat{\bbeta}$ draw for each covariate the $Y$ value from the corresponding probability measure on $\mathbb{N}\cup\{0\}$.\;
+\nlset{3} Truncate units with drawn $Y$ value equal to $0$.\;
+\nlset{4} Obtain population size estimate $N_b$ based on the truncated data.\;
+\nlset{5} Repeat $1-3$ $B$ times.
+\end{algorithm}
 
 Note that for this type of algorithm to result in consistent
 standard error estimates it is imperative that the estimated model for
 the entire superpopulation probability space is consistent which may be
-much less realistic than semiparametric bootstrap. The parametric
+much less realistic than semi-parametric bootstrap. The parametric
 bootstrap algorithm is the default in \pkg{singleRcapture}.
 
 
@@ -493,9 +501,9 @@ To show the main function let us recreate the zero-truncated Poisson
 model from \cite{ztpoisson} on the same data included in the package
 under the name \code{netherlandsimmigrant}
 
-```{r, loading_singleRcapture}
+```{r, loading_singleRcapture, results='asis'}
 library(singleRcapture)
-head(netherlandsimmigrant)
+knitr::kable(head(netherlandsimmigrant))
 ```
 
 This data set contains information about immigrants in four cities
@@ -538,7 +546,7 @@ in the dataset may led to undesirable consequences from the point of
 view of the subject of the observation (here possible deportation,
 detainment or similar). For those reason researcher may consider one-inflated models such as \code{oiztgeom} and presented below.
 
-```{r, model_inflated_netherlands, warning=FALSE}
+```{r, model_inflated_netherlands, warning=FALSE, cache=T}
 set.seed(123456)
 modelInflated <- estimatePopsize(
     formula = capture ~ nation,
@@ -621,7 +629,7 @@ dev.off()
 
 Plots suggest that the \code{otztgeom} model fits the data better. Furthermore, important issue in population size estimation is the diagnostics of the models in order to verify whether influential observations are present in the data. For this purpose leave-one-out (LOO) diagnostic implemented in the \code{dfbeta} from the \pkg{stats} package was adapted and demonstrated below
 
-```{r, dfbeta_basic_model}
+```{r, dfbeta_basic_model, cache=T}
 dfb <- dfbeta(basicModel)
 t(round(apply(dfb, 2, quantile)*100,4))
 ```
@@ -653,9 +661,15 @@ which may be passed from the call to the \code{plot} method down to base
 
 Researchers may be interested on only in the total population size but also in specific subpopulations (e.g. males, females, group pages). For that reason we have created function \code{stratifyPopsize} which allows to estimate the size by stratas defined by the coefficients in the model (the default option).
 
-```{r}
+
+```{r, stratas, results='asis'}
 pop_size_stratas <- stratifyPopsize(basicModel)
-pop_size_stratas[, c("name", "Observed", "Estimated", "logNormalLowerBound", "logNormalUpperBound")]
+
+cols <- c("name", "Observed", "Estimated", "logNormalLowerBound", 
+          "logNormalUpperBound")
+cols_custom <- c("Name", "Obs", "Estimated", "LowerBound", "UpperBound")
+
+knitr::kable(pop_size_stratas[, cols],  col.names = cols_custom, digits=2)
 ```
 
 One may also specify \code{plotType = "strata"} in the \code{plot} function which results in a plot with point and CI estimates of the population size.
@@ -671,7 +685,7 @@ The method for \code{singleRStaticCountData} class accepts three optional parame
 populations, the significance levels and the covariance matrix that will
 be used to compute standard errors. An example of the full call is presented below.
 
-```{r}
+```{r, custom-strata, results='asis', message=F, warning=F}
 library(sandwich)
 pop_size_stratas_custom <- stratifyPopsize(
   object  = basicModel,
@@ -680,7 +694,7 @@ pop_size_stratas_custom <- stratifyPopsize(
   cov     = vcovHC(basicModel, type = "HC4")
 )
 
-pop_size_stratas_custom[, c("name", "Observed", "Estimated", "logNormalLowerBound", "logNormalUpperBound")]
+knitr::kable(pop_size_stratas_custom[, cols], col.names = cols_custom, digits=2)
 ```
 
 \normalsize
@@ -707,7 +721,7 @@ lower bounds.
 
 The package implements analytic and bootstrap variance estimators. In the control 
 function \code{controlPopVar} user may specify the \code{bootType} argument which has
-three possible values \code{"parametric", "semiparametric"} and \code{"nonparametric"} 
+three possible values \code{"parametric", "semi-parametric"} and \code{"nonparametric"} 
 Additional arguments accepted by the \code{contorlPopVar} function which
 are relevant to bootstrap are:
 
@@ -756,7 +770,7 @@ Using the fitted \code{zerotrunc, vglm, vgam} class objects in
 population size estimation such as the one additive models with smooth
 terms for dataset from \cite{chao-generalization}.
 
-```{r, modelVGAM, warning=FALSE, message=FALSE}
+```{r, modelVGAM, warning=FALSE, message=FALSE, cache=T}
 library(VGAM)
 library(singleRcaptureExtra)
 modelVgam <- vgam(
@@ -772,7 +786,7 @@ modelVgam <- vgam(
 
 Estimation of the population size can be accomplished with the following syntax simple syntax. 
 
-```{r, singleRcaptureExtra_showcase}
+```{r, singleRcaptureExtra_showcase, cache=TRUE}
 modelVgamPop <- estimatePopsize(modelVgam)
 ```
 The resulting object is of class \code{singleRforeign} to underline that the parameters were estimated outside the \pkg{singleRcapture}. The structure of the object is as follows
@@ -785,7 +799,7 @@ str(modelVgamPop,1)
 Compare with a similar linear model from base \pkg{singleRcapture}:
 \small
 
-```{r, singleRcaptureExtra_compare}
+```{r, singleRcaptureExtra_compare, cache=TRUE}
 modelBase <- estimatePopsize(
   TOTAL_SUB ~ (log_size + log_distance) * C_TYPE,
   data = farmsubmission,

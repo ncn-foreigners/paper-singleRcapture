@@ -82,10 +82,21 @@ ul. Wojska Polskiego 27/29\\
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
+% From pandoc table feature
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
 
 
 
-\usepackage{amsmath, amsthm, amssymb} \usepackage{calc, ragged2e}
+\usepackage{amsmath, amsthm, amssymb} \usepackage{calc, ragged2e} \usepackage[ruled]{algorithm2e}
 
 \DeclareMathAlphabet{\mathmybb}{U}{bbold}{m}{n}
 \newcommand{\1}{\mathcal{I}} \newcommand{\bZero}{\boldsymbol{0}}
@@ -332,7 +343,7 @@ functions
         \left(\frac{\alpha^{-1}}{\alpha^{-1}+\lambda}\right)^{\alpha^{-1}}
         \left(\frac{\lambda}{\lambda + \alpha^{-1}}\right)^{y}.
     \end{equation*}
-    \item Zero-truncated one-inflated (\code{ztoi}) modifications distributions where the new probability $\mathbb{P}^{\ast}$ measure is defined in terms of count data measure $\mathbb{P}$ with support on $\mathbb{N}\cup\{0\}$ as
+    \item Zero-truncated one-inflated (\code{ztoi*}) modifications distributions where the new probability $\mathbb{P}^{\ast}$ measure is defined in terms of count data measure $\mathbb{P}$ with support on $\mathbb{N}\cup\{0\}$ as
     \begin{equation*}
     \mathbb{P}^{\ast}[Y=y]=
     \begin{cases}
@@ -353,7 +364,7 @@ functions
         \omega\frac{\mathcal{I}_{\{1\}}(y)}{1-(1-\omega)\mathbb{P}[Y=0]}+
         (1-\omega)\frac{\mathbb{P}[Y=y]}{1-(1-\omega)\mathbb{P}[Y=0]}.
     \end{equation*}
-    Note that \code{ztoi} and \code{oizt} distributions are equivalent as shown by \cite{bohning2023equivalence} but population size estimators are different.
+    Note that \code{ztoi} and \code{oizt*} distributions are equivalent as shown by \cite{bohning2023equivalence} but population size estimators are different.
 \end{itemize}
 
 In addition, we have provided two new approaches that allow modelling
@@ -426,8 +437,8 @@ zero-truncated models seem to be more numerically stable.
 
 Although interpretation of regression parameters tends to be somewhat
 overlooked in the SSCR studies we should point out that interpretation
-of the \(\omega\) inflation parameter (in \code{ziot} or \code{oizt}) is
-more convenient that the interpretation of the \(\pi\) probability
+of the \(\omega\) inflation parameter (in \code{ziot*} or \code{oizt*})
+is more convenient that the interpretation of the \(\pi\) probability
 parameter (in Hurdle models). Additionally the interpretation of the
 \(\lambda\) parameter in (one) inflated models conforms to the intuition
 that given that unit \(k\) comes from the non-inflated part of the
@@ -473,40 +484,46 @@ where \(\boldsymbol{\eta}_{(k)}\) is the \(k\)'th row of
 which is often just
 \(\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}\).
 
-\begin{enumerate}
-\justifying
-  \item Initialize with \code{iter}$\leftarrow 1, \boldsymbol{\eta}\leftarrow$\code{start}
-    $, \boldsymbol{W}\leftarrow I, \ell\leftarrow\ell(\boldsymbol{\beta})$.
-    \item Store values from the previous step: 
+\begin{algorithm}[ht!]
+\small
+\caption{A modified IRLS algorithm used in the \pkg{singleRcapture} package}
+\label{algo-estimation}\DontPrintSemicolon
+\nlset{1} Initialize with \code{iter}$\leftarrow 1, \boldsymbol{\eta}\leftarrow$\code{start}
+    $, \boldsymbol{W}\leftarrow I, \ell\leftarrow\ell(\boldsymbol{\beta})$.\;
+\nlset{2} Store values from the previous step: 
     $\ell_{-}\leftarrow\ell, \boldsymbol{W}_{-}\leftarrow\boldsymbol{W}, \boldsymbol{\beta}_{-}\leftarrow\boldsymbol{\beta}$ 
     (the last assignment is omitted during the first iteration), and assign values in current iteration 
-    $\displaystyle\boldsymbol{\eta}\leftarrow\boldsymbol{X}_{\text{vlm}}\boldsymbol{\beta}+\boldsymbol{o}, \boldsymbol{W}_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boldsymbol{\eta}_{(k)}^\top\partial\boldsymbol{\eta}_{(k)}}\right], Z\leftarrow\boldsymbol{\eta}_{(k)}+\frac{\partial\ell}{\partial\boldsymbol{\eta}_{(k)}}\boldsymbol{W}_{(k)}^{-1}-\boldsymbol{o}_{(k)}$.
-    \item Assign current coefficient value: 
-    $\boldsymbol{\beta}\leftarrow\left(\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{X}_{\text{vlm}}\right)^{-1}\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{Z}$.
-    \item If $\ell(\boldsymbol{\beta})<\ell(\boldsymbol{\beta}_{-})$ try selecting the smallest value $h$ such that for
+    $\displaystyle\boldsymbol{\eta}\leftarrow\boldsymbol{X}_{\text{vlm}}\boldsymbol{\beta}+\boldsymbol{o}, \boldsymbol{W}_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boldsymbol{\eta}_{(k)}^\top\partial\boldsymbol{\eta}_{(k)}}\right], Z\leftarrow\boldsymbol{\eta}_{(k)}+\frac{\partial\ell}{\partial\boldsymbol{\eta}_{(k)}}\boldsymbol{W}_{(k)}^{-1}-\boldsymbol{o}_{(k)}$.\;
+\nlset{3} Assign current coefficient value: 
+    $\boldsymbol{\beta}\leftarrow\left(\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{X}_{\text{vlm}}\right)^{-1}\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{Z}$.\;
+\nlset{4} If $\ell(\boldsymbol{\beta})<\ell(\boldsymbol{\beta}_{-})$ try selecting the smallest value $h$ such that for
     $\boldsymbol{\beta}_{h}\leftarrow2^{-h}\left(\boldsymbol{\beta}+\boldsymbol{\beta}_{-}\right)$ the inequality $\ell(\boldsymbol{\beta}_{h})>\ell(\boldsymbol{\beta}_{-})$ 
-    holds if this is successful $\boldsymbol{\beta}\leftarrow\boldsymbol{\beta}_{h}$ else stop the algorithm.
-    \item If convergence is achieved or \code{iter} is higher than \code{maxiter} end algorithm, 
+    holds if this is successful $\boldsymbol{\beta}\leftarrow\boldsymbol{\beta}_{h}$ else stop the algorithm.\;
+\nlset{5} If convergence is achieved or \code{iter} is higher than \code{maxiter} end algorithm, 
     else \code{iter}$\leftarrow 1+$\code{iter} and return to step 2.
-\end{enumerate}
+\end{algorithm}
 
 \subsection{Variance estimation using bootstrap}\label{sec-boostrap}
 
 We have implemented three types of bootstrap algorithms: parametric,
-semiparametric and nonparametric with the nonparametric being bootstrap
+semi-parametric and nonparametric with the nonparametric being bootstrap
 being the usual bootstrap algorithm which as argued in \cite{norrpoll}
 and \cite{zwane}.
 
-The idea of semiparametric bootstrap is to modify the usual bootstrap to
-include the additional uncertainty due to the sample size being a random
-variable. This type of bootstrap can be in short described as:
+The idea of semi-parametric bootstrap is to modify the usual bootstrap
+to include the additional uncertainty due to the sample size being a
+random variable. This type of bootstrap can be in short described as in
+the Algorithm \ref{algo-semipar-boot}.
 
-\begin{enumerate}
-    \item Draw the sample size $N_{obs}'\sim\text{Be}\left(N', \frac{N'-N_{obs}}{N'}\right)$, where $N'=\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$.
-    \item Draw $N_{obs}'$ units from the data uniformly without replacement.
-    \item Obtain new population size estimate using bootstrap data.
-    \item Repeat $1-3$ $B$ times.
-\end{enumerate}
+\begin{algorithm}[ht!]
+\small
+\caption{Semi-parametric bootstrap}
+\label{algo-semipar-boot}\DontPrintSemicolon
+\nlset{1} Draw the sample size $N_{obs}'\sim\text{Be}\left(N', \frac{N'-N_{obs}}{N'}\right)$, where $N'=\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$.\;
+\nlset{2} Draw $N_{obs}'$ units from the data uniformly without replacement.\;
+\nlset{3} Obtain new population size estimate $N_b$ using bootstrap data.\;
+\nlset{4} Repeat $1-3$ $B$ times.
+\end{algorithm}
 
 In other words, we first draw the sample size and then the sample
 conditional on the sample size. Note that in using semi-parametric
@@ -514,20 +531,24 @@ bootstrap one implicitly assumes that the population size estimate
 \(\hat{N}\) is accurate. The last implemented bootstrap type is the
 parametric algorithm which in short first draws the finite population of
 size \(\approx\hat{N}\) from the superpopulation model and then samples
-from this population according to the selected model:
+from this population according to the selected model as described in
+Algorithm \ref{algo-semipar-boot}.
 
-\begin{enumerate}
-    \item Draw the number of covariates equal to $\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$ proportional to the estimated contribution $(\mathbb{P}\left[Y_{k}>0|\boldsymbol{x}_{k}\right])^{-1}$ with replacement.
-    \item Using the fitted model and regression coefficients $\hat{\boldsymbol{\beta}}$ draw for each covariate the $Y$ value from the corresponding probability measure on $\mathbb{N}\cup\{0\}$.
-    \item Truncate units with drawn $Y$ value equal to $0$.
-    \item Obtain population size estimate based on the truncated data.
-    \item Repeat $1-4$ $B$ times.
-\end{enumerate}
+\begin{algorithm}[ht!]
+\small
+\caption{Parametric bootstrap}
+\label{algo-semipar-boot}\DontPrintSemicolon
+\nlset{1} Draw the number of covariates equal to $\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$ proportional to the estimated contribution $(\mathbb{P}\left[Y_{k}>0|\boldsymbol{x}_{k}\right])^{-1}$ with replacement.\;
+\nlset{2} Using the fitted model and regression coefficients $\hat{\boldsymbol{\beta}}$ draw for each covariate the $Y$ value from the corresponding probability measure on $\mathbb{N}\cup\{0\}$.\;
+\nlset{3} Truncate units with drawn $Y$ value equal to $0$.\;
+\nlset{4} Obtain population size estimate $N_b$ based on the truncated data.\;
+\nlset{5} Repeat $1-3$ $B$ times.
+\end{algorithm}
 
 Note that for this type of algorithm to result in consistent standard
 error estimates it is imperative that the estimated model for the entire
 superpopulation probability space is consistent which may be much less
-realistic than semiparametric bootstrap. The parametric bootstrap
+realistic than semi-parametric bootstrap. The parametric bootstrap
 algorithm is the default in \pkg{singleRcapture}.
 
 \section{Basic usage}\label{sec-basic}
@@ -566,21 +587,25 @@ To show the main function let us recreate the zero-truncated Poisson
 model from \cite{ztpoisson} on the same data included in the package
 under the name \code{netherlandsimmigrant}
 
-\begin{CodeChunk}
 \begin{CodeInput}
 R> library(singleRcapture)
-R> head(netherlandsimmigrant)
+R> knitr::kable(head(netherlandsimmigrant))
 \end{CodeInput}
-\begin{CodeOutput}
-  capture gender    age       reason       nation
-1       1   male <40yrs Other reason North Africa
-2       1   male <40yrs Other reason North Africa
-3       1   male <40yrs Other reason North Africa
-4       1   male <40yrs Other reason         Asia
-5       1   male <40yrs Other reason         Asia
-6       2   male <40yrs Other reason North Africa
-\end{CodeOutput}
-\end{CodeChunk}
+
+\begin{longtable}[]{@{}rllll@{}}
+\toprule\noalign{}
+capture & gender & age & reason & nation \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & male & \textless40yrs & Other reason & North Africa \\
+1 & male & \textless40yrs & Other reason & North Africa \\
+1 & male & \textless40yrs & Other reason & North Africa \\
+1 & male & \textless40yrs & Other reason & Asia \\
+1 & male & \textless40yrs & Other reason & Asia \\
+2 & male & \textless40yrs & Other reason & North Africa \\
+\end{longtable}
 
 This data set contains information about immigrants in four cities
 (Amsterdam, Rotterdam, The Hague and Utrecht) in Netherlands that have
@@ -966,36 +991,49 @@ that reason we have created function \code{stratifyPopsize} which allows
 to estimate the size by stratas defined by the coefficients in the model
 (the default option).
 
-\begin{CodeChunk}
 \begin{CodeInput}
 R> pop_size_stratas <- stratifyPopsize(basicModel)
-R> pop_size_stratas[, c("name", "Observed", "Estimated", "logNormalLowerBound", "logNormalUpperBound")]
+R> 
+R> cols <- c("name", "Observed", "Estimated", "logNormalLowerBound", 
++           "logNormalUpperBound")
+R> cols_custom <- c("Name", "Obs", "Estimated", "LowerBound", "UpperBound")
+R> 
+R> knitr::kable(pop_size_stratas[, cols],  col.names = cols_custom, digits=2)
 \end{CodeInput}
-\begin{CodeOutput}
-                             name Observed  Estimated logNormalLowerBound
-1                  gender==female      398  3811.0911           2189.0443
-2                    gender==male     1482  8879.2594           6090.7762
-3                     age==<40yrs     1769 10506.8971           7359.4155
-4                     age==>40yrs      111  2183.4535            872.0130
-5  nation==American and Australia      173   708.3688            504.6086
-6                    nation==Asia      284  2742.3147           1755.2548
-7            nation==North Africa     1023  3055.2033           2697.4900
-8          nation==Rest of Africa      243  2058.1533           1318.7466
-9                 nation==Surinam       64  2386.4513            505.2457
-10                 nation==Turkey       93  1739.8592            638.0497
-   logNormalUpperBound
-1             6902.133
-2            13354.880
-3            15426.455
-4             5754.876
-5             1037.331
-6             4391.590
-7             3489.333
-8             3305.786
-9            12287.983
-10            5068.959
-\end{CodeOutput}
-\end{CodeChunk}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.4559}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.0735}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1471}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1618}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1618}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Name
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Obs
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Estimated
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+LowerBound
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+UpperBound
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+gender==female & 398 & 3811.09 & 2189.04 & 6902.13 \\
+gender==male & 1482 & 8879.26 & 6090.78 & 13354.88 \\
+age==\textless40yrs & 1769 & 10506.90 & 7359.42 & 15426.45 \\
+age==\textgreater40yrs & 111 & 2183.45 & 872.01 & 5754.88 \\
+nation==American and Australia & 173 & 708.37 & 504.61 & 1037.33 \\
+nation==Asia & 284 & 2742.31 & 1755.25 & 4391.59 \\
+nation==North Africa & 1023 & 3055.20 & 2697.49 & 3489.33 \\
+nation==Rest of Africa & 243 & 2058.15 & 1318.75 & 3305.79 \\
+nation==Surinam & 64 & 2386.45 & 505.25 & 12287.98 \\
+nation==Turkey & 93 & 1739.86 & 638.05 & 5068.96 \\
+\end{longtable}
 
 One may also specify \code{plotType = "strata"} in the \code{plot}
 function which results in a plot with point and CI estimates of the
@@ -1018,13 +1056,12 @@ specification of sub populations, the significance levels and the
 covariance matrix that will be used to compute standard errors. An
 example of the full call is presented below.
 
-\begin{CodeChunk}
 \begin{CodeInput}
 R> library(sandwich)
 \end{CodeInput}
-\begin{CodeOutput}
-Warning: package 'sandwich' was built under R version 4.3.3
-\end{CodeOutput}
+
+Warning: package `sandwich' was built under R version 4.3.3
+
 \begin{CodeInput}
 R> pop_size_stratas_custom <- stratifyPopsize(
 +   object  = basicModel,
@@ -1033,49 +1070,52 @@ R> pop_size_stratas_custom <- stratifyPopsize(
 +   cov     = vcovHC(basicModel, type = "HC4")
 + )
 R> 
-R> pop_size_stratas_custom[, c("name", "Observed", "Estimated", "logNormalLowerBound", "logNormalUpperBound")]
+R> knitr::kable(pop_size_stratas_custom[, cols], col.names = cols_custom, digits=2)
 \end{CodeInput}
-\begin{CodeOutput}
-                                        name Observed Estimated
-1                             gender==female      398 3811.0911
-2                               gender==male     1482 8879.2594
-3  genderfemale:nationAmerican and Australia       67  328.8780
-4    gendermale:nationAmerican and Australia      106  379.4908
-5                    genderfemale:nationAsia       62  775.9054
-6                      gendermale:nationAsia      222 1966.4093
-7            genderfemale:nationNorth Africa      169  644.0545
-8              gendermale:nationNorth Africa      854 2411.1488
-9          genderfemale:nationRest of Africa       65  682.1776
-10           gendermale:nationRest of Africa      178 1375.9757
-11                genderfemale:nationSurinam       20  931.4677
-12                  gendermale:nationSurinam       44 1454.9835
-13                 genderfemale:nationTurkey       15  448.6079
-14                   gendermale:nationTurkey       78 1291.2513
-15                    genderfemale:age<40yrs      378 3169.8263
-16                      gendermale:age<40yrs     1391 7337.0708
-17                    genderfemale:age>40yrs       20  641.2648
-18                      gendermale:age>40yrs       91 1542.1886
-   logNormalLowerBound logNormalUpperBound
-1            2275.6416           6602.1612
-2            6745.5675          11877.8858
-3             255.7692            430.3013
-4             318.4739            458.0301
-5             604.5269           1001.4205
-6            1225.6476           3253.9046
-7             517.5628            816.4495
-8            2242.8856           2599.7970
-9             527.2996            888.9423
-10           1155.7975           1645.7331
-11            234.3583           3895.6296
-12            502.1052           4389.8894
-13            241.6446            844.5624
-14            836.6593           2018.2367
-15           2617.4717           3858.4164
-16           5543.4798           9905.3720
-17            288.7316           1456.2658
-18            899.8794           2694.5381
-\end{CodeOutput}
-\end{CodeChunk}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.5316}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.0633}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1266}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1392}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1392}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Name
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Obs
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Estimated
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+LowerBound
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+UpperBound
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+gender==female & 398 & 3811.09 & 2275.64 & 6602.16 \\
+gender==male & 1482 & 8879.26 & 6745.57 & 11877.89 \\
+genderfemale:nationAmerican and Australia & 67 & 328.88 & 255.77 &
+430.30 \\
+gendermale:nationAmerican and Australia & 106 & 379.49 & 318.47 &
+458.03 \\
+genderfemale:nationAsia & 62 & 775.91 & 604.53 & 1001.42 \\
+gendermale:nationAsia & 222 & 1966.41 & 1225.65 & 3253.90 \\
+genderfemale:nationNorth Africa & 169 & 644.05 & 517.56 & 816.45 \\
+gendermale:nationNorth Africa & 854 & 2411.15 & 2242.89 & 2599.80 \\
+genderfemale:nationRest of Africa & 65 & 682.18 & 527.30 & 888.94 \\
+gendermale:nationRest of Africa & 178 & 1375.98 & 1155.80 & 1645.73 \\
+genderfemale:nationSurinam & 20 & 931.47 & 234.36 & 3895.63 \\
+gendermale:nationSurinam & 44 & 1454.98 & 502.11 & 4389.89 \\
+genderfemale:nationTurkey & 15 & 448.61 & 241.64 & 844.56 \\
+gendermale:nationTurkey & 78 & 1291.25 & 836.66 & 2018.24 \\
+genderfemale:age\textless40yrs & 378 & 3169.83 & 2617.47 & 3858.42 \\
+gendermale:age\textless40yrs & 1391 & 7337.07 & 5543.48 & 9905.37 \\
+genderfemale:age\textgreater40yrs & 20 & 641.26 & 288.73 & 1456.27 \\
+gendermale:age\textgreater40yrs & 91 & 1542.19 & 899.88 & 2694.54 \\
+\end{longtable}
 
 \normalsize
 
@@ -1105,7 +1145,7 @@ lower bounds.
 The package implements analytic and bootstrap variance estimators. In
 the control function \code{controlPopVar} user may specify the
 \code{bootType} argument which has three possible values
-\code{"parametric", "semiparametric"} and \code{"nonparametric"}
+\code{"parametric", "semi-parametric"} and \code{"nonparametric"}
 Additional arguments accepted by the \code{contorlPopVar} function which
 are relevant to bootstrap are:
 
@@ -1120,12 +1160,23 @@ are relevant to bootstrap are:
 \section[Integration with the]{Integration with the \pkg{VGAM, countreg}
 packages}\label{VGAMcountreg-packages}
 
-The \pkg{singleRcaptureExtra} extensions allows for converting objects
-created by \code{vglm, vgam, countreg} functions from packages
-\pkg{VGAM, countreg} to a \code{singleRStaticCountData} via the
-respective \code{estimatePopsize} methods for their classes. The help
-files for all the methods and all the controll functions are accessed
-by:
+As noted at the beginning we provide an integration with the \pkg{VGAM}
+and \pkg{countreg} packages via the \pkg{singleRcaptureExtra} package
+available through Github at
+\url{https://github.com/ncn-foreigners/singleRcaptureExtra}.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> install.packages("pak")
+R> pak::pak("ncn-foreigners/singleRcaptureExtra")
+\end{CodeInput}
+\end{CodeChunk}
+
+The \pkg{singleRcaptureExtra} allows for converting objects created by
+\code{vglm, vgam, countreg} functions from packages \pkg{VGAM, countreg}
+to a \code{singleRStaticCountData} via the respective
+\code{estimatePopsize} methods for their classes. The help files for all
+the methods and all the control functions are accessed by
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1136,26 +1187,14 @@ R> ?controlEstPopVgam
 
 Using the fitted \code{zerotrunc, vglm, vgam} class objects in
 population size estimation such as the one additive models with smooth
-terms for dataset from \cite{chao-generalization}:
+terms for dataset from \cite{chao-generalization}.
 
 \begin{CodeChunk}
 \begin{CodeInput}
 R> library(VGAM)
-\end{CodeInput}
-\begin{CodeOutput}
-Warning: package 'VGAM' was built under R version 4.3.3
-\end{CodeOutput}
-\begin{CodeOutput}
-Loading required package: stats4
-\end{CodeOutput}
-\begin{CodeOutput}
-Loading required package: splines
-\end{CodeOutput}
-\begin{CodeInput}
 R> library(singleRcaptureExtra)
 R> modelVgam <- vgam(
-+   TOTAL_SUB ~ (s(log_size, df  = 3) + 
-+                  s(log_distance, df  = 2)) / C_TYPE,
++   TOTAL_SUB ~ (s(log_size, df  = 3) + s(log_distance, df  = 2)) / C_TYPE,
 +   data = farmsubmission,
 +   # Using different link since
 +   # VGAM uses parametrisation with 1/alpha
@@ -1166,7 +1205,8 @@ R> modelVgam <- vgam(
 \end{CodeInput}
 \end{CodeChunk}
 
-can be acomplished with the following syntax simple syntax:
+Estimation of the population size can be accomplished with the following
+syntax simple syntax.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1174,7 +1214,27 @@ R> modelVgamPop <- estimatePopsize(modelVgam)
 \end{CodeInput}
 \end{CodeChunk}
 
-Compare with a simmilar linear model from base \pkg{singleRcapture}:
+The resulting object is of class \code{singleRforeign} to underline that
+the parameters were estimated outside the \pkg{singleRcapture}. The
+structure of the object is as follows
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> str(modelVgamPop,1)
+\end{CodeInput}
+\begin{CodeOutput}
+List of 5
+ $ foreignObject :Formal class 'vgam' [package "VGAM"] with 43 slots
+ $ call          : language estimatePopsize.vgam(formula = modelVgam)
+ $ sizeObserved  : int 12036
+ $ populationSize:List of 5
+  ..- attr(*, "class")= chr "popSizeEstResults"
+ $ derivFunc     :function (eta)  
+ - attr(*, "class")= chr [1:4] "singleRadditive" "singleRforeign" "singleRStaticCountData" "singleR"
+\end{CodeOutput}
+\end{CodeChunk}
+
+Compare with a similar linear model from base \pkg{singleRcapture}:
 \small
 
 \begin{CodeChunk}
@@ -1291,7 +1351,11 @@ s(log_size, df = 3):s(log_distance, df = 2):C_TYPE
 
 \normalsize
 
-\section{Conclusions}\label{conclusions}
+\section{Concluding remarks}\label{concluding-remarks}
+
+Package \pkg{singleRcapture}
+
+\ldots{} something more on the conclusions
 
 \section{Acknowledgements}
 
@@ -1835,7 +1899,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x106228770>
+<bytecode: 0x124dab0d0>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}
