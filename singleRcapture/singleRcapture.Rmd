@@ -782,7 +782,7 @@ str(modelVgamPop,1)
 ```
 
 
-Compare with a simmilar linear model from base \pkg{singleRcapture}:
+Compare with a similar linear model from base \pkg{singleRcapture}:
 \small
 
 ```{r, singleRcaptureExtra_compare}
