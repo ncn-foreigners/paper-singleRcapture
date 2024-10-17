@@ -732,12 +732,20 @@ a z różnic jest to że Yee używa do obliczania macierzy informacji fishera sy
 -->
 ```
 
-The \pkg{singleRcaptureExtra} extensions allows for converting objects
+As noted at the beginning we provide an integration with the \pkg{VGAM} and \pkg{countreg} packages via the \pkg{singleRcaptureExtra} package available through Github at \url{https://github.com/ncn-foreigners/singleRcaptureExtra}. 
+
+
+```{r, eval = FALSE}
+install.packages("pak")
+pak::pak("ncn-foreigners/singleRcaptureExtra")
+```
+
+The \pkg{singleRcaptureExtra} allows for converting objects
 created by \code{vglm, vgam, countreg} functions from packages
 \pkg{VGAM, countreg} to a \code{singleRStaticCountData} via the
 respective \code{estimatePopsize} methods for their classes. The help
-files for all the methods and all the controll functions are accessed
-by:
+files for all the methods and all the control functions are accessed
+by
 
 ```{r, eval=FALSE}
 ?estimatePopsize.vgam
@@ -746,14 +754,13 @@ by:
 
 Using the fitted \code{zerotrunc, vglm, vgam} class objects in
 population size estimation such as the one additive models with smooth
-terms for dataset from \cite{chao-generalization}:
+terms for dataset from \cite{chao-generalization}.
 
-```{r, modelVGAM}
+```{r, modelVGAM, warning=FALSE, message=FALSE}
 library(VGAM)
 library(singleRcaptureExtra)
 modelVgam <- vgam(
-  TOTAL_SUB ~ (s(log_size, df  = 3) + 
-                 s(log_distance, df  = 2)) / C_TYPE,
+  TOTAL_SUB ~ (s(log_size, df  = 3) + s(log_distance, df  = 2)) / C_TYPE,
   data = farmsubmission,
   # Using different link since
   # VGAM uses parametrisation with 1/alpha
@@ -763,11 +770,17 @@ modelVgam <- vgam(
 )
 ```
 
-can be acomplished with the following syntax simple syntax:
+Estimation of the population size can be accomplished with the following syntax simple syntax. 
 
 ```{r, singleRcaptureExtra_showcase}
 modelVgamPop <- estimatePopsize(modelVgam)
 ```
+The resulting object is of class \code{singleRforeign} to underline that the parameters were estimated outside the \pkg{singleRcapture}. The structure of the object is as follows
+
+```{r}
+str(modelVgamPop,1)
+```
+
 
 Compare with a simmilar linear model from base \pkg{singleRcapture}:
 \small
@@ -784,7 +797,11 @@ summary(modelVgamPop)
 
 \normalsize
 
-# Conclusions
+# Concluding remarks
+
+Package \pkg{singleRcapture} 
+
+... something more on the conclusions
 
 \section{Acknowledgements}
 
