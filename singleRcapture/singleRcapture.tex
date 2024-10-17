@@ -7,7 +7,8 @@
 \usepackage[utf8]{inputenc}
 
 \author{
-Piotr Chlebicki\\Stockholm University \And Maciej
+Piotr Chlebicki~\orcidlink{0009-0006-4867-7434}\\Stockholm
+University \And Maciej
 Beręsewicz~\orcidlink{0000-0002-8281-4301}\\Poznań University of
 Economics and Business\\
 Statistical Office in Poznań
@@ -97,7 +98,7 @@ ul. Wojska Polskiego 27/29\\
 
 
 
-\section{Introduction}\label{introduction}
+\section{Introduction}\label{sec-introduction}
 
 Population size estimation is a methodological approach employed across
 multiple scientific disciplines, serving as a basis for research, policy
@@ -107,7 +108,7 @@ population estimates are essential for developing robust economic
 models, optimizing resource allocation, and informing evidence-based
 policy formulation \citep[cf.][]{baffour-awuah2009}. Social scientists
 utilize advanced population estimation techniques to investigate
-\textit{hard-to-reach} populations, such as homeless individuals or
+\emph{hard-to-reach} populations, such as homeless individuals or
 illicit drug users, thereby addressing the inherent limitations of
 conventional census methodologies. These techniques are crucial for
 obtaining accurate data on populations that are typically
@@ -128,7 +129,7 @@ existing data sources, such as administrative registers or carefully
 designed small-scale studies in wildlife research or census coverage
 surveys \citep{wolter1986some, zhang2019note}. Application of these
 sources often comes with statistical methods, known as
-\textit{capture-recapture} or \textit{multiple system estimation}, that
+\emph{capture-recapture} or \emph{multiple system estimation}, that
 utilizes data from multiple enumerations of the same population
 \citep[cf.][]{dunne2024system}. This can be implemented using a single
 source with repeated observations, two, or multiple sources.
@@ -155,7 +156,7 @@ software that tan be used for estimating population size based on SSCR
 methods.
 
 \subsection{Software for capture-recapture for single and multiple
-sources}\label{software-for-capture-recapture-for-single-and-multiple-sources}
+sources}\label{sec-software}
 
 Majority of SSCR methods assume zero-truncated distributions or their
 extensions (e.g., inclusion of one-inflation). The \pkg{countreg}
@@ -196,10 +197,9 @@ available methods. Section \ref{sec-integration} covers integration with
 package. The paper ends with conclusions and an appendix that shows how
 to a implement custom model.
 
-\section{Theoretical background}\label{theoretical-background}
+\section{Theoretical background}\label{sec-theory}
 
-\subsection{How do we estimate population size with a single
-register?}\label{how-do-we-estimate-population-size-with-a-single-register}
+\subsection{How do we estimate population size with a single register?}
 
 Let \(Y_{k}\) represent the number of times \(k\)-th unit was observed
 in a register. Clearly, we only observe \(Y_{k}>\) and we do not know
@@ -212,10 +212,10 @@ distribution we may estimate the population size using Horowitz-Thompson
 type estimator given by
 
 \begin{equation}
-    \hat{N}=
-    \sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}[Y_{k}>0|\bX_{k}]}=
-    \sum_{k=1}^{N_{obs}}\frac{1}{\mathbb{P}[Y_{k}>0|\bX_{k}]},
-    \label{eq-ht-estimator}
+\hat{N}=
+\sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}[Y_{k}>0|\boldsymbol{X}_{k}]}=
+\sum_{k=1}^{N_{obs}}\frac{1}{\mathbb{P}[Y_{k}>0|\boldsymbol{X}_{k}]},
+\label{eq-ht-estimator}
 \end{equation}
 
 where \(I_{k}:=\mathcal{I}_{\mathbb{N}}(Y_{k})\), and maximum likelihood
@@ -226,49 +226,52 @@ for \(\mathbb{P}[Y_{k}>0|\boldsymbol{x}_{k}]\) into
 The basic SSCR assumes independence between counts which may be rather
 naive as the first capture may significantly influence the behaviour of
 a given unit or limit possibilities of further captures (e.g.~due to
-incarceration). Therefore, \citet{godwin2017estimation} and
+incarceration). To solve these issues, \citet{godwin2017estimation} and
 \citet{ztoi-oizt-poisson} introduced one-inflated distributions that
 explicitly model probability of the singletons by giving additional mass
-for singletons as presented below
+\(\omega\) for singletons denoted as \(\mathcal{I}_{\{1\}}(y)\)
 
 \[
 \mathbb{P}^{\ast}[Y=y|Y>0]=\omega\mathcal{I}_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y|Y>0],
-\] where \ldots{} which can be further plug-in in the estimator
-\eqref{eq-ht-estimator}. For recent review see \citet{bohning2024one}.
+\]
+
+which can be further plugged-in the estimator \eqref{eq-ht-estimator}.
+For more about the one-inflation in the context SSCR see recent review
+of \citet{bohning2024one}.
 
 The analytic variance estimation is then done by computing two parts of
 the decomposition due to the law of total variance given by
 
 \begin{equation}
-  \text{var}[\hat{N}]=
-  \mathbb{E}\left[\text{var}
-  \left[\hat{N}|I_{1},\dots,I_{n}\right]\right]+
-  \text{var}\left[\mathbb{E}[\hat{N}|I_{1},\dots,I_{n}]\right],
-  \label{eq-law_of_total_variance_decomposition}
+\text{var}[\hat{N}]=
+\mathbb{E}\left[\text{var}
+\left[\hat{N}|I_{1},\dots,I_{n}\right]\right]+
+\text{var}\left[\mathbb{E}[\hat{N}|I_{1},\dots,I_{n}]\right],
+\label{eq-law_of_total_variance_decomposition}
 \end{equation}
 
 where the first part can be estimated using the multivariate \(\delta\)
 method given by
 
-\begin{equation}
-  \mathbb{E}\left[\text{var}
-  \left[\hat{N}|I_{1},\dots,I_{n}\right]\right]=
-  \left.\left(\frac{\partial(N|I_1,\dots,I_N)}{\partial\bbeta}\right)^\top
-  \text{cov}\left[\bbeta\right]
-  \left(\frac{\partial(N|I_1,\dots,I_N)}{\partial\bbeta}\right)
-  \right|_{\bbeta=\hat{\bbeta}},
-\end{equation}
+\[
+\mathbb{E}\left[\text{var}
+\left[\hat{N}|I_{1},\dots,I_{n}\right]\right]=
+\left.\left(\frac{\partial(N|I_1,\dots,I_N)}{\partial\boldsymbol{\beta}}\right)^\top
+\text{cov}\left[\boldsymbol{\beta}\right]
+\left(\frac{\partial(N|I_1,\dots,I_N)}{\partial\boldsymbol{\beta}}\right)
+\right|_{\boldsymbol{\beta}=\hat{\boldsymbol{\beta}}},
+\]
 
 while the second part of the decomposition in
 \eqref{eq-law_of_total_variance_decomposition} is under the assumption
 of independence of \(I_{k}\)'s and after some omitted simplifications
 one sees that this is optimally estimated by
 
-\begin{equation}
-  \text{var}\left(\mathbb{E}(\hat{N}|I_{1},\dots,I_{n})\right)=
-  \text{var}\left(\sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}(Y_{k}>0)}\right)
-  \approx\sum_{k=1}^{N_{obs}}\frac{1-\mathbb{P}(Y_{k}>0)}{\mathbb{P}(Y_{k}>0)^{2}},
-\end{equation}
+\[
+\text{var}\left(\mathbb{E}(\hat{N}|I_{1},\dots,I_{n})\right)=
+\text{var}\left(\sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}(Y_{k}>0)}\right)
+\approx\sum_{k=1}^{N_{obs}}\frac{1-\mathbb{P}(Y_{k}>0)}{\mathbb{P}(Y_{k}>0)^{2}},
+\]
 
 which forms the basis for the interval estimation. Confidence intervals
 are usually constructed under the assumption of (asymptotic) normality
@@ -278,16 +281,16 @@ a common criticism of student type confidence intervals in SSCR, that is
 a possibly skewed distribution of \(\hat{N}\), and results in the
 \(1-\alpha\) confidence interval given by
 
-\begin{equation*}
-  \left(N_{obs}+\frac{\hat{N}-N_{obs}}{G},N_{obs}+\left(\hat{N}-N_{obs}\right)G\right),
-\end{equation*}
+\[
+\left(N_{obs}+\frac{\hat{N}-N_{obs}}{G},N_{obs}+\left(\hat{N}-N_{obs}\right)G\right),
+\]
 
 where:
 
-\begin{equation*}
-  G = \exp\left(z\left(1-\frac{\alpha}{2}\right)
+\[
+G = \exp\left(z\left(1-\frac{\alpha}{2}\right)
   \sqrt{\ln\left(1+\frac{\widehat{\text{Var}}(\hat{N})}{\left(\hat{N}-N_{obs}\right)^{2}}\right)}\right).
-\end{equation*}
+\]
 
 where \(z\) is standardized normal distribution. The estimator
 \(\hat{N}\) is best interpreted as being an estimator for the total
@@ -296,11 +299,11 @@ no means of estimating the number of units in the population for which
 the probability of being included in the data is \(0\)
 \citep[cf.][]{ztpoisson}.
 
-\subsection{Avaiable models}\label{avaiable-models}
+\subsection{Available models}
 
 The full list of implemented models in \pkg{singleRcapture} along with
-the expressions for probability density functions and point estimates is
-found in the collective help file for all family functions:
+the expressions for probability density functions and point estimates
+can be found in the collective help file for all family functions:
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -308,16 +311,28 @@ R> ?ztpoisson
 \end{CodeInput}
 \end{CodeChunk}
 
-Here we limit ourselves to just listing the family functions:
+For the sake of simplicity we limit ourselves to just listing the family
+functions
 
 \begin{itemize}
-    \item Zero-truncated and zero-one-truncated Poisson, geometric, NB type II regression where the untruncated distribution is parameterized as:
+    \item Generalized Chao's \citep{chao1987estimating} and Zelterman's \citep{zelterman1988robust} estimators via logistic regression on variable $Z$ defined as $Z=1$ if $Y=2$ and $Z=0$ if $Y=1$ with $Z\sim b(p)$ where $b()$ is Bernoulli distribution and $p$ can be modelled for each unit $k$ by $\text{logit}(p_k)=\ln(\lambda_k/2)$ for Poisson parameter $\lambda_k=\boldsymbol{x}_{k}\boldsymbol{\beta}$ (for extension for covariates see \cite{chao-generalization} and \cite{zelterman})
+    \begin{align}
+        \hat{N} &= N_{obs}+
+        \sum_{k=1}^{\boldsymbol{f}_{1}+\boldsymbol{f}_{2}}
+        \left(2\exp\left(\boldsymbol{x}_{k}\hat{\boldsymbol{\beta}}\right)+
+        2\exp\left(2\boldsymbol{x}_{k}\hat{\boldsymbol{\beta}}\right)\right)^{-1},
+        \tag{\text{Chao's estimator}}\\
+        \hat{N}&=\sum_{k=1}^{N_{obs}}
+        \left(1-\exp\left(-2\exp\left(\boldsymbol{x}_{k}\hat{\boldsymbol{\beta}}\right)\right)\right)^{-1}.
+        \tag{\text{Zelterman's estimator}}
+    \end{align}
+    \item Zero-truncated and zero-one-truncated Poisson \citep[cf. ][]{zotmodels}, geometric, NB type II (NB2) regression where the untruncated distribution is parameterized as
     \begin{equation*}
         \mathbb{P}[Y=y|\lambda,\alpha] = \frac{\Gamma\left(y+\alpha^{-1}\right)}{\Gamma\left(\alpha^{-1}\right)y!}
         \left(\frac{\alpha^{-1}}{\alpha^{-1}+\lambda}\right)^{\alpha^{-1}}
         \left(\frac{\lambda}{\lambda + \alpha^{-1}}\right)^{y}.
     \end{equation*}
-    \item Zero-truncated one-inflated (ztoi) modifications distributions where the new probability $\mathbb{P}^{\ast}$ measure is defined in terms of count data measure $\mathbb{P}$ with support on $\mathbb{N}\cup\{0\}$ as:
+    \item Zero-truncated one-inflated (\code{ztoi}) modifications distributions where the new probability $\mathbb{P}^{\ast}$ measure is defined in terms of count data measure $\mathbb{P}$ with support on $\mathbb{N}\cup\{0\}$ as
     \begin{equation*}
     \mathbb{P}^{\ast}[Y=y]=
     \begin{cases}
@@ -327,29 +342,26 @@ Here we limit ourselves to just listing the family functions:
     \end{cases}
     \end{equation*}
     \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y|Y>0]=\omega\1_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y|Y>0].
+        \mathbb{P}^{\ast}[Y=y|Y>0]=\omega\mathcal{I}_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y|Y>0].
     \end{equation*}
-    \item One-inflated zero-truncated (oizt) modifications distributions where the new probability $\mathbb{P}^{\ast}$ measure is defined as:
+    \item One-inflated zero-truncated (\code{oizt}) modifications distributions where the new probability $\mathbb{P}^{\ast}$ measure is defined as
     \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y] = \omega \1_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y],
+        \mathbb{P}^{\ast}[Y=y] = \omega \mathcal{I}_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y],
     \end{equation*}
     \begin{equation*}
         \mathbb{P}^{\ast}[Y=y|Y>0] = 
-        \omega\frac{\1_{\{1\}}(y)}{1-(1-\omega)\mathbb{P}[Y=0]}+
+        \omega\frac{\mathcal{I}_{\{1\}}(y)}{1-(1-\omega)\mathbb{P}[Y=0]}+
         (1-\omega)\frac{\mathbb{P}[Y=y]}{1-(1-\omega)\mathbb{P}[Y=0]}.
     \end{equation*}
-    \item Generalized Chao's and Zelterman's estimators via logistic regression on variable $Z$ defined as $Z=1$ if $Y=2$ and $Z=0$ if $Y=1$ with $Z\sim b(p)$ where $\text{logit}(p)=\ln(\lambda/2)$ for poisson parameter $\lambda$,
-    \begin{align}
-        \hat{N} &= N_{obs}+
-        \sum_{k=1}^{\boldsymbol{f}_{1}+\boldsymbol{f}_{2}}
-        \left(2\exp\left(\bx_{k}\hat{\bbeta}\right)+
-        2\exp\left(2\bx_{k}\hat{\bbeta}\right)\right)^{-1},
-        \tag{\text{Chao's estimator}}\\
-        \hat{N}&=\sum_{k=1}^{N_{obs}}
-        \left(1-\exp\left(-2\exp\left(\bx_{k}\hat{\bbeta}\right)\right)\right)^{-1}.
-        \tag{\text{Zelterman's estimator}}
-    \end{align}
-    \item Alternative approaches to modelling one-inflation that mimic hurdle models where the first type zero truncated hurdle model (ztHurdle) is defined as:
+    Note that \code{ztoi} and \code{oizt} distributions are equivalent as shown by \cite{bohning2023equivalence} but population size estimators are different.
+\end{itemize}
+
+In addition, we have provided two new approaches that allow modelling
+singletons in a similar was as in Hurdle models. In particular we have
+proposed the following
+
+\begin{itemize}
+    \item Zero-truncated Hurdle model (\code{ztHurdle*}) for Poisson, geometric and NB2 is defined as
     \begin{equation*}
         \mathbb{P}^{\ast}[Y=y]=\begin{cases}
         \frac{\mathbb{P}[Y=0]}{1-\mathbb{P}[Y=1]} & y=0, \\
@@ -358,10 +370,10 @@ Here we limit ourselves to just listing the family functions:
         \end{cases}
     \end{equation*}
     \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y|Y>0]=\pi\1_{\{1\}}(y)+
-        (1-\pi)\1_{\mathbb{N}\setminus\{1\}}(y)\frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]}
+        \mathbb{P}^{\ast}[Y=y|Y>0]=\pi\mathcal{I}_{\{1\}}(y)+
+        (1-\pi)\mathcal{I}_{\mathbb{N}\setminus\{1\}}(y)\frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]}.
     \end{equation*}
-    \item The Hurdle zero truncarted (Hurdlezt) is defined as:
+    \item The Hurdle zero-truncated (\code{Hurdlezt*}) for Poisson, geometric and NB2 is defined as:
     \begin{align*}
         \mathbb{P}^{\ast}[Y=y]&=\begin{cases}
         \pi & y=1, \\
@@ -374,28 +386,69 @@ Here we limit ourselves to just listing the family functions:
     \end{align*}
 \end{itemize}
 
-\subsection{Key takeaways of different
-models}\label{key-takeaways-of-different-models}
+The approaches presented above differ in terms of assumptions,
+computational complexity, or how they treat heterogeneity of captures
+and singletons. For instance, the dispersion parameter \(\alpha\) in the
+NB2 type models is often interpreted as measuring the
+\textit{severeness} of unobserved heterogeneity in the underlying
+poisson process \citep[cf.][]{ztnegbin}. When using any truncated NB
+model the hope is that due to the class of models considered the
+consistency is not lost despite the lack of information.
 
-\begin{itemize}
-  \item The dispersion parameter $\alpha$ in the negative binomial type models is often interpreted as measuring the severeness of unobserved heterogeneity in the underlying poisson process cf. \cite{ztnegbin}. When using any truncated negative binomial model the hope is that due to the class of models considered the consistency is not lost despite the lack of information.
-  \item While not discussed in the literature yet (to the best of the knowledge of the authors) the interpretation of $\alpha$ being heterogeneous across the population (specified in \code{controlModel}) would be that the unobserved heterogeneity affects the accuracy of the prediction for the dependent variable $Y$ more severely than others.
-  \item The geometric model (negative binomial with $\alpha=1$) is singled out in the package and often considered in the literature due to inherent computational issues with negative binomial models which are exasperated by the fact that data in SSCR is usually of somewhat low quality. Sparseness of the data is in particular a common issue in SSCR and a big issue for all numerical methods for fitting the (zero truncated) negative binomial model.
-  \item The extra mass $\omega$ in the inflated models is an important addition to the researcher's toolbox in SSCR since the inflation at $y=1$ is likely to occur in many types of applications. For example in estimating the number active people who committed criminal acts in a given time period being observed naturally induces a risk of no longer being able to be observed for all units with possibility of arrest. One constraint present in modelling via inflated models is that trying to include both the possibility of one inflation and one deflation leads to both numerical and theoritical problems since the parameter space (of $(\omega, \lambda)$ or $(\omega, \lambda, \alpha)$) is then a much more complicated set.
-  \item Hurdle models are another approach to modelling the one-inflation, they can also model deflation as well as both inflation and deflation simultaneously so they are more flexible and situationally the Hurdle zero truncated models seem to be more numerically stable.
-  \item Although interpretation of regression parameters tends to be somewhat overlooked in SSCR studies we should point out that interpretation of  of the $\omega$ inflation parameter is more convenient that the interpretation of the $\pi$ probability parameter. Additionally the interpretation of the $\lambda$ parameter in (one) inflated models conforms to the intuition that given that unit $k$ comes from the non-inflated part of the population then it follows a poisson distribution (respectively geometric or negative binomial) with the $\lambda$ parameter (or $\lambda,\alpha$), in hurdle models one loses that interpretation.
-  \item It is somewhat interesting is that the estimates from Hurdle zero truncated and one inflated zero truncated models are "usually" quite close to one another.
-\end{itemize}
+While not discussed in the literature yet the interpretation of
+\(\alpha\) being heterogeneous across the population (specified in
+\code{controlModel}) would be that the unobserved heterogeneity affects
+the accuracy of the prediction for the dependent variable \(Y\) more
+severely than others. The geometric model (NB with \(\alpha=1\)) is
+singled out in the package and often considered in the literature due to
+inherent computational issues with NB models which are exasperated by
+the fact that data in SSCR is usually of somewhat low quality.
+Sparseness of the data is in particular a common issue in SSCR and a big
+issue for all numerical methods for fitting the (zero-truncated) NB
+model.
+
+The extra mass \(\omega\) in the one-inflated models is an important
+extension to the researcher's toolbox for SSCR models. Since the
+inflation at \(y=1\) is likely to occur in many types of applications.
+For example in estimating the number active people who committed
+criminal acts in a given time period being observed naturally induces a
+risk of no longer being able to be observed for all units with
+possibility of arrest. One constraint present in modelling via inflated
+models is that trying to include both the possibility of one inflation
+and one deflation leads to both numerical and theoretical problems since
+the parameter space (of \((\omega, \lambda)\) or
+\((\omega, \lambda, \alpha)\)) is then a much more complicated set.
+
+Hurdle models are another approach to modelling the one-inflation, they
+can also model deflation as well as both inflation and deflation
+simultaneously so they are more flexible and situationally the Hurdle
+zero-truncated models seem to be more numerically stable.
+
+Although interpretation of regression parameters tends to be somewhat
+overlooked in the SSCR studies we should point out that interpretation
+of the \(\omega\) inflation parameter (in \code{ziot} or \code{oizt}) is
+more convenient that the interpretation of the \(\pi\) probability
+parameter (in Hurdle models). Additionally the interpretation of the
+\(\lambda\) parameter in (one) inflated models conforms to the intuition
+that given that unit \(k\) comes from the non-inflated part of the
+population then it follows a poisson distribution (respectively
+geometric or negative binomial) with the \(\lambda\) parameter (or
+\(\lambda,\alpha\)), in hurdle models one loses that interpretation. It
+is somewhat interesting is that the estimates from Hurdle zero-truncated
+and one-inflated zero-truncated models are ``usually'' quite close to
+one another, this however require more studies.
 
 \subsection{Fitting method}\label{fitting-method}
 
-As previously showcased the \pkg{singleRcapture} package supports
-modelling (linear) dependence on covariates of all parameters. To that
-end a modified IRLS algorithm is employed, full details are available in
-\cite{VGAM-main}. In order to employ the algorithm a modified model
-matrix is created \(\boldsymbol{X}_{\text{vlm}}\) at call to
-\code{estimatePopsize}. In the context of the models implemented in
-\pkg{singleRcapture} this matrix can be written as:
+As previously noted the \pkg{singleRcapture} package supports modelling
+(linear) dependence on covariates of all parameters. To that end
+a\textasciitilde modified IRLS algorithm is employed, full details are
+available in \cite{VGAM-main}. In order to employ the algorithm
+a\textasciitilde modified model matrix is created
+\(\boldsymbol{X}_{\text{vlm}}\) at call to \code{estimatePopsize}. In
+the context of the models implemented in \pkg{singleRcapture} this
+matrix can be written as:
+
 \begin{equation}\label{X_vlm-definition}
   \boldsymbol{X}_{vlm}=
   \begin{pmatrix}
@@ -404,8 +457,10 @@ matrix is created \(\boldsymbol{X}_{\text{vlm}}\) at call to
     \vdots & \vdots & \ddots & \vdots\cr
     \boldsymbol{0}& \boldsymbol{0}&\dotso &\boldsymbol{X}_{p}
   \end{pmatrix}
-\end{equation} where each \(\boldsymbol{X}_{i}\) corresponds to a model
-matrix associated with user specified formula.
+\end{equation}
+
+where each \(\boldsymbol{X}_{i}\) corresponds to a model matrix
+associated with user specified formula.
 
 In the context of multi-parameter families we have a matrix of linear
 predictors \(\boldsymbol{\eta}\) instead of a vector, with the number of
@@ -419,33 +474,32 @@ which is often just
 \(\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}\).
 
 \begin{enumerate}
-    \justifying
-    \item Initialize with \code{iter}$\leftarrow 1, \boeta\leftarrow$\code{start}
-    $, \bW\leftarrow I, \ell\leftarrow\ell(\bbeta)$.
+\justifying
+  \item Initialize with \code{iter}$\leftarrow 1, \boldsymbol{\eta}\leftarrow$\code{start}
+    $, \boldsymbol{W}\leftarrow I, \ell\leftarrow\ell(\boldsymbol{\beta})$.
     \item Store values from the previous step: 
-    $\ell_{-}\leftarrow\ell, \bW_{-}\leftarrow\bW, \bbeta_{-}\leftarrow\bbeta$ 
+    $\ell_{-}\leftarrow\ell, \boldsymbol{W}_{-}\leftarrow\boldsymbol{W}, \boldsymbol{\beta}_{-}\leftarrow\boldsymbol{\beta}$ 
     (the last assignment is omitted during the first iteration), and assign values in current iteration 
-    $\displaystyle\boeta\leftarrow\bX_{\text{vlm}}\bbeta+\bo, \bW_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boeta_{(k)}^\top\partial\boeta_{(k)}}\right], Z\leftarrow\boeta_{(k)}+\frac{\partial\ell}{\partial\boeta_{(k)}}\bW_{(k)}^{-1}-\bo_{(k)}$.
+    $\displaystyle\boldsymbol{\eta}\leftarrow\boldsymbol{X}_{\text{vlm}}\boldsymbol{\beta}+\boldsymbol{o}, \boldsymbol{W}_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boldsymbol{\eta}_{(k)}^\top\partial\boldsymbol{\eta}_{(k)}}\right], Z\leftarrow\boldsymbol{\eta}_{(k)}+\frac{\partial\ell}{\partial\boldsymbol{\eta}_{(k)}}\boldsymbol{W}_{(k)}^{-1}-\boldsymbol{o}_{(k)}$.
     \item Assign current coefficient value: 
-    $\bbeta\leftarrow\left(\bX_{\text{vlm}}\bW\bX_{\text{vlm}}\right)^{-1}\bX_{\text{vlm}}\bW\boldsymbol{Z}$.
-    \item If $\ell(\bbeta)<\ell(\bbeta_{-})$ try selecting the smallest value $h$ such that for
-    $\bbeta_{h}\leftarrow2^{-h}\left(\bbeta+\bbeta_{-}\right)$ the inequality $\ell(\bbeta_{h})>\ell(\bbeta_{-})$ 
-    holds if this is successful $\bbeta\leftarrow\bbeta_{h}$ else stop the algorithm.
+    $\boldsymbol{\beta}\leftarrow\left(\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{X}_{\text{vlm}}\right)^{-1}\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{Z}$.
+    \item If $\ell(\boldsymbol{\beta})<\ell(\boldsymbol{\beta}_{-})$ try selecting the smallest value $h$ such that for
+    $\boldsymbol{\beta}_{h}\leftarrow2^{-h}\left(\boldsymbol{\beta}+\boldsymbol{\beta}_{-}\right)$ the inequality $\ell(\boldsymbol{\beta}_{h})>\ell(\boldsymbol{\beta}_{-})$ 
+    holds if this is successful $\boldsymbol{\beta}\leftarrow\boldsymbol{\beta}_{h}$ else stop the algorithm.
     \item If convergence is achieved or \code{iter} is higher than \code{maxiter} end algorithm, 
     else \code{iter}$\leftarrow 1+$\code{iter} and return to step 2.
 \end{enumerate}
 
-\subsection{Bootstrap algorithms}\label{bootstrap-algorithms}
+\subsection{Variance estimation using bootstrap}\label{sec-boostrap}
 
-There are three types of bootstrap algorithms which the user may specify
-in \code{controlPopVar} controls with \code{bootType} argument which has
-three possible values
-\code{"parametric", "semiparametric", "nonparametric"} with the
-nonparametric being bootstrap being the usual bootstrap algorithm which
-as argued in \cite{norrpoll} and \cite{zwane}. The idea of
-semiparametric bootstrap is to modify the usual bootstrap to include the
-additional uncertainty due to the sample size being a random variable.
-This type of bootstrap can be in short described as:
+We have implemented three types of bootstrap algorithms: parametric,
+semiparametric and nonparametric with the nonparametric being bootstrap
+being the usual bootstrap algorithm which as argued in \cite{norrpoll}
+and \cite{zwane}.
+
+The idea of semiparametric bootstrap is to modify the usual bootstrap to
+include the additional uncertainty due to the sample size being a random
+variable. This type of bootstrap can be in short described as:
 
 \begin{enumerate}
     \item Draw the sample size $N_{obs}'\sim\text{Be}\left(N', \frac{N'-N_{obs}}{N'}\right)$, where $N'=\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$.
@@ -454,7 +508,7 @@ This type of bootstrap can be in short described as:
     \item Repeat $1-3$ $B$ times.
 \end{enumerate}
 
-In other words we first draw the sample size and then the sample
+In other words, we first draw the sample size and then the sample
 conditional on the sample size. Note that in using semi-parametric
 bootstrap one implicitly assumes that the population size estimate
 \(\hat{N}\) is accurate. The last implemented bootstrap type is the
@@ -463,34 +517,22 @@ size \(\approx\hat{N}\) from the superpopulation model and then samples
 from this population according to the selected model:
 
 \begin{enumerate}
-    \item Draw the number of covariates equal to $\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$ proportional to the estimated contribution $(\mathbb{P}\left[Y_{k}>0|\bx_{k}\right])^{-1}$ with replacement.
-    \item Using the fitted model and regression coefficients $\hat{\bbeta}$ draw for each covariate the $Y$ value from the corresponding probability measure on $\mathbb{N}\cup\{0\}$.
+    \item Draw the number of covariates equal to $\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$ proportional to the estimated contribution $(\mathbb{P}\left[Y_{k}>0|\boldsymbol{x}_{k}\right])^{-1}$ with replacement.
+    \item Using the fitted model and regression coefficients $\hat{\boldsymbol{\beta}}$ draw for each covariate the $Y$ value from the corresponding probability measure on $\mathbb{N}\cup\{0\}$.
     \item Truncate units with drawn $Y$ value equal to $0$.
     \item Obtain population size estimate based on the truncated data.
     \item Repeat $1-4$ $B$ times.
 \end{enumerate}
 
-Note however that for this type of algorithm to result in consistent
-standard error estimates it is imperative that the estimated model for
-the entire superpopulation probability space is consistent which may be
-much less realistic than semiparametric bootstrap. The parametric
-bootstrap algorithm is the default in \pkg{singleRcapture}.
-
-Additional arguments accepted by the \code{contorlPopVar} function which
-are relevant to bootstrap are:
-
-\begin{itemize}
-  \item \code{alpha, B} -- significance level and number of bootstrap samples to be performed respectively with $0.05$ and $500$ being the default options.
-  \item \code{cores} -- number of process cores to use in bootstrap (1 by default) parallel computing is done via \pkg{doParallel, foreach, parallel} packages.
-  \item \code{keepbootStat} --  logical value indicating whether to keep a vector of statistics produced by bootstrap.
-  \item \code{traceBootstrapSize, bootstrapVisualTrace} --  logical values indicating whether sample and population size should be tracked (\code{FALSE} by default) these work only when \code{cores} = 1.
-    \item \code{fittingMethod, bootstrapFitcontrol} -- fitting method (by default the same as used in the original call) and control parameters (\code{controlMethod}) for model fitting in bootstrap.
-\end{itemize}
+Note that for this type of algorithm to result in consistent standard
+error estimates it is imperative that the estimated model for the entire
+superpopulation probability space is consistent which may be much less
+realistic than semiparametric bootstrap. The parametric bootstrap
+algorithm is the default in \pkg{singleRcapture}.
 
 \section{Basic usage}\label{sec-basic}
 
-\subsection[The]{The \code{estimatePopsize}
-function}\label{estimatePopsize-function}
+\subsection{The main function}\label{the-main-function}
 
 The main function that \pkg{singleRcapture} is built around is
 \code{estimatePopsize}. The leading design principle was to make using
@@ -500,22 +542,19 @@ possible. The most important arguments are:
 \begin{itemize}
     \item \code{formula} -- the main formula (i.e for the Poisson $\lambda$ parameter),
     \item \code{data} -- the \code{data.frame} (or \code{data.frame} coercible) object,
-    \item \code{model} -- either a function a string or a family class object specifying which model should be used possible values are listed in documentation. The supplied argument should have the form \code{model =  "ztpoisson"}, \code{model = ztpoisson} or \code{model = ztpoisson(lambdaLink = "log")} the third way is the only one where the user may (but doesn't have to) select a link function.
+    \item \code{model} -- either a function a string or a family class object specifying which model should be used possible values are listed in documentation. The supplied argument should have the form \code{model =  "ztpoisson"}, \code{model = ztpoisson} or if link function should be specified then \code{model = ztpoisson(lambdaLink = "log")} can be used,
     \item \code{method} -- numerical method used to fit regression \code{IRLS} or \code{optim},
     \item \code{popVar} -- a method for estimating variance of $\hat{N}$ and confidence interval creation (either bootstrap, analytic or skipping the estimation entirely),
-    \item \code{controlMethod, controlModel, controlPopVar} -- control parameters for numerical fitting, specifying additional formulas (inflation, dispersion) and population size estimation respectively. We will tackle these arguments separately,
+    \item \code{controlMethod, controlModel, controlPopVar} -- control parameters for numerical fitting, specifying additional formulas (inflation, dispersion) and population size estimation respectively,
     \item \code{offset} -- a matrix of offset values with number of columns matching the number of distribution parameters providing offset values to each of linear predictors.
 \end{itemize}
 
 With the \code{formula, data, model} being the three arguments which
 must be provided in \code{estimatePopsize} syntax.
 
-\subsubsection[Example with R code]{Example with \proglang{R}
-code}\label{r-code}
+\subsection{Example with R code}\label{example-with-r-code}
 
-The package should be installed from CRAN
-\url{https://cran.r-project.org/package=singleRcapture} with the usual
-code:
+The package can be installed in a standard way using
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -523,9 +562,9 @@ R> install.packages("singleRcapture")
 \end{CodeInput}
 \end{CodeChunk}
 
-To showcase the main function let us recreate the zero truncated Poisson
+To show the main function let us recreate the zero-truncated Poisson
 model from \cite{ztpoisson} on the same data included in the package
-under the name \code{netherlandsimmigrant}:
+under the name \code{netherlandsimmigrant}
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -545,12 +584,13 @@ R> head(netherlandsimmigrant)
 
 This data set contains information about immigrants in four cities
 (Amsterdam, Rotterdam, The Hague and Utrecht) in Netherlands that have
-been staying in the country illegally in 1995 and have appeared in
-police records that year. The number of times each individual appeared
-in the records is included in the \code{capture} variable with the
-available covariates being \code{gender, age, reason, nation} being
-respectively the persons gender and age, reason for being captured and
-region of the world from which each person comes:
+been staying in the country without a legal permit in 1995 and have
+appeared in police records that year. The number of times each
+individual appeared in the records is included in the \code{capture}
+variable with the available covariates being
+\code{gender, age, reason, nation} being respectively the persons gender
+and age, reason for being captured and region of the world from which
+each person comes
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -574,9 +614,24 @@ R> summary(netherlandsimmigrant)
 \end{CodeOutput}
 \end{CodeChunk}
 
-The basic syntax is indeed vary similar to that of \code{glm} with the
-output of the summary method being also quite simmilar except for the
-additional results of the population size estimates:
+One point which we should make while analysing this data set is that
+there is a disproportionate number of individuals who were observed only
+once (see table bellow)
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> table(netherlandsimmigrant$capture)
+\end{CodeInput}
+\begin{CodeOutput}
+
+   1    2    3    4    5    6 
+1645  183   37   13    1    1 
+\end{CodeOutput}
+\end{CodeChunk}
+
+The basic syntax is vary similar to that of \code{glm} with the output
+of the summary method being also quite similar except for the additional
+results of the population size estimates
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -640,25 +695,16 @@ logNormal   9.534288   22.29793
 \end{CodeOutput}
 \end{CodeChunk}
 
-One point which we should make while analysing this data set is that
-there is a disproportionate number of individuals who were observed only
-once (see table bellow):
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> table(netherlandsimmigrant$capture)
-\end{CodeInput}
-\begin{CodeOutput}
-
-   1    2    3    4    5    6 
-1645  183   37   13    1    1 
-\end{CodeOutput}
-\end{CodeChunk}
+According to this simple model the population size is about 12.5k with
+about 15\% of units observed in the register. The 95\% CI under
+normality indicate that the true population size may be between 7k-18k
+with about 10\% to 26\% observed in the register.
 
 Since there is a reasonable suspicion that the act of observing a unit
 in the dataset may led to undesirable consequences from the point of
 view of the subject of the observation (here possible deportation,
-detainment or similar). For those reason one should
+detainment or similar). For those reason researcher may consider
+one-inflated models such as \code{oiztgeom} and presented below.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -673,21 +719,6 @@ R> modelInflated <- estimatePopsize(
 +     popVar = "bootstrap",
 +     controlPopVar = controlPopVar(bootType = "semiparametric")
 + )
-\end{CodeInput}
-\begin{CodeOutput}
-Warning in estimatePopsize.default(formula = capture ~ nation, model = oiztgeom(omegaLink = "cloglog"), : The (analytically computed) hessian of the score function is not negative define.
-NOTE: Second derivative test failing does not 
-        necessarily mean that the maximum of score function that was found 
-        numericaly is invalid since R^k is not a bounded space.
-Additionally in one inflated and hurdle models second derivative test often fails even on valid arguments.
-\end{CodeOutput}
-\begin{CodeOutput}
-Warning in estimatePopsize.default(formula = capture ~ nation, model =
-oiztgeom(omegaLink = "cloglog"), : Switching from observed information matrix
-to Fisher information matrix because hessian of log-likelihood is not negative
-define.
-\end{CodeOutput}
-\begin{CodeInput}
 R> summary(modelInflated)
 \end{CodeInput}
 \begin{CodeOutput}
@@ -744,7 +775,19 @@ lowerBound upperBound
 \end{CodeOutput}
 \end{CodeChunk}
 
-\subsubsection{Methods}\label{methods}
+This approach suggest that the population size is about 7k which is
+about 5k less than the naive Poisson approach. Comparison of AIC and BIC
+suggest that the one-inflation model fits the data better with BIC for
+\code{oiztgeom} 1727 and 1757 for \code{ztpoisson}.
+
+\subsection{Methods}
+
+For the purpose of the package we have created a class
+\code{singleRStaticCountData}, \code{singleR} \code{popSizeEstResults}
+which allows for extracting relevant information regarding the
+population size. For instance, function \code{popSizeEst} allows to
+extract information on the estimated size of the population as given
+below
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -760,8 +803,8 @@ logNormal   8431.277   19718.31
 \end{CodeOutput}
 \end{CodeChunk}
 
-the \code{popEst} object is of the \code{popSizeEstResults} class and
-\code{list} type and contains the following fields:
+and the resulting object \code{popEst} is of the
+\code{popSizeEstResults} class contains the following fields:
 
 \begin{itemize}
   \item \code{pointEstimate}, \code{variance} -- numerics containing point estimate and variance of this estimate.
@@ -771,43 +814,7 @@ the \code{popEst} object is of the \code{popSizeEstResults} class and
   \item \code{control} -- a \code{controlPopVar} object with controls used to obtained the object.
 \end{itemize}
 
-\small
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> dfb <- dfbeta(basicModel)
-R> apply(dfb, 2, quantile)
-\end{CodeInput}
-\begin{CodeOutput}
-       (Intercept)    gendermale     age>40yrs    nationAsia nationNorth Africa
-0%   -0.0099087522 -0.0905349870 -0.0200100686 -9.555875e-02      -9.660498e-02
-25%  -0.0015325874 -0.0007770048  0.0001792918 -5.288544e-04      -8.417624e-04
-50%   0.0001906118 -0.0002829978  0.0003789034  6.642632e-05      -1.768274e-04
-75%   0.0005208531  0.0010171840  0.0006909682  1.199821e-04       8.674555e-05
-100%  0.0866193889  0.0221346454  0.1600608767  1.799137e-01       3.125955e-02
-     nationRest of Africa nationSurinam  nationTurkey
-0%          -9.449682e-02 -9.313832e-02 -9.619821e-02
-25%         -2.436010e-04 -6.484354e-05 -2.199798e-04
-50%          2.984337e-05  2.101820e-05  7.918083e-05
-75%          8.278833e-05  3.676223e-05  1.427685e-04
-100%         1.097872e-01  9.933828e-01  3.209798e-01
-\end{CodeOutput}
-\end{CodeChunk}
-
-\normalsize
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> dfp <- dfpopsize(basicModel, dfbeta = dfb)
-R> summary(dfp)
-\end{CodeInput}
-\begin{CodeOutput}
-     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
--4236.407     2.660     2.660     5.445    17.281   117.445 
-\end{CodeOutput}
-\end{CodeChunk}
-
-\subsection{Marginal frequencies}\label{marginal-frequencies}
+\subsection{Testing marginal frequencies}
 
 A popular method of testing the model fit in single source
 capture-recapture studies is comparing the fitted marginal frequencies
@@ -818,7 +825,7 @@ for \(k\geq1\). If a fitted model bears sufficient resemblance to the
 real data collection process these quantities should be quite close and
 both \(G\) and \(\chi^{2}\) tests may be employed in order to test the
 statistical significance of the discrepancy with the following
-\pkg{singleRcapture} syntax:
+\pkg{singleRcapture} syntax for the Poisson model (rather poor fit)
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -838,29 +845,93 @@ Names of cells used in calculating test(s) statistic: 1 2 3
 \end{CodeOutput}
 \end{CodeChunk}
 
+and for the one-inflated model (better fit)
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> margFreq_inf <- marginalFreq(modelInflated)
+R> summary(margFreq_inf, df = 1, dropl5 = "group")
+\end{CodeInput}
+\begin{CodeOutput}
+Test for Goodness of fit of a regression model:
+
+                 Test statistics df P(>X^2)
+Chi-squared test            1.88  1    0.17
+G-test                      2.32  1    0.13
+
+-------------------------------------------------------------- 
+Cells with fitted frequencies of < 5 have been grouped 
+Names of cells used in calculating test(s) statistic: 1 2 3 4  
+\end{CodeOutput}
+\end{CodeChunk}
+
 where the \code{dropl5} argument is used to indicate how to handle the
 cells with less than \(5\) fitted observations, note however that
 currently there is no continuity correction.
 
-\subsection{Plots}\label{plots}
+\subsection{Diagnostics}
 
 The \code{singleRStaticCountData} class has a \code{plot} method
 implementing several types of quick demonstrative plots such as the
-rootogram \cite{rootogram} for comparing the fitted and marginal
-frequencies which we can get with the syntax:
+rootogram \citep[cf.][]{rootogram} for comparing the fitted and marginal
+frequencies which we can get with the syntax
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> plot(basicModel, plotType = "rootogram")
+R> par(mfrow=c(1,2))
+R> plot(basicModel, plotType = "rootogram", main = "ZT Poisson model")
+R> plot(modelInflated, plotType = "rootogram", main = "OI ZT Geometric model")
 \end{CodeInput}
 
 
-\begin{center}\includegraphics{singleRcapture_files/figure-latex/rootogram-1} \end{center}
+\begin{center}\includegraphics[width=6cm]{singleRcapture_files/figure-latex/rootogram-1} \includegraphics[width=6cm]{singleRcapture_files/figure-latex/rootogram-2} \end{center}
 
 \end{CodeChunk}
 
+Plots suggest that the \code{otztgeom} model fits the data better.
+Furthermore, important issue in population size estimation is the
+diagnostics of the models in order to verify whether influential
+observations are present in the data. For this purpose leave-one-out
+(LOO) diagnostic implemented in the \code{dfbeta} from the \pkg{stats}
+package was adapted and demonstrated below
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> dfb <- dfbeta(basicModel)
+R> t(round(apply(dfb, 2, quantile)*100,4))
+\end{CodeInput}
+\begin{CodeOutput}
+                          0%     25%     50%    75%    100%
+(Intercept)          -0.9909 -0.1533  0.0191 0.0521  8.6619
+gendermale           -9.0535 -0.0777 -0.0283 0.1017  2.2135
+age>40yrs            -2.0010  0.0179  0.0379 0.0691 16.0061
+nationAsia           -9.5559 -0.0529  0.0066 0.0120 17.9914
+nationNorth Africa   -9.6605 -0.0842 -0.0177 0.0087  3.1260
+nationRest of Africa -9.4497 -0.0244  0.0030 0.0083 10.9787
+nationSurinam        -9.3138 -0.0065  0.0021 0.0037 99.3383
+nationTurkey         -9.6198 -0.0220  0.0079 0.0143 32.0980
+\end{CodeOutput}
+\end{CodeChunk}
+
+Furthermore, result of the \code{dfbeta} can be further used in the
+function \code{dfpopsize} which allows for quantification of LOO on the
+population size.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> dfp <- dfpopsize(basicModel, dfbeta = dfb)
+R> summary(dfp)
+\end{CodeInput}
+\begin{CodeOutput}
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+-4236.407     2.660     2.660     5.445    17.281   117.445 
+\end{CodeOutput}
+\end{CodeChunk}
+
 The comparison of deletion effect on population size estimate and
-inverse probability weights:
+inverse probability weights, which refer to the contribution of a given
+observation to the population size estimation, is presented in the
+Figure \ldots{}
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -872,7 +943,63 @@ R> plot(basicModel, plotType = "dfpopContr", dfpop = dfp)
 
 \end{CodeChunk}
 
-and the plot that showcases stratisfied stimates:
+This plot informs on the change of the population size if a given
+observation will be removed. For instance if we remove observation 542
+from the data then population size will drop by about 4236.
+
+The full list of plot types along with the list of optional arguments
+which may be passed from the call to the \code{plot} method down to base
+\proglang{R} and \pkg{graphics} functions is listed in the help file
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> ?plot.singleRStaticCountData
+\end{CodeInput}
+\end{CodeChunk}
+
+\subsection{The stratifyPopsize
+method}\label{the-stratifypopsize-method}
+
+Researchers may be interested on only in the total population size but
+also in specific subpopulations (e.g.~males, females, group pages). For
+that reason we have created function \code{stratifyPopsize} which allows
+to estimate the size by stratas defined by the coefficients in the model
+(the default option).
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> pop_size_stratas <- stratifyPopsize(basicModel)
+R> pop_size_stratas[, c("name", "Observed", "Estimated", "logNormalLowerBound", "logNormalUpperBound")]
+\end{CodeInput}
+\begin{CodeOutput}
+                             name Observed  Estimated logNormalLowerBound
+1                  gender==female      398  3811.0911           2189.0443
+2                    gender==male     1482  8879.2594           6090.7762
+3                     age==<40yrs     1769 10506.8971           7359.4155
+4                     age==>40yrs      111  2183.4535            872.0130
+5  nation==American and Australia      173   708.3688            504.6086
+6                    nation==Asia      284  2742.3147           1755.2548
+7            nation==North Africa     1023  3055.2033           2697.4900
+8          nation==Rest of Africa      243  2058.1533           1318.7466
+9                 nation==Surinam       64  2386.4513            505.2457
+10                 nation==Turkey       93  1739.8592            638.0497
+   logNormalUpperBound
+1             6902.133
+2            13354.880
+3            15426.455
+4             5754.876
+5             1037.331
+6             4391.590
+7             3489.333
+8             3305.786
+9            12287.983
+10            5068.959
+\end{CodeOutput}
+\end{CodeChunk}
+
+One may also specify \code{plotType = "strata"} in the \code{plot}
+function which results in a plot with point and CI estimates of the
+population size.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -885,75 +1012,11 @@ R> plot(basicModel, plotType = "strata")
 
 \end{CodeChunk}
 
-the information which was supplied to the plot function above comes from
-the \code{stratifyPopsize} method: \small
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> stratifyPopsize(basicModel)
-\end{CodeInput}
-\begin{CodeOutput}
-   Observed  Estimated ObservedPercentage  StdError normalLowerBound
-1       398  3811.0911          10.443203 1153.9733       1549.34513
-2      1482  8879.2594          16.690581 1812.0790       5327.64991
-3      1769 10506.8971          16.836560 2017.2284       6553.20200
-4       111  2183.4535           5.083690 1132.4502        -36.10819
-5       173   708.3688          24.422308  132.8183        448.04969
-6       284  2742.3147          10.356215  655.0929       1458.35623
-7      1023  3055.2033          33.483860  201.2387       2660.78263
-8       243  2058.1533          11.806701  493.2612       1091.37903
-9        64  2386.4513           2.681806 2380.1835      -2278.62266
-10       93  1739.8592           5.345260 1008.1794       -236.13602
-   normalUpperBound logNormalLowerBound logNormalUpperBound
-1         6072.8372           2189.0443            6902.133
-2        12430.8689           6090.7762           13354.880
-3        14460.5922           7359.4155           15426.455
-4         4403.0151            872.0130            5754.876
-5          968.6878            504.6086            1037.331
-6         4026.2732           1755.2548            4391.590
-7         3449.6240           2697.4900            3489.333
-8         3024.9276           1318.7466            3305.786
-9         7051.5252            505.2457           12287.983
-10        3715.8544            638.0497            5068.959
-                             name confLevel
-1                  gender==female      0.05
-2                    gender==male      0.05
-3                     age==<40yrs      0.05
-4                     age==>40yrs      0.05
-5  nation==American and Australia      0.05
-6                    nation==Asia      0.05
-7            nation==North Africa      0.05
-8          nation==Rest of Africa      0.05
-9                 nation==Surinam      0.05
-10                 nation==Turkey      0.05
-\end{CodeOutput}
-\end{CodeChunk}
-
-\normalsize
-
-The full list of plot types along with the list of optional arguments
-which may be passed from the call to the \code{plot} method down to base
-\proglang{R} and \pkg{graphics} functions is listed in the help file:
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> ?plot.singleRStaticCountData
-\end{CodeInput}
-\end{CodeChunk}
-
-\subsubsection[The stratifyPopsize method]{The \code{stratifyPopsize}
-method}\label{the-method}
-
-As previously showcased the \code{stratifyPopsize} may be used to
-estimate the population sizes for different stratas using the same
-fitted regression model as previously computed using the call to the
-\code{estimatePopsize} function. The method for
-\code{singleRStaticCountData} class accepts three optional parameters
-\code{stratas, alpha, cov} which correspond to specification of sub
-populations, the significance levels and the covariance matrix that will
-be used to compute standard errors.
-
-The full call is of the type: \footnotesize
+The method for \code{singleRStaticCountData} class accepts three
+optional parameters \code{stratas, alpha, cov} which correspond to
+specification of sub populations, the significance levels and the
+covariance matrix that will be used to compute standard errors. An
+example of the full call is presented below.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -963,82 +1026,67 @@ R> library(sandwich)
 Warning: package 'sandwich' was built under R version 4.3.3
 \end{CodeOutput}
 \begin{CodeInput}
-R> stratifyPopsize(
+R> pop_size_stratas_custom <- stratifyPopsize(
 +   object  = basicModel,
 +   stratas = ~ gender / (nation + age), 
-+   alpha   = rep(c(.1, .2, .3, .4, .5), 
-+                 length.out = 18),
++   alpha   = rep(c(.1, .2, .3, .4, .5), length.out = 18),
 +   cov     = vcovHC(basicModel, type = "HC4")
 + )
+R> 
+R> pop_size_stratas_custom[, c("name", "Observed", "Estimated", "logNormalLowerBound", "logNormalUpperBound")]
 \end{CodeInput}
 \begin{CodeOutput}
-   Observed Estimated ObservedPercentage   StdError normalLowerBound
-1       398 3811.0911          10.443203 1282.09956       1702.22504
-2      1482 8879.2594          16.690581 1999.39209       6316.93533
-3        67  328.8780          20.372297   84.81957        240.96814
-4       106  379.4908          27.932167   83.91530        308.86588
-5        62  775.9054           7.990665  303.01257        571.52651
-6       222 1966.4093          11.289613  603.18021        974.26616
-7       169  644.0545          26.240014  116.46407        494.79982
-8       854 2411.1488          35.418801  172.33202       2232.53812
-9        65  682.1776           9.528310  218.28791        498.46186
-10      178 1375.9757          12.936275  369.03697       1127.06403
-11       20  931.4677           2.147149  985.54139       -689.60358
-12       44 1454.9835           3.024089 1520.27163       -493.32295
-13       15  448.6079           3.343677  300.30767        137.35901
-14       78 1291.2513           6.040652  733.06058        674.29194
-15      378 3169.8263          11.924944  937.42614       2537.54198
-16     1391 7337.0708          18.958520 1313.47160       5176.60226
-17       20  641.2648           3.118836  453.82492         59.66481
-18       91 1542.1886           5.900705  887.97851        621.85804
-   normalUpperBound logNormalLowerBound logNormalUpperBound
-1         5919.9573           2275.6416           6602.1612
-2        11441.5835           6745.5675          11877.8858
-3          416.7878            255.7692            430.3013
-4          450.1157            318.4739            458.0301
-5          980.2842            604.5269           1001.4205
-6         2958.5525           1225.6476           3253.9046
-7          793.3092            517.5628            816.4495
-8         2589.7594           2242.8856           2599.7970
-9          865.8933            527.2996            888.9423
-10        1624.8873           1155.7975           1645.7331
-11        2552.5391            234.3583           3895.6296
-12        3403.2900            502.1052           4389.8894
-13         759.8568            241.6446            844.5624
-14        1908.2106            836.6593           2018.2367
-15        3802.1106           2617.4717           3858.4164
-16        9497.5393           5543.4798           9905.3720
-17        1222.8649            288.7316           1456.2658
-18        2462.5192            899.8794           2694.5381
-                                        name confLevel
-1                             gender==female       0.1
-2                               gender==male       0.2
-3  genderfemale:nationAmerican and Australia       0.3
-4    gendermale:nationAmerican and Australia       0.4
-5                    genderfemale:nationAsia       0.5
-6                      gendermale:nationAsia       0.1
-7            genderfemale:nationNorth Africa       0.2
-8              gendermale:nationNorth Africa       0.3
-9          genderfemale:nationRest of Africa       0.4
-10           gendermale:nationRest of Africa       0.5
-11                genderfemale:nationSurinam       0.1
-12                  gendermale:nationSurinam       0.2
-13                 genderfemale:nationTurkey       0.3
-14                   gendermale:nationTurkey       0.4
-15                    genderfemale:age<40yrs       0.5
-16                      gendermale:age<40yrs       0.1
-17                    genderfemale:age>40yrs       0.2
-18                      gendermale:age>40yrs       0.3
+                                        name Observed Estimated
+1                             gender==female      398 3811.0911
+2                               gender==male     1482 8879.2594
+3  genderfemale:nationAmerican and Australia       67  328.8780
+4    gendermale:nationAmerican and Australia      106  379.4908
+5                    genderfemale:nationAsia       62  775.9054
+6                      gendermale:nationAsia      222 1966.4093
+7            genderfemale:nationNorth Africa      169  644.0545
+8              gendermale:nationNorth Africa      854 2411.1488
+9          genderfemale:nationRest of Africa       65  682.1776
+10           gendermale:nationRest of Africa      178 1375.9757
+11                genderfemale:nationSurinam       20  931.4677
+12                  gendermale:nationSurinam       44 1454.9835
+13                 genderfemale:nationTurkey       15  448.6079
+14                   gendermale:nationTurkey       78 1291.2513
+15                    genderfemale:age<40yrs      378 3169.8263
+16                      gendermale:age<40yrs     1391 7337.0708
+17                    genderfemale:age>40yrs       20  641.2648
+18                      gendermale:age>40yrs       91 1542.1886
+   logNormalLowerBound logNormalUpperBound
+1            2275.6416           6602.1612
+2            6745.5675          11877.8858
+3             255.7692            430.3013
+4             318.4739            458.0301
+5             604.5269           1001.4205
+6            1225.6476           3253.9046
+7             517.5628            816.4495
+8            2242.8856           2599.7970
+9             527.2996            888.9423
+10           1155.7975           1645.7331
+11            234.3583           3895.6296
+12            502.1052           4389.8894
+13            241.6446            844.5624
+14            836.6593           2018.2367
+15           2617.4717           3858.4164
+16           5543.4798           9905.3720
+17            288.7316           1456.2658
+18            899.8794           2694.5381
 \end{CodeOutput}
 \end{CodeChunk}
 
 \normalsize
 
-where we used the \code{vcovHC} method for \code{singleRStaticCountData}
-class from the \pkg{sandwitch} package, different significance levels
-for confidence intervals in each strata and a formula to specify that we
-wanted estimates for both males and females subdivided by \code{nation}
-and \code{age}. The \code{stratas} parameter may be specified either as:
+We provide integration with the \pkg{sandwich} \citep{sandwich} package
+to correct variance-covariance matrix in the \(\delta\) method. In the
+code we have used the \code{vcovHC} method for
+\code{singleRStaticCountData} class from the \pkg{sandwitch} package,
+different significance levels for confidence intervals in each strata
+and a formula to specify that we wanted estimates for both males and
+females subdivided by \code{nation} and \code{age}. The \code{stratas}
+parameter may be specified either as:
 
 \begin{itemize}
 \item a formula with empty left hand side which we have seen here,
@@ -1052,92 +1100,22 @@ For plotting only the \code{logNormal} type of confidence interval is
 used since the studentized confidence intervals often result in negative
 lower bounds.
 
-\section{Detailed information}\label{sec-details}
+\subsection{Variance estimation}\label{variance-estimation}
 
-\subsection[The]{The \code{estimatePopsizeFit}
-function}\label{estimatePopsizeFit-function}
+The package implements analytic and bootstrap variance estimators. In
+the control function \code{controlPopVar} user may specify the
+\code{bootType} argument which has three possible values
+\code{"parametric", "semiparametric"} and \code{"nonparametric"}
+Additional arguments accepted by the \code{contorlPopVar} function which
+are relevant to bootstrap are:
 
-\begin{CodeChunk}
-\begin{CodeInput}
-R> X <- matrix(data = 0, nrow = 2 * NROW(farmsubmission), ncol = 7)
-R> X[1:NROW(farmsubmission), 1:4] <- model.matrix(
-+ ~ 1 + log_size + log_distance + C_TYPE, 
-+ farmsubmission
-+ )
-R> X[-(1:NROW(farmsubmission)), 5:7] <- X[1:NROW(farmsubmission), c(1, 3, 4)]
-R> # this attribute tells the function which elements of the design matrix 
-R> # correspond to which linear predictor 
-R> attr(X, "hwm") <- c(4, 3)
-R> start <- glm.fit(# get starting points
-+   y = farmsubmission$TOTAL_SUB, 
-+   x = X[1:NROW(farmsubmission), 1:4], 
-+   family = poisson()
-+ )$coefficients
-R> res <- estimatePopsizeFit(
-+   y            = farmsubmission$TOTAL_SUB, 
-+   X            = X, 
-+   method       = "IRLS", 
-+   priorWeights = 1, 
-+   family       = ztoigeom(), 
-+   control      = controlMethod(silent = TRUE), 
-+   coefStart    = c(start, 0, 0, 0),
-+   etaStart     = matrix(X %*% c(start, 0, 0, 0), ncol = 2),
-+   offset       = cbind(rep(0, NROW(farmsubmission)), 
-+                        rep(0, NROW(farmsubmission)))
-+ )# extract results
-R> ll <- ztoigeom()$makeMinusLogLike(y = farmsubmission$TOTAL_SUB, X = X)
-R> print(c(res$beta, -ll(res$beta), res$iter))
-\end{CodeInput}
-\begin{CodeOutput}
-[1] -2.784523e+00  6.170270e-01 -6.455925e-02  5.346108e-01 -3.174491e+00
-[6]  1.280589e-01 -1.086452e+00 -1.727876e+04  1.500000e+01
-\end{CodeOutput}
-\begin{CodeInput}
-R> # Compare with optim call
-R> res2 <- estimatePopsizeFit(
-+   y = farmsubmission$TOTAL_SUB, 
-+   X = X, 
-+   method = "optim", 
-+   priorWeights = 1, 
-+   family = ztoigeom(), 
-+   coefStart = c(start, 0, 0, 0),
-+   control = controlMethod(silent = TRUE),
-+   offset = cbind(rep(0, NROW(farmsubmission)), rep(0, NROW(farmsubmission)))
-+ )# extract results
-R> c(res2$beta, -ll(res2$beta), res2$iter)
-\end{CodeInput}
-\begin{CodeOutput}
-                                                                      
--2.640779e+00  6.258275e-01 -8.293688e-02  5.324707e-01 -1.243731e-01 
-                                               function      gradient 
--1.629884e-01 -1.105502e+00 -1.728034e+04  1.002000e+03            NA 
-\end{CodeOutput}
-\end{CodeChunk}
-
-\subsection{Structure of a family
-function}\label{structure-of-a-family-function}
-
-\itemize{
-  \item \code{makeMinusLogLike} -- A factory function for creating the:
-  \begin{equation*}
-    \ell(\bbeta), 
-    \frac{\partial\ell}{\partial\bbeta},
-    \frac{\partial^{2}\ell}{\partial\bbeta^\top\partial\bbeta}
-  \end{equation*}
-  functions from $\boldsymbol{y}$ vector and $\bX_{vlm}$ the argument \code{deriv} with possible 
-  values in \code{c(0, 1, 2)} provides which derivative to return with the default \code{0} being just the minus log-likelihood.
-  \item \code{links} -- List with link functions.
-  \item \code{mu.eta, variance} -- Functions of linear predictors that return expected value and variance. There is a `type` argument with 2 possible values \code{"trunc"} and \code{"nontrunc"} that specifies whether to return $\mathbb{E}[Y|Y>0], \text{var}[Y|Y>0]$ or $\mathbb{E}[Y], \text{var}[Y]$ respectively, also the \code{deriv} argument with values in \code{c(0, 1, 2)} is used for indicating the derivative with respect to the linear predictors with is used for providing standard error in \code{predict} method.
-  \item \code{family} -- Character that specifies name of the model.
-  \item \code{valideta, validmu} -- For now only returns true. In near future will be used to check whether applied linear predictors are valid (i.e. are transformed into some elements of parameter space the subjected to inverse link function).
-  \item \code{funcZ, Wfun} -- Functions that create pseudo residuals and working weights used in IRLS algorithm.
-  \item \code{devResids} -- Function that given the linear predictors prior weights vector and response vector returns deviance residuals.
-  \item \code{pointEst, popVar} -- Functions that given prior weights linear predictors and in the later case also estimation of  $\text{cov}(\hat{\bbeta})$ and $\boldsymbol{X_{vlm}}$ matrix return point estimate for population size and analytic estimation of its variance.There is a additional boolean parameter \code{contr} in the former function that if set to true returns contribution of each unit.
-  \item \code{etaNames} -- Names of linear predictors.
-  \item \code{densityFunction} -- A function that given linear predictors returns value of PMF at values \code{x}. Additional argument \code{type} specifies whether to return $\mathbb{P}[Y|Y>0]$ or $\mathbb{P}[Y]$.
-  \item \code{simulate} -- A function that generates values of dependent  vector given linear predictors.
-  \item \code{getStart} -- Expression for generating starting points.
-}
+\begin{itemize}
+  \item \code{alpha, B} -- significance level and number of bootstrap samples to be performed respectively with $0.05$ and $500$ being the default options.
+  \item \code{cores} -- number of process cores to use in bootstrap (1 by default) parallel computing is done via \pkg{doParallel, foreach, parallel} packages.
+  \item \code{keepbootStat} --  logical value indicating whether to keep a vector of statistics produced by bootstrap.
+  \item \code{traceBootstrapSize, bootstrapVisualTrace} --  logical values indicating whether sample and population size should be tracked (\code{FALSE} by default) these work only when \code{cores} = 1.
+    \item \code{fittingMethod, bootstrapFitcontrol} -- fitting method (by default the same as used in the original call) and control parameters (\code{controlMethod}) for model fitting in bootstrap.
+\end{itemize}
 
 \section[Integration with the]{Integration with the \pkg{VGAM, countreg}
 packages}\label{VGAMcountreg-packages}
@@ -1158,7 +1136,7 @@ R> ?controlEstPopVgam
 
 Using the fitted \code{zerotrunc, vglm, vgam} class objects in
 population size estimation such as the one additive models with smooth
-terms for dataset from \cite{chao}:
+terms for dataset from \cite{chao-generalization}:
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1313,14 +1291,101 @@ s(log_size, df = 3):s(log_distance, df = 2):C_TYPE
 
 \normalsize
 
-\section{Conclusions}
+\section{Conclusions}\label{conclusions}
 
-\textbackslash section*\{Acknowledgements\}
+\section{Acknowledgements}
 
 The authors' work has been financed by the National Science Centre in
 Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
 
 \appendix
+
+\section{Detailed information}\label{sec-details}
+
+\subsection[The]{The \code{estimatePopsizeFit}
+function}\label{estimatePopsizeFit-function}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> X <- matrix(data = 0, nrow = 2 * NROW(farmsubmission), ncol = 7)
+R> X[1:NROW(farmsubmission), 1:4] <- model.matrix(
++ ~ 1 + log_size + log_distance + C_TYPE, 
++ farmsubmission
++ )
+R> X[-(1:NROW(farmsubmission)), 5:7] <- X[1:NROW(farmsubmission), c(1, 3, 4)]
+R> # this attribute tells the function which elements of the design matrix 
+R> # correspond to which linear predictor 
+R> attr(X, "hwm") <- c(4, 3)
+R> start <- glm.fit(# get starting points
++   y = farmsubmission$TOTAL_SUB, 
++   x = X[1:NROW(farmsubmission), 1:4], 
++   family = poisson()
++ )$coefficients
+R> res <- estimatePopsizeFit(
++   y            = farmsubmission$TOTAL_SUB, 
++   X            = X, 
++   method       = "IRLS", 
++   priorWeights = 1, 
++   family       = ztoigeom(), 
++   control      = controlMethod(silent = TRUE), 
++   coefStart    = c(start, 0, 0, 0),
++   etaStart     = matrix(X %*% c(start, 0, 0, 0), ncol = 2),
++   offset       = cbind(rep(0, NROW(farmsubmission)), 
++                        rep(0, NROW(farmsubmission)))
++ )# extract results
+R> ll <- ztoigeom()$makeMinusLogLike(y = farmsubmission$TOTAL_SUB, X = X)
+R> print(c(res$beta, -ll(res$beta), res$iter))
+\end{CodeInput}
+\begin{CodeOutput}
+[1] -2.784523e+00  6.170270e-01 -6.455925e-02  5.346108e-01 -3.174491e+00
+[6]  1.280589e-01 -1.086452e+00 -1.727876e+04  1.500000e+01
+\end{CodeOutput}
+\begin{CodeInput}
+R> # Compare with optim call
+R> res2 <- estimatePopsizeFit(
++   y = farmsubmission$TOTAL_SUB, 
++   X = X, 
++   method = "optim", 
++   priorWeights = 1, 
++   family = ztoigeom(), 
++   coefStart = c(start, 0, 0, 0),
++   control = controlMethod(silent = TRUE),
++   offset = cbind(rep(0, NROW(farmsubmission)), rep(0, NROW(farmsubmission)))
++ )# extract results
+R> c(res2$beta, -ll(res2$beta), res2$iter)
+\end{CodeInput}
+\begin{CodeOutput}
+                                                                      
+-2.640779e+00  6.258275e-01 -8.293688e-02  5.324707e-01 -1.243731e-01 
+                                               function      gradient 
+-1.629884e-01 -1.105502e+00 -1.728034e+04  1.002000e+03            NA 
+\end{CodeOutput}
+\end{CodeChunk}
+
+\subsection{Structure of a family
+function}\label{structure-of-a-family-function}
+
+\itemize{
+  \item \code{makeMinusLogLike} -- A factory function for creating the:
+  \begin{equation*}
+    \ell(\bbeta), 
+    \frac{\partial\ell}{\partial\bbeta},
+    \frac{\partial^{2}\ell}{\partial\bbeta^\top\partial\bbeta}
+  \end{equation*}
+  functions from $\boldsymbol{y}$ vector and $\bX_{vlm}$ the argument \code{deriv} with possible 
+  values in \code{c(0, 1, 2)} provides which derivative to return with the default \code{0} being just the minus log-likelihood.
+  \item \code{links} -- List with link functions.
+  \item \code{mu.eta, variance} -- Functions of linear predictors that return expected value and variance. There is a `type` argument with 2 possible values \code{"trunc"} and \code{"nontrunc"} that specifies whether to return $\mathbb{E}[Y|Y>0], \text{var}[Y|Y>0]$ or $\mathbb{E}[Y], \text{var}[Y]$ respectively, also the \code{deriv} argument with values in \code{c(0, 1, 2)} is used for indicating the derivative with respect to the linear predictors with is used for providing standard error in \code{predict} method.
+  \item \code{family} -- Character that specifies name of the model.
+  \item \code{valideta, validmu} -- For now only returns true. In near future will be used to check whether applied linear predictors are valid (i.e. are transformed into some elements of parameter space the subjected to inverse link function).
+  \item \code{funcZ, Wfun} -- Functions that create pseudo residuals and working weights used in IRLS algorithm.
+  \item \code{devResids} -- Function that given the linear predictors prior weights vector and response vector returns deviance residuals.
+  \item \code{pointEst, popVar} -- Functions that given prior weights linear predictors and in the later case also estimation of  $\text{cov}(\hat{\bbeta})$ and $\boldsymbol{X_{vlm}}$ matrix return point estimate for population size and analytic estimation of its variance.There is a additional boolean parameter \code{contr} in the former function that if set to true returns contribution of each unit.
+  \item \code{etaNames} -- Names of linear predictors.
+  \item \code{densityFunction} -- A function that given linear predictors returns value of PMF at values \code{x}. Additional argument \code{type} specifies whether to return $\mathbb{P}[Y|Y>0]$ or $\mathbb{P}[Y]$.
+  \item \code{simulate} -- A function that generates values of dependent  vector given linear predictors.
+  \item \code{getStart} -- Expression for generating starting points.
+}
 
 \section[Implementing custom singleRcapture family function]{Implementing
 custom \pkg{singleRcapture} family
@@ -1770,7 +1835,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x1501b7670>
+<bytecode: 0x106228770>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}

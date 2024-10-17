@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024/Homebrew) (preloaded format=pdflatex 2024.7.14)  16 OCT 2024 20:49
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024/Homebrew) (preloaded format=pdflatex 2024.7.14)  17 OCT 2024 13:03
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -809,7 +809,7 @@ Package: ragged2e 2023/06/22 v3.6 ragged2e Package
 \RaggedRightParindent=\skip82
 \JustifyingParindent=\skip83
 )
-LaTeX Font Info:    Trying to load font information for T1+lmr on input line 96
+LaTeX Font Info:    Trying to load font information for T1+lmr on input line 97
 .
 
 (/opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/tex/latex/lm/t1lmr.fd
@@ -823,24 +823,24 @@ File: l3backend-pdftex.def 2024-02-20 L3 backend support: PDF output (pdfTeX)
 ) (./singleRcapture.aux)
 \openout1 = `singleRcapture.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 96.
-LaTeX Font Info:    ... okay on input line 96.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 96.
-LaTeX Font Info:    ... okay on input line 96.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 96.
-LaTeX Font Info:    ... okay on input line 96.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 96.
-LaTeX Font Info:    ... okay on input line 96.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 96.
-LaTeX Font Info:    ... okay on input line 96.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 96.
-LaTeX Font Info:    ... okay on input line 96.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 96.
-LaTeX Font Info:    ... okay on input line 96.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 96.
-LaTeX Font Info:    ... okay on input line 96.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 96.
-LaTeX Font Info:    ... okay on input line 96.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 97.
+LaTeX Font Info:    ... okay on input line 97.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 97.
+LaTeX Font Info:    ... okay on input line 97.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 97.
+LaTeX Font Info:    ... okay on input line 97.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 97.
+LaTeX Font Info:    ... okay on input line 97.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 97.
+LaTeX Font Info:    ... okay on input line 97.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 97.
+LaTeX Font Info:    ... okay on input line 97.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 97.
+LaTeX Font Info:    ... okay on input line 97.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 97.
+LaTeX Font Info:    ... okay on input line 97.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 97.
+LaTeX Font Info:    ... okay on input line 97.
 
 (/opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/tex/context/base/mkii
 /supp-pdf.mkii
@@ -868,17 +868,17 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-Package hyperref Info: Link coloring ON on input line 96.
+Package hyperref Info: Link coloring ON on input line 97.
 (./singleRcapture.out) (./singleRcapture.out)
 \@outlinefile=\write5
 \openout5 = `singleRcapture.out'.
 
-<jsslogo.jpg, id=91, 540.0175pt x 393.47pt>
+<jsslogo.jpg, id=95, 540.0175pt x 393.47pt>
 File: jsslogo.jpg Graphic file (type jpg)
 <use jsslogo.jpg>
-Package pdftex.def Info: jsslogo.jpg  used on input line 96.
+Package pdftex.def Info: jsslogo.jpg  used on input line 97.
 (pdftex.def)             Requested size: 89.80768pt x 65.43607pt.
-LaTeX Font Info:    Trying to load font information for T1+pzc on input line 96
+LaTeX Font Info:    Trying to load font information for T1+pzc on input line 97
 .
 
 (/opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/tex/latex/psnfss/t1pz
@@ -886,49 +886,49 @@ c.fd
 File: t1pzc.fd 2020/03/25 font definitions for T1/pzc.
 )
 LaTeX Font Info:    Font shape `T1/pzc/m/n' in size <28> not available
-(Font)              Font shape `T1/pzc/m/it' tried instead on input line 96.
+(Font)              Font shape `T1/pzc/m/it' tried instead on input line 97.
 LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 9
-6.
+7.
 
 (/opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/tex/latex/lm/ot1lmr.f
 d
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OML+lmm on input line 9
-6.
+7.
 
 (/opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/tex/latex/lm/omllmm.f
 d
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
-96.
+97.
 
 (/opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/tex/latex/lm/omslmsy.
 fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 
-96.
+97.
 
 (/opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/tex/latex/lm/omxlmex.
 fd
 File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 96.
+(Font)              <10.95> on input line 97.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 96.
+(Font)              <8> on input line 97.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 96.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 96.
+(Font)              <6> on input line 97.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 97.
 
 
 (/opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/tex/latex/amsfonts/um
 sa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 96.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 97.
 
 
 (/opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/tex/latex/amsfonts/um
@@ -936,7 +936,7 @@ sb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Trying to load font information for T1+lmss on input line 9
-6.
+7.
 
 (/opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/tex/latex/lm/t1lmss.f
 d
@@ -951,7 +951,7 @@ ap/pdftex.map}{/opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/fonts/e
 nc/dvips/lm/lm-ec.enc}{/opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist
 /fonts/enc/dvips/base/8r.enc} <./jsslogo.jpg>]
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 1
-53.
+54.
 
 (/opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/tex/latex/lm/t1lmtt.f
 d
@@ -963,12 +963,12 @@ Overfull \hbox (5.47499pt too wide) has occurred while \output is active
 
 [2]
 
-LaTeX Warning: Reference `sec-basic-usage' on page 3 undefined on input line 18
-9.
+LaTeX Warning: Reference `sec-basic-usage' on page 3 undefined on input line 19
+0.
 
 
 LaTeX Warning: Reference `sec-integration' on page 3 undefined on input line 19
-4.
+5.
 
 
 Overfull \hbox (5.47499pt too wide) has occurred while \output is active
@@ -981,7 +981,7 @@ nc/dvips/lm/lm-rm.enc}{/opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist
 /fonts/enc/dvips/lm/lm-mathex.enc}{/opt/homebrew/Cellar/texlive/20240312_1/shar
 e/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}]
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 3
-14.
+18.
 
 (/opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/tex/latex/lm/ts1lmr.f
 d
@@ -1003,48 +1003,20 @@ Overfull \hbox (5.47499pt too wide) has occurred while \output is active
  []
 
 [6]
-Overfull \hbox (42.0041pt too wide) in paragraph at lines 440--449
-\T1/lmr/m/n/10.95 con-trols with \T1/lmtt/m/n/10.95 bootType \T1/lmr/m/n/10.95 
-ar-gu-ment which has three pos-si-ble val-ues \T1/lmtt/m/n/10.95 "parametric", 
-"semiparametric",
- []
-
-
 Overfull \hbox (5.47499pt too wide) has occurred while \output is active
 [] \T1/lmr/m/n/10.95 7
  []
 
 [7]
-Overfull \hbox (2.49307pt too wide) in paragraph at lines 486--487
-[]\T1/lmtt/m/n/10.95 traceBootstrapSize, bootstrapVisualTrace \T1/lmr/m/n/10.95
- -- log-i-cal val-ues in-di-cat-ing whether sam-
- []
-
-
 Overfull \hbox (5.47499pt too wide) has occurred while \output is active
 \T1/lmr/m/n/10.95 8 []
  []
 
 [8]
-Overfull \hbox (15.29819pt too wide) in paragraph at lines 503--504
-\T1/lmr/m/n/10.95 the form \T1/lmtt/m/n/10.95 model = "ztpoisson"\T1/lmr/m/n/10
-.95 , \T1/lmtt/m/n/10.95 model = ztpoisson \T1/lmr/m/n/10.95 or \T1/lmtt/m/n/10
-.95 model = ztpoisson(lambdaLink
- []
-
-LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <12> not available
-(Font)              Font shape `T1/lmss/m/sl' tried instead on input line 514.
-
-Overfull \hbox (50.31932pt too wide) in paragraph at lines 516--519
-[]\T1/lmr/m/n/10.95 The pack-age should be in-stalled from CRAN [][]$\T1/lmtt/m
-/n/10.95 https : / / cran . r-[]project . org / package = singleRcapture$[][]
- []
-
-
-Overfull \hbox (41.7791pt too wide) in paragraph at lines 526--529
-\T1/lmr/m/n/10.95 Hei-j-den \T1/lmr/m/it/10.95 et al.[][] \T1/lmr/m/n/10.95 ([]
-[]2003[][]) on the same data in-cluded in the pack-age un-der the name \T1/lmtt
-/m/n/10.95 netherlandsimmigrant\T1/lmr/m/n/10.95 : 
+Overfull \hbox (19.27083pt too wide) in paragraph at lines 565--568
+\T1/lmr/m/n/10.95 den \T1/lmr/m/it/10.95 et al.[][] \T1/lmr/m/n/10.95 ([][]2003
+[][]) on the same data in-cluded in the pack-age un-der the name \T1/lmtt/m/n/1
+0.95 netherlandsimmigrant 
  []
 
 
@@ -1059,7 +1031,7 @@ Overfull \hbox (10.94998pt too wide) has occurred while \output is active
 
 [10]
 LaTeX Font Info:    Trying to load font information for TS1+lmtt on input line 
-619.
+674.
 
 (/opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/tex/latex/lm/ts1lmtt.
 fd
@@ -1080,67 +1052,73 @@ Overfull \hbox (10.94998pt too wide) has occurred while \output is active
  []
 
 [13]
+<singleRcapture_files/figure-latex/rootogram-1.pdf, id=303, 157.58875pt x 229.8
+5875pt>
+File: singleRcapture_files/figure-latex/rootogram-1.pdf Graphic file (type pdf)
+
+<use singleRcapture_files/figure-latex/rootogram-1.pdf>
+Package pdftex.def Info: singleRcapture_files/figure-latex/rootogram-1.pdf  use
+d on input line 887.
+(pdftex.def)             Requested size: 170.71652pt x 249.02237pt.
+<singleRcapture_files/figure-latex/rootogram-2.pdf, id=304, 173.64874pt x 229.8
+5875pt>
+File: singleRcapture_files/figure-latex/rootogram-2.pdf Graphic file (type pdf)
+
+<use singleRcapture_files/figure-latex/rootogram-2.pdf>
+Package pdftex.def Info: singleRcapture_files/figure-latex/rootogram-2.pdf  use
+d on input line 887.
+(pdftex.def)             Requested size: 170.71652pt x 225.98604pt.
+
 Overfull \hbox (10.94998pt too wide) has occurred while \output is active
 \T1/lmr/m/n/10.95 14 []
  []
 
 [14]
-<singleRcapture_files/figure-latex/rootogram-1.pdf, id=292, 327.2225pt x 199.74
-625pt>
-File: singleRcapture_files/figure-latex/rootogram-1.pdf Graphic file (type pdf)
+Overfull \hbox (10.94998pt too wide) has occurred while \output is active
+[] \T1/lmr/m/n/10.95 15
+ []
 
-<use singleRcapture_files/figure-latex/rootogram-1.pdf>
-Package pdftex.def Info: singleRcapture_files/figure-latex/rootogram-1.pdf  use
-d on input line 858.
-(pdftex.def)             Requested size: 354.12434pt x 216.16772pt.
-<singleRcapture_files/figure-latex/dfpopsize_plot-1.pdf, id=293, 350.30875pt x 
+[15 <./singleRcapture_files/figure-latex/rootogram-1.pdf> <./singleRcapture_fil
+es/figure-latex/rootogram-2.pdf>]
+<singleRcapture_files/figure-latex/dfpopsize_plot-1.pdf, id=332, 350.30875pt x 
 235.88126pt>
 File: singleRcapture_files/figure-latex/dfpopsize_plot-1.pdf Graphic file (type
  pdf)
 <use singleRcapture_files/figure-latex/dfpopsize_plot-1.pdf>
 Package pdftex.def Info: singleRcapture_files/figure-latex/dfpopsize_plot-1.pdf
-  used on input line 871.
+  used on input line 942.
 (pdftex.def)             Requested size: 354.12434pt x 238.46854pt.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
-Overfull \hbox (10.94998pt too wide) has occurred while \output is active
-[] \T1/lmr/m/n/10.95 15
- []
-
-[15 <./singleRcapture_files/figure-latex/rootogram-1.pdf>]
-<singleRcapture_files/figure-latex/strata_plot-1.pdf, id=308, 348.30125pt x 237
-.88875pt>
-File: singleRcapture_files/figure-latex/strata_plot-1.pdf Graphic file (type pd
-f)
-<use singleRcapture_files/figure-latex/strata_plot-1.pdf>
-Package pdftex.def Info: singleRcapture_files/figure-latex/strata_plot-1.pdf  u
-sed on input line 884.
-(pdftex.def)             Requested size: 354.12434pt x 241.8774pt.
-
-Overfull \hbox (7.29803pt too wide) in paragraph at lines 888--890
-[]\T1/lmr/m/n/10.95 the in-for-ma-tion which was sup-plied to the plot func-tio
-n above comes from the \T1/lmtt/m/n/10.95 stratifyPopsize
- []
-
 
 Overfull \hbox (10.94998pt too wide) has occurred while \output is active
 \T1/lmr/m/n/10.95 16 []
  []
 
-[16 <./singleRcapture_files/figure-latex/dfpopsize_plot-1.pdf> <./singleRcaptur
-e_files/figure-latex/strata_plot-1.pdf>]
+[16 <./singleRcapture_files/figure-latex/dfpopsize_plot-1.pdf>]
+<singleRcapture_files/figure-latex/strata_plot-1.pdf, id=346, 348.30125pt x 237
+.88875pt>
+File: singleRcapture_files/figure-latex/strata_plot-1.pdf Graphic file (type pd
+f)
+<use singleRcapture_files/figure-latex/strata_plot-1.pdf>
+Package pdftex.def Info: singleRcapture_files/figure-latex/strata_plot-1.pdf  u
+sed on input line 1011.
+(pdftex.def)             Requested size: 354.12434pt x 241.8774pt.
+
 Overfull \hbox (10.94998pt too wide) has occurred while \output is active
 [] \T1/lmr/m/n/10.95 17
  []
 
-[17]
+[17 <./singleRcapture_files/figure-latex/strata_plot-1.pdf>]
 Overfull \hbox (10.94998pt too wide) has occurred while \output is active
 \T1/lmr/m/n/10.95 18 []
  []
 
 [18]
+Overfull \hbox (2.49307pt too wide) in paragraph at lines 1116--1117
+[]\T1/lmtt/m/n/10.95 traceBootstrapSize, bootstrapVisualTrace \T1/lmr/m/n/10.95
+ -- log-i-cal val-ues in-di-cat-ing whether sam-
+ []
+
+
 Overfull \hbox (10.94998pt too wide) has occurred while \output is active
 [] \T1/lmr/m/n/10.95 19
  []
@@ -1151,11 +1129,7 @@ Overfull \hbox (10.94998pt too wide) has occurred while \output is active
  []
 
 [20]
-Overfull \hbox (14.21878pt too wide) in paragraph at lines 1145--1151
-\T1/lmtt/m/n/10.95 vgam, countreg \T1/lmr/m/n/10.95 func-tions from pack-ages \
-T1/lmr/b/n/10.95 VGAM, coun-treg \T1/lmr/m/n/10.95 to a \T1/lmtt/m/n/10.95 sing
-leRStaticCountData
- []
+Underfull \vbox (badness 5622) has occurred while \output is active []
 
 
 Overfull \hbox (10.94998pt too wide) has occurred while \output is active
@@ -1163,6 +1137,9 @@ Overfull \hbox (10.94998pt too wide) has occurred while \output is active
  []
 
 [21]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
 Overfull \hbox (10.94998pt too wide) has occurred while \output is active
 \T1/lmr/m/n/10.95 22 []
  []
@@ -1178,9 +1155,6 @@ Overfull \hbox (10.94998pt too wide) has occurred while \output is active
  []
 
 [24]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
 Overfull \hbox (10.94998pt too wide) has occurred while \output is active
 [] \T1/lmr/m/n/10.95 25
  []
@@ -1218,6 +1192,9 @@ Overfull \hbox (10.94998pt too wide) has occurred while \output is active
  []
 
 [29]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
 Overfull \hbox (10.94998pt too wide) has occurred while \output is active
 \T1/lmr/m/n/10.95 30 []
  []
@@ -1227,34 +1204,39 @@ Overfull \hbox (10.94998pt too wide) has occurred while \output is active
 [] \T1/lmr/m/n/10.95 31
  []
 
-[31] (./singleRcapture.bbl
+[31]
 Overfull \hbox (10.94998pt too wide) has occurred while \output is active
 \T1/lmr/m/n/10.95 32 []
  []
 
-[32])
-Underfull \hbox (badness 10000) in paragraph at lines 1786--1786
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1786--1786
-
- []
-
-LaTeX Font Info:    Font shape `T1/pzc/m/n' in size <13> not available
-(Font)              Font shape `T1/pzc/m/it' tried instead on input line 1786.
-
+[32] (./singleRcapture.bbl
 Overfull \hbox (10.94998pt too wide) has occurred while \output is active
 [] \T1/lmr/m/n/10.95 33
  []
 
-[33]
+[33])
+Underfull \hbox (badness 10000) in paragraph at lines 1851--1851
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1851--1851
+
+ []
+
+LaTeX Font Info:    Font shape `T1/pzc/m/n' in size <13> not available
+(Font)              Font shape `T1/pzc/m/it' tried instead on input line 1851.
+
 Overfull \hbox (10.94998pt too wide) has occurred while \output is active
 \T1/lmr/m/n/10.95 34 []
  []
 
-[34] (./singleRcapture.aux)
+[34]
+Overfull \hbox (10.94998pt too wide) has occurred while \output is active
+[] \T1/lmr/m/n/10.95 35
+ []
+
+[35] (./singleRcapture.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
@@ -1263,16 +1245,16 @@ L3 programming layer <2024-02-20>
 LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `singleRcapture.out' has not changed.
-(rerunfilecheck)             Checksum: 63C2FD579955B476BED4BCA4ECBD02A6;4343.
+(rerunfilecheck)             Checksum: 6CC0A89DD57BE87053CDB94373F3CBAB;4651.
  ) 
 Here is how much of TeX's memory you used:
- 22602 strings out of 474116
- 428265 string characters out of 5732613
+ 22632 strings out of 474116
+ 429301 string characters out of 5732613
  1945187 words of memory out of 5000000
- 44395 multiletter control sequences out of 15000+600000
- 663813 words of font info for 102 fonts, out of 8000000 for 9000
+ 44421 multiletter control sequences out of 15000+600000
+ 656432 words of font info for 99 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 99i,16n,101p,763b,864s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 99i,16n,101p,648b,866s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/fonts/type1/public/
 lm/lmb10.pfb></opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/fonts/ty
 pe1/public/lm/lmbo10.pfb></opt/homebrew/Cellar/texlive/20240312_1/share/texmf-d
@@ -1288,26 +1270,22 @@ mf-dist/fonts/type1/public/lm/lmr10.pfb></opt/homebrew/Cellar/texlive/20240312_
 1/share/texmf-dist/fonts/type1/public/lm/lmr6.pfb></opt/homebrew/Cellar/texlive
 /20240312_1/share/texmf-dist/fonts/type1/public/lm/lmr8.pfb></opt/homebrew/Cell
 ar/texlive/20240312_1/share/texmf-dist/fonts/type1/public/lm/lmri10.pfb></opt/h
-omebrew/Cellar/texlive/20240312_1/share/texmf-dist/fonts/type1/public/lm/lmri12
+omebrew/Cellar/texlive/20240312_1/share/texmf-dist/fonts/type1/public/lm/lmro10
 .pfb></opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/fonts/type1/publ
-ic/lm/lmro10.pfb></opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/font
-s/type1/public/lm/lmss10.pfb></opt/homebrew/Cellar/texlive/20240312_1/share/tex
-mf-dist/fonts/type1/public/lm/lmsso12.pfb></opt/homebrew/Cellar/texlive/2024031
-2_1/share/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></opt/homebrew/Cellar/tex
-live/20240312_1/share/texmf-dist/fonts/type1/public/lm/lmsy6.pfb></opt/homebrew
-/Cellar/texlive/20240312_1/share/texmf-dist/fonts/type1/public/lm/lmsy8.pfb></o
-pt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/fonts/type1/public/lm/lm
-tt10.pfb></opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/fonts/type1/
-public/lm/lmtt12.pfb></opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/
-fonts/type1/public/lm/lmtt9.pfb></opt/homebrew/Cellar/texlive/20240312_1/share/
-texmf-dist/fonts/type1/public/lm/lmtto10.pfb></opt/homebrew/Cellar/texlive/2024
-0312_1/share/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></opt/ho
-mebrew/Cellar/texlive/20240312_1/share/texmf-dist/fonts/type1/urw/zapfchan/uzcm
-i8a.pfb>
-Output written on singleRcapture.pdf (34 pages, 603451 bytes).
+ic/lm/lmss10.pfb></opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/font
+s/type1/public/lm/lmsy10.pfb></opt/homebrew/Cellar/texlive/20240312_1/share/tex
+mf-dist/fonts/type1/public/lm/lmsy6.pfb></opt/homebrew/Cellar/texlive/20240312_
+1/share/texmf-dist/fonts/type1/public/lm/lmsy8.pfb></opt/homebrew/Cellar/texliv
+e/20240312_1/share/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></opt/homebrew/C
+ellar/texlive/20240312_1/share/texmf-dist/fonts/type1/public/lm/lmtt12.pfb></op
+t/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/fonts/type1/public/lm/lmt
+to10.pfb></opt/homebrew/Cellar/texlive/20240312_1/share/texmf-dist/fonts/type1/
+public/amsfonts/symbols/msbm10.pfb></opt/homebrew/Cellar/texlive/20240312_1/sha
+re/texmf-dist/fonts/type1/urw/zapfchan/uzcmi8a.pfb>
+Output written on singleRcapture.pdf (35 pages, 553040 bytes).
 PDF statistics:
- 582 PDF objects out of 1000 (max. 8388607)
- 473 compressed objects within 5 object streams
- 118 named destinations out of 1000 (max. 500000)
- 201 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 603 PDF objects out of 1000 (max. 8388607)
+ 497 compressed objects within 5 object streams
+ 125 named destinations out of 1000 (max. 500000)
+ 214 words of extra memory for PDF output out of 10000 (max. 10000000)
 
