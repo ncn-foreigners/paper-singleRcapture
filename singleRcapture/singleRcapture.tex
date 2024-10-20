@@ -807,40 +807,6 @@ about 5k less than the naive Poisson approach. Comparison of AIC and BIC
 suggest that the one-inflation model fits the data better with BIC for
 \code{oiztgeom} 1727 and 1757 for \code{ztpoisson}.
 
-\subsection{Methods}\label{methods}
-
-For the purpose of the package we have created a class
-\code{singleRStaticCountData}, \code{singleR} \code{popSizeEstResults}
-which allows for extracting relevant information regarding the
-population size. For instance, function \code{popSizeEst} allows to
-extract information on the estimated size of the population as given
-below:
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> (popEst <- popSizeEst(basicModel))
-\end{CodeInput}
-\begin{CodeOutput}
-Point estimate: 12690.35
-Variance: 7885812
-95% confidence intervals:
-          lowerBound upperBound
-normal      7186.444   18194.26
-logNormal   8431.275   19718.32
-\end{CodeOutput}
-\end{CodeChunk}
-
-and the resulting object \code{popEst} is of the
-\code{popSizeEstResults} class contains the following fields:
-
-\begin{itemize}
-  \item \code{pointEstimate}, \code{variance} -- numerics containing point estimate and variance of this estimate.
-  \item \code{confidenceInterval} -- a \code{data.frame} with confidence intervals.
-  \item \code{boot} -- If bootstrap was performed a numeric vector containing the $\hat{N}$ values from the bootstrap, 
-  a character vector with value \code{"No bootstrap performed"} otherwise.
-  \item \code{control} -- a \code{controlPopVar} object with controls used to obtained the object.
-\end{itemize}
-
 \subsection{Testing marginal
 frequencies}\label{testing-marginal-frequencies}
 
@@ -924,24 +890,26 @@ package was adapted and demonstrated below:
 
 \begin{CodeInput}
 R> dfb <- dfbeta(basicModel)
-R> knitr::kable(tibble::as_tibble(t(apply(dfb, 2, quantile)*100)), digits = 4)
+R> knitr::kable(as.data.frame(
++   t(apply(dfb, 2, quantile)*100)), digits = 4
++ )
 \end{CodeInput}
 
-\begin{longtable}[]{@{}rrrrr@{}}
+\begin{longtable}[]{@{}lrrrrr@{}}
 \toprule\noalign{}
-0\% & 25\% & 50\% & 75\% & 100\% \\
+& 0\% & 25\% & 50\% & 75\% & 100\% \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
--0.9909 & -0.1533 & 0.0191 & 0.0521 & 8.6619 \\
--9.0535 & -0.0777 & -0.0283 & 0.1017 & 2.2135 \\
--2.0010 & 0.0179 & 0.0379 & 0.0691 & 16.0061 \\
--9.5559 & -0.0529 & 0.0066 & 0.0120 & 17.9914 \\
--9.6605 & -0.0842 & -0.0177 & 0.0087 & 3.1260 \\
--9.4497 & -0.0244 & 0.0030 & 0.0083 & 10.9787 \\
--9.3140 & -0.0066 & 0.0020 & 0.0035 & 99.3383 \\
--9.6198 & -0.0220 & 0.0079 & 0.0143 & 32.0980 \\
+(Intercept) & -0.9909 & -0.1533 & 0.0191 & 0.0521 & 8.6619 \\
+gendermale & -9.0535 & -0.0777 & -0.0283 & 0.1017 & 2.2135 \\
+age\textgreater40yrs & -2.0010 & 0.0179 & 0.0379 & 0.0691 & 16.0061 \\
+nationAsia & -9.5559 & -0.0529 & 0.0066 & 0.0120 & 17.9914 \\
+nationNorth Africa & -9.6605 & -0.0842 & -0.0177 & 0.0087 & 3.1260 \\
+nationRest of Africa & -9.4497 & -0.0244 & 0.0030 & 0.0083 & 10.9787 \\
+nationSurinam & -9.3140 & -0.0066 & 0.0020 & 0.0035 & 99.3383 \\
+nationTurkey & -9.6198 & -0.0220 & 0.0079 & 0.0143 & 32.0980 \\
 \end{longtable}
 
 Furthermore, result of the \code{dfbeta} can be further used in the
@@ -1165,6 +1133,110 @@ are relevant to bootstrap are:
     \item \code{fittingMethod, bootstrapFitcontrol} -- fitting method (by default the same as used in the original call) and control parameters (\code{controlMethod}) for model fitting in bootstrap.
 \end{itemize}
 
+\subsection{Methods}\label{methods}
+
+For the purpose of the package we have created classes
+\code{singleRStaticCountData}, \code{singleR} (for now the two former
+classes are the same, the distinction is made for future development),
+\code{singleRfamily}, \code{popSizeEstResults},
+\code{summarysingleRStaticCountData} and \code{summarysingleRmargin}
+which allows for extracting relevant information regarding the
+population size. For instance, function \code{popSizeEst} allows to
+extract information on the estimated size of the population as given
+below:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> (popEst <- popSizeEst(basicModel))
+\end{CodeInput}
+\begin{CodeOutput}
+Point estimate: 12690.35
+Variance: 7885812
+95% confidence intervals:
+          lowerBound upperBound
+normal      7186.444   18194.26
+logNormal   8431.275   19718.32
+\end{CodeOutput}
+\end{CodeChunk}
+
+and the resulting object \code{popEst} is of the
+\code{popSizeEstResults} class contains the following fields:
+
+\begin{itemize}
+  \item \code{pointEstimate}, \code{variance} -- numerics containing point estimate and variance of this estimate.
+  \item \code{confidenceInterval} -- a \code{data.frame} with confidence intervals.
+  \item \code{boot} -- If bootstrap was performed a numeric vector containing the $\hat{N}$ values from the bootstrap, 
+  a character vector with value \code{"No bootstrap performed"} otherwise.
+  \item \code{control} -- a \code{controlPopVar} object with controls used to obtained the object.
+\end{itemize}
+
+The only explicitly defined method for \code{popSizeEstResults},
+\code{summarysingleRmargin} and \code{summarysingleRStaticCountData}
+classes is the print method, but the former one also accepts
+\proglang{R} primitives like \code{coef}:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> coef(summary(basicModel))
+\end{CodeInput}
+\begin{CodeOutput}
+                       Estimate Std. Error    z value      P(>|z|)
+(Intercept)          -1.3410661  0.2148870 -6.2407965 4.353484e-10
+gendermale            0.3971793  0.1630155  2.4364504 1.483220e-02
+age>40yrs            -0.9746058  0.4082420 -2.3873235 1.697155e-02
+nationAsia           -1.0925990  0.3016259 -3.6223642 2.919228e-04
+nationNorth Africa    0.1899980  0.1940007  0.9793677 3.273983e-01
+nationRest of Africa -0.9106361  0.3008092 -3.0272880 2.467587e-03
+nationSurinam        -2.3363962  1.0135645 -2.3051282 2.115939e-02
+nationTurkey         -1.6753917  0.6027744 -2.7794674 5.444812e-03
+\end{CodeOutput}
+\end{CodeChunk}
+
+analogously to \code{glm} from \pkg{stats}. The \code{singleRfamily}
+inherits the \code{family} class from \pkg{stats} and has explictly
+defined \code{print} and \code{simulate} methods defined. Example usage:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> set.seed(1234567890)
+R> N <- 10000
+R> gender <- rbinom(N, 1, 0.2)
+R> eta <- -1 + 0.5*gender
+R> counts <- simulate(ztpoisson(), eta = cbind(eta), seed = 1)
+R> summary(data.frame(gender, eta, counts))
+\end{CodeInput}
+\begin{CodeOutput}
+     gender            eta              counts      
+ Min.   :0.0000   Min.   :-1.0000   Min.   :0.0000  
+ 1st Qu.:0.0000   1st Qu.:-1.0000   1st Qu.:0.0000  
+ Median :0.0000   Median :-1.0000   Median :0.0000  
+ Mean   :0.2036   Mean   :-0.8982   Mean   :0.4196  
+ 3rd Qu.:0.0000   3rd Qu.:-1.0000   3rd Qu.:1.0000  
+ Max.   :1.0000   Max.   :-0.5000   Max.   :5.0000  
+\end{CodeOutput}
+\end{CodeChunk}
+
+The full list of explicitly defined methods for
+\code{singleRStaticCountData} methods is:
+
+\begin{itemize}
+  \item \code{AIC, BIC, extractAIC, family, confint, df.residual, model.frame, hatvalues, nobs, print} -- 
+  Which work exactly like \code{glm} counterparts.
+  \item \code{fitted} -- Which work almost exactly like \code{glm} counterparts but return more information, namely on fitted values for the truncated and non-truncated probability distribution.
+  \item \code{logLik} -- which compared to \code{glm} method has the possiblity of returning not just the value of the fitted loglikelihood mut also the entire function (argument \code{type = "function"}) along with two first derivatives (argument \code{deriv = 0:2}).
+  \item \code{model.matrix} -- which has the possibility of returning the $X_{\text{vlm}}$ matrix defined in \ref{X_vlm-definition}.
+  \item \code{simulate} -- which calls \code{simulate} method for the chosen model and fitted $\boldsymbol{\eta}$.
+  \item \code{predict} -- which has the possibility of returning either of fitted ditribution parameters for each unit (\code{type = "response"}), just linear predictors (\code{type = "link"}), means of the fitted distributnios of $Y$ and $Y|Y>0$ (\code{type = "mean"}) and the inverse probability weights (\code{type = "contr"}). There us also the \code{se.fit} argument which can be set to \code{TRUE} to obtain standard errors for each of those by using the $\delta$ method. Also it is possible to use a custom covariance matrix for standard error computation (argument \code{cov}).
+  \item \code{redoPopEstimation} -- A function that applies all post-hoc procedures that were taken (such as heteroscedastic consistent covariance matrix estimation or bias reduction) to population size estimation and standard error estimation.
+  \item \code{residuals} -- for obtaining residuals of several types, we refer interested readers to the manual \code{?singleRcapture:::residuals.singleRStaticCountData}.
+  \item \code{stratifyPopsize, summary} -- which were already discussed. Compared to \code{glm} class summary has the possibility of adding confidence interval to the coefficient matrix (argument \code{confint = TRUE}) and using custom covariance matrix (argument \code{cov = someMatrix}).
+  \item \code{plot} -- which was already discussed.
+  \item \code{popSizeEst} -- an extractor showcased above.
+  \item \code{cooks.distance} -- which works only for single predictor models
+  \item \code{dfbeta, dfpopsize} -- Multithreading in \code{dfbeta} is available and \code{dfpopsize} calls \code{dfbeta} if no \code{dfbeta} object was provided at call.
+  \item \code{bread, estfun, vcovHC} -- for (almost) full \pkg{sandwitch} compatibility.
+\end{itemize}
+
 \section[Integration with the]{Integration with the \pkg{VGAM, countreg}
 packages}\label{VGAMcountreg-packages}
 
@@ -1378,8 +1450,8 @@ functionaly of the package.
 
 \section{Detailed information}\label{sec-details}
 
-\subsection[The]{The \code{estimatePopsizeFit}
-function}\label{estimatePopsizeFit-function}
+\subsection[The estimatePopsizeFit function]{The
+\code{estimatePopsizeFit} function}\label{estimatePopsizeFit-function}
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1911,7 +1983,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x10f646340>
+<bytecode: 0x134a65620>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}

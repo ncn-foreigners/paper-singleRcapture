@@ -565,24 +565,6 @@ summary(modelInflated)
 
 This approach suggest that the population size is about 7k which is about 5k less than the naive Poisson approach. Comparison of AIC and BIC suggest that the one-inflation model fits the data better with BIC for \code{oiztgeom} `r round(BIC(modelInflated))` and `r round(BIC(basicModel))` for \code{ztpoisson}.
 
-## Methods
-
-For the purpose of the package we have created a class \code{singleRStaticCountData}, \code{singleR} \code{popSizeEstResults} which allows for extracting relevant information regarding the population size. For instance, function \code{popSizeEst} allows to extract information on the estimated size of the population as given below:
-
-```{r, popsize_extract}
-(popEst <- popSizeEst(basicModel))
-```
-
-and the resulting object \code{popEst} is of the \code{popSizeEstResults} class contains the following fields:
-
-\begin{itemize}
-  \item \code{pointEstimate}, \code{variance} -- numerics containing point estimate and variance of this estimate.
-  \item \code{confidenceInterval} -- a \code{data.frame} with confidence intervals.
-  \item \code{boot} -- If bootstrap was performed a numeric vector containing the $\hat{N}$ values from the bootstrap, 
-  a character vector with value \code{"No bootstrap performed"} otherwise.
-  \item \code{control} -- a \code{controlPopVar} object with controls used to obtained the object.
-\end{itemize}
-
 ## Testing marginal frequencies
 
 A popular method of testing the model fit in single source
@@ -632,7 +614,9 @@ Plots suggest that the \code{otztgeom} model fits the data better. Furthermore, 
 
 ```{r, dfbeta_basic_model, results='asis'}
 dfb <- dfbeta(basicModel)
-knitr::kable(tibble::as_tibble(t(apply(dfb, 2, quantile)*100)), digits = 4)
+knitr::kable(as.data.frame(
+  t(apply(dfb, 2, quantile)*100)), digits = 4
+)
 ```
 
 Furthermore, result of the \code{dfbeta} can be further used in the function \code{dfpopsize} which allows for quantification of LOO on the population size.
@@ -736,6 +720,62 @@ are relevant to bootstrap are:
     \item \code{fittingMethod, bootstrapFitcontrol} -- fitting method (by default the same as used in the original call) and control parameters (\code{controlMethod}) for model fitting in bootstrap.
 \end{itemize}
 
+## Methods
+
+For the purpose of the package we have created classes \code{singleRStaticCountData}, \code{singleR} (for now the two former classes are the same, the distinction is made for future development), \code{singleRfamily}, \code{popSizeEstResults}, \code{summarysingleRStaticCountData} and \code{summarysingleRmargin} which allows for extracting relevant information regarding the population size. For instance, function \code{popSizeEst} allows to extract information on the estimated size of the population as given below:
+
+```{r, popsize_extract}
+(popEst <- popSizeEst(basicModel))
+```
+
+and the resulting object \code{popEst} is of the \code{popSizeEstResults} class contains the following fields:
+
+\begin{itemize}
+  \item \code{pointEstimate}, \code{variance} -- numerics containing point estimate and variance of this estimate.
+  \item \code{confidenceInterval} -- a \code{data.frame} with confidence intervals.
+  \item \code{boot} -- If bootstrap was performed a numeric vector containing the $\hat{N}$ values from the bootstrap, 
+  a character vector with value \code{"No bootstrap performed"} otherwise.
+  \item \code{control} -- a \code{controlPopVar} object with controls used to obtained the object.
+\end{itemize}
+
+The only explicitly defined method for \code{popSizeEstResults}, \code{summarysingleRmargin} and \code{summarysingleRStaticCountData} classes is the print method, but the former one also accepts \proglang{R} primitives like \code{coef}:
+
+```{r}
+coef(summary(basicModel))
+```
+
+analogously to \code{glm} from \pkg{stats}. The \code{singleRfamily} inherits the \code{family} class from \pkg{stats} and has explictly defined \code{print} and \code{simulate} methods defined. Example usage:
+
+```{r}
+set.seed(1234567890)
+N <- 10000
+gender <- rbinom(N, 1, 0.2)
+eta <- -1 + 0.5*gender
+counts <- simulate(ztpoisson(), eta = cbind(eta), seed = 1)
+summary(data.frame(gender, eta, counts))
+```
+
+The full list of explicitly defined methods for \code{singleRStaticCountData} methods is:
+
+\begin{itemize}
+  \item \code{AIC, BIC, extractAIC, family, confint, df.residual, model.frame, hatvalues, nobs, print} -- 
+  Which work exactly like \code{glm} counterparts.
+  \item \code{fitted} -- Which work almost exactly like \code{glm} counterparts but return more information, namely on fitted values for the truncated and non-truncated probability distribution.
+  \item \code{logLik} -- which compared to \code{glm} method has the possiblity of returning not just the value of the fitted loglikelihood mut also the entire function (argument \code{type = "function"}) along with two first derivatives (argument \code{deriv = 0:2}).
+  \item \code{model.matrix} -- which has the possibility of returning the $X_{\text{vlm}}$ matrix defined in \ref{X_vlm-definition}.
+  \item \code{simulate} -- which calls \code{simulate} method for the chosen model and fitted $\boeta$.
+  \item \code{predict} -- which has the possibility of returning either of fitted ditribution parameters for each unit (\code{type = "response"}), just linear predictors (\code{type = "link"}), means of the fitted distributnios of $Y$ and $Y|Y>0$ (\code{type = "mean"}) and the inverse probability weights (\code{type = "contr"}). There us also the \code{se.fit} argument which can be set to \code{TRUE} to obtain standard errors for each of those by using the $\delta$ method. Also it is possible to use a custom covariance matrix for standard error computation (argument \code{cov}).
+  \item \code{redoPopEstimation} -- A function that applies all post-hoc procedures that were taken (such as heteroscedastic consistent covariance matrix estimation or bias reduction) to population size estimation and standard error estimation.
+  \item \code{residuals} -- for obtaining residuals of several types, we refer interested readers to the manual \code{?singleRcapture:::residuals.singleRStaticCountData}.
+  \item \code{stratifyPopsize, summary} -- which were already discussed. Compared to \code{glm} class summary has the possibility of adding confidence interval to the coefficient matrix (argument \code{confint = TRUE}) and using custom covariance matrix (argument \code{cov = someMatrix}).
+  \item \code{plot} -- which was already discussed.
+  \item \code{popSizeEst} -- an extractor showcased above.
+  \item \code{cooks.distance} -- which works only for single predictor models
+  \item \code{dfbeta, dfpopsize} -- Multithreading in \code{dfbeta} is available and \code{dfpopsize} calls \code{dfbeta} if no \code{dfbeta} object was provided at call.
+  \item \code{bread, estfun, vcovHC} -- for (almost) full \pkg{sandwitch} compatibility.
+\end{itemize}
+
+
 # Integration with the \pkg{VGAM, countreg} packages {#VGAMcountreg-packages short-title="Integration with the"}
 
 ```{=html}
@@ -836,7 +876,7 @@ The authors would like to thank Layna Dennett from University of Southampton for
 
 # Detailed information {#sec-details}
 
-## The \code{estimatePopsizeFit} function {#estimatePopsizeFit-function short-title="The"}
+## The \code{estimatePopsizeFit} function {#estimatePopsizeFit-function short-title="The estimatePopsizeFit function"}
 
 ```{r, estimatePopsizeFit}
 X <- matrix(data = 0, nrow = 2 * NROW(farmsubmission), ncol = 7)
