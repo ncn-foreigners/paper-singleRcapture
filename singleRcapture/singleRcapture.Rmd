@@ -123,7 +123,7 @@ because of the costs or problems with identification of members of these
 populations.
 
 While methods for two or more sources are implemented in various
-open-source software [e.g., @baillargeon2007rcapture] the single-source
+open-source software, for instance \pkg{Rcapture} [@baillargeon2007rcapture], \pkg{marked} [@laake2013marked] or \pkg{VGAM} [@yee2015vgam] the single-source
 capture-recapture (SSCR) methods are less available being only partially
 implemented in existing \proglang{R} packages. The goal of the paper is 
 to introduce the \pkg{singleRcapture} and \pkg{singleRcaptureExtra}
@@ -208,15 +208,12 @@ a given unit or limit possibilities of further captures (e.g. due to
 incarceration). To solve these issues, @godwin2017estimation and
 @ztoi-oizt-poisson introduced one-inflated distributions that explicitly
 model probability of the singletons by giving additional mass $\omega$
-for singletons denoted as $\1_{\{1\}}(y)$:
+for singletons denoted as $\1_{\{1\}}(y)$ [cf. @bohning2024one]
 
 \begin{equation*}
   \mathbb{P}^{\ast}[Y=y|Y>0] =
   \omega\1_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y|Y>0].
 \end{equation*}
-
-For more about the one-inflation in the context SSCR see recent review
-of @bohning2024one.
 
 The analytic variance estimation is then done by computing two parts of
 the decomposition due to the law of total variance given by:
@@ -299,7 +296,7 @@ For the sake of simplicity we limit ourselves to just listing the family functio
         \left(1-\exp\left(-2\exp\left(\bx_{k}\hat{\bbeta}\right)\right)\right)^{-1}.
         \tag{\text{Zelterman's estimator}}
     \end{align}
-    \item Zero-truncated (\code{zt}$^\ast$) and zero-one-truncated (\code{ztoi}$^\ast$) Poisson \citep[cf. ][]{zotmodels}, geometric, NB type II (NB2) regression where the non-truncated distribution is parameterized as:
+    \item Zero-truncated (\code{zt}$^\ast$) and zero-one-truncated (\code{zot}$^\ast$) Poisson \citep[cf. ][]{zotmodels}, geometric, NB type II (NB2) regression where the non-truncated distribution is parameterized as:
     \begin{equation*}
         \mathbb{P}[Y=y|\lambda,\alpha] = \frac{\Gamma\left(y+\alpha^{-1}\right)}{\Gamma\left(\alpha^{-1}\right)y!}
         \left(\frac{\alpha^{-1}}{\alpha^{-1}+\lambda}\right)^{\alpha^{-1}}
@@ -422,7 +419,7 @@ $\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}$.
 \end{algorithm}
 
 
-## Variance estimation using bootstrap {#sec-boostrap}
+## Bootstrap variance estimators {#sec-boostrap}
 
 We have implemented three types of bootstrap algorithms: parametric, semi-parametric and nonparametric with the
 nonparametric being bootstrap being the usual bootstrap algorithm which
@@ -476,17 +473,28 @@ bootstrap algorithm is the default in \pkg{singleRcapture}.
 The main function that \pkg{singleRcapture} is built around is
 \code{estimatePopsize}. The leading design principle was to make using
 \code{estimatePopsize} as close to standard \code{stats::glm} as
-possible. The most important arguments are:
+possible. The most important arguments are given in Table \ref{tab-arguments-popsize}.
 
-\begin{itemize}
-    \item \code{formula} -- the main formula (i.e for the Poisson $\lambda$ parameter),
-    \item \code{data} -- the \code{data.frame} (or \code{data.frame} coercible) object,
-    \item \code{model} -- either a function a string or a family class object specifying which model should be used possible values are listed in documentation. The supplied argument should have the form \code{model =  "ztpoisson"}, \code{model = ztpoisson} or if link function should be specified then \code{model = ztpoisson(lambdaLink = "log")} can be used,
-    \item \code{method} -- numerical method used to fit regression \code{IRLS} or \code{optim},
-    \item \code{popVar} -- a method for estimating variance of $\hat{N}$ and confidence interval creation (either bootstrap, analytic or skipping the estimation entirely),
-    \item \code{controlMethod, controlModel, controlPopVar} -- control parameters for numerical fitting, specifying additional formulas (inflation, dispersion) and population size estimation respectively,
-    \item \code{offset} -- a matrix of offset values with number of columns matching the number of distribution parameters providing offset values to each of linear predictors.
-\end{itemize}
+\begin{table}[ht!]
+\centering
+\begin{tabular}{p{3cm}p{11cm}}
+\hline
+Argument & Description \\
+\hline
+\code{formula} & The main formula (i.e for the Poisson $\lambda$ parameter) \\
+\code{data} & the \code{data.frame} (or \code{data.frame} coercible) object \\
+\code{model} & either a function a string or a family class object specifying which model should be used possible values are listed in documentation. The supplied argument should have the form \code{model =  "ztpoisson"}, \code{model = ztpoisson} or if link function should be specified then \code{model = ztpoisson(lambdaLink = "log")} can be used \\
+\code{method} & numerical method used to fit regression \code{IRLS} or \code{optim} \\
+\code{popVar} & a method for estimating variance of $\hat{N}$ and confidence interval creation (either bootstrap, analytic or skipping the estimation entirely) \\
+\code{controlMethod}, \code{controlModel} or \code{controlPopVar} & control parameters for numerical fitting, specifying additional formulas (inflation, dispersion) and population size estimation respectively \\
+\code{offset} &  a matrix of offset values with number of columns matching the number of distribution parameters providing offset values to each of linear predictors\\
+\code{...} & additional optional arguments passed to other methods eg. \code{estimatePopsizeFit} \\
+\hline
+\end{tabular}
+\caption{\code{estimatePopsize()} arguments description}
+\label{tab-arguments-popsize}
+\end{table}
+
 
 With the \code{formula, data, model} being the three arguments which
 must be provided in \code{estimatePopsize} syntax.
@@ -687,7 +695,7 @@ knitr::kable(popSizeStratasCustom[, cols], col.names = cols_custom, digits=2)
 \normalsize
 
 We provide integration with the \pkg{sandwich} \citep{sandwich} package to correct variance-covariance matrix in the $\delta$ method. In the code we have used the \code{vcovHC} method for \code{singleRStaticCountData}
-class from the \pkg{sandwitch} package, different significance levels
+class from the \pkg{sandwich} package, different significance levels
 for confidence intervals in each strata and a formula to specify that we
 wanted estimates for both males and females subdivided by \code{nation}
 and \code{age}. The \code{stratas} parameter may be specified either as:
@@ -755,25 +763,32 @@ counts <- simulate(ztpoisson(), eta = cbind(eta), seed = 1)
 summary(data.frame(gender, eta, counts))
 ```
 
-The full list of explicitly defined methods for \code{singleRStaticCountData} methods is:
+The full list of explicitly defined methods for \code{singleRStaticCountData} methods is
 
-\begin{itemize}
-  \item \code{AIC, BIC, extractAIC, family, confint, df.residual, model.frame, hatvalues, nobs, print} -- 
-  Which work exactly like \code{glm} counterparts.
-  \item \code{fitted} -- Which work almost exactly like \code{glm} counterparts but return more information, namely on fitted values for the truncated and non-truncated probability distribution.
-  \item \code{logLik} -- which compared to \code{glm} method has the possiblity of returning not just the value of the fitted loglikelihood mut also the entire function (argument \code{type = "function"}) along with two first derivatives (argument \code{deriv = 0:2}).
-  \item \code{model.matrix} -- which has the possibility of returning the $X_{\text{vlm}}$ matrix defined in \ref{X_vlm-definition}.
-  \item \code{simulate} -- which calls \code{simulate} method for the chosen model and fitted $\boeta$.
-  \item \code{predict} -- which has the possibility of returning either of fitted ditribution parameters for each unit (\code{type = "response"}), just linear predictors (\code{type = "link"}), means of the fitted distributnios of $Y$ and $Y|Y>0$ (\code{type = "mean"}) and the inverse probability weights (\code{type = "contr"}). There us also the \code{se.fit} argument which can be set to \code{TRUE} to obtain standard errors for each of those by using the $\delta$ method. Also it is possible to use a custom covariance matrix for standard error computation (argument \code{cov}).
-  \item \code{redoPopEstimation} -- A function that applies all post-hoc procedures that were taken (such as heteroscedastic consistent covariance matrix estimation or bias reduction) to population size estimation and standard error estimation.
-  \item \code{residuals} -- for obtaining residuals of several types, we refer interested readers to the manual \code{?singleRcapture:::residuals.singleRStaticCountData}.
-  \item \code{stratifyPopsize, summary} -- which were already discussed. Compared to \code{glm} class summary has the possibility of adding confidence interval to the coefficient matrix (argument \code{confint = TRUE}) and using custom covariance matrix (argument \code{cov = someMatrix}).
-  \item \code{plot} -- which was already discussed.
-  \item \code{popSizeEst} -- an extractor showcased above.
-  \item \code{cooks.distance} -- which works only for single predictor models
-  \item \code{dfbeta, dfpopsize} -- Multithreading in \code{dfbeta} is available and \code{dfpopsize} calls \code{dfbeta} if no \code{dfbeta} object was provided at call.
-  \item \code{bread, estfun, vcovHC} -- for (almost) full \pkg{sandwitch} compatibility.
-\end{itemize}
+\begin{table}[ht!]
+\centering
+\begin{tabular}{p{5cm}p{11cm}}
+\hline 
+Function & Description \\
+\hline
+\code{fitted} & Which work almost exactly like \code{glm} counterparts but return more information, namely on fitted values for the truncated and non-truncated probability distribution. \\
+\code{logLik} & which compared to \code{glm} method has the possiblity of returning not just the value of the fitted loglikelihood mut also the entire function (argument \code{type = "function"}) along with two first derivatives (argument \code{deriv = 0:2}) \\
+\code{model.matrix} & which has the possibility of returning the $X_{\text{vlm}}$ matrix defined in \ref{X_vlm-definition}\\
+\code{simulate} & which calls \code{simulate} method for the chosen model and fitted $\boeta$ \\
+\code{predict} &  which has the possibility of returning either of fitted ditribution parameters for each unit (\code{type = "response"}), just linear predictors (\code{type = "link"}), means of the fitted distributnios of $Y$ and $Y|Y>0$ (\code{type = "mean"}) and the inverse probability weights (\code{type = "contr"}). There us also the \code{se.fit} argument which can be set to \code{TRUE} to obtain standard errors for each of those by using the $\delta$ method. Also it is possible to use a custom covariance matrix for standard error computation (argument \code{cov}). \\
+\code{redoPopEstimation} & A function that applies all post-hoc procedures that were taken (such as heteroscedastic consistent covariance matrix estimation or bias reduction) to population size estimation and standard error estimation. \\
+\code{residuals} & for obtaining residuals of several types, we refer interested readers to the manual \code{?singleRcapture:::residuals.singleRStaticCountData}. \\
+\code{stratifyPopsize, summary} & which were already discussed. Compared to \code{glm} class summary has the possibility of adding confidence interval to the coefficient matrix (argument \code{confint = TRUE}) and using custom covariance matrix (argument \code{cov = someMatrix}) \\
+\code{plot} & which was already discussed \\
+\code{popSizeEst} & an extractor showcased above. \\
+\code{cooks.distance} & which works only for single predictor models \\
+\code{dfbeta, dfpopsize} & Multithreading in \code{dfbeta} is available and \code{dfpopsize} calls \code{dfbeta} if no \code{dfbeta} object was provided at call. \\
+\code{bread, estfun, vcovHC} & for (almost) full \pkg{sandwich} compatibility. \\
+\code{AIC, BIC, extractAIC, family, confint, df.residual, model.frame, hatvalues, nobs, print}  & Which work exactly like \code{glm} counterparts.\\
+\hline 
+\end{tabular}
+\caption{\code{S3Methods} implemented in the \pkg{singleRcapture}}
+\end{table}
 
 
 # Integration with the \pkg{VGAM, countreg} packages {#VGAMcountreg-packages short-title="Integration with the"}

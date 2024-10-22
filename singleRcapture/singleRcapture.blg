@@ -1,49 +1,49 @@
-This is BibTeX, Version 0.99d (TeX Live 2024)
+This is BibTeX, Version 0.99d (TeX Live 2024/Homebrew)
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: singleRcapture.aux
 The style file: jss.bst
 Database file #1: refs.bib
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Warning--missing school in baffour-awuah2009
-You've used 25 entries,
+You've used 27 entries,
             3215 wiz_defined-function locations,
-            801 strings with 9877 characters,
-and the built_in function-call counts, 24457 in all, are:
-= -- 2419
-> -- 518
+            810 strings with 10247 characters,
+and the built_in function-call counts, 26614 in all, are:
+= -- 2627
+> -- 580
 < -- 20
-+ -- 200
-- -- 169
-* -- 1787
-:= -- 2892
-add.period$ -- 102
-call.type$ -- 25
-change.case$ -- 158
-chr.to.int$ -- 26
-cite$ -- 26
-duplicate$ -- 2549
-empty$ -- 2009
-format.name$ -- 253
-if$ -- 4973
++ -- 225
+- -- 190
+* -- 1952
+:= -- 3148
+add.period$ -- 110
+call.type$ -- 27
+change.case$ -- 173
+chr.to.int$ -- 28
+cite$ -- 28
+duplicate$ -- 2778
+empty$ -- 2176
+format.name$ -- 280
+if$ -- 5405
 int.to.chr$ -- 2
 int.to.str$ -- 1
-missing$ -- 268
-newline$ -- 141
-num.names$ -- 100
-pop$ -- 1211
+missing$ -- 292
+newline$ -- 151
+num.names$ -- 108
+pop$ -- 1324
 preamble$ -- 1
-purify$ -- 156
+purify$ -- 171
 quote$ -- 0
-skip$ -- 459
+skip$ -- 496
 stack$ -- 0
-substring$ -- 2595
-swap$ -- 666
+substring$ -- 2809
+swap$ -- 722
 text.length$ -- 1
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 219
+type$ -- 237
 warning$ -- 1
-while$ -- 168
+while$ -- 183
 width$ -- 0
-write$ -- 342
+write$ -- 368
 (There was 1 warning)

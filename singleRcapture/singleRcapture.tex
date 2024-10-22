@@ -157,16 +157,17 @@ be inappropriate because of the costs or problems with identification of
 members of these populations.
 
 While methods for two or more sources are implemented in various
-open-source software \citep[e.g.,][]{baillargeon2007rcapture} the
-single-source capture-recapture (SSCR) methods are less available being
-only partially implemented in existing \proglang{R} packages. The goal
-of the paper is to introduce the \pkg{singleRcapture} and
-\pkg{singleRcaptureExtra} packages which by implementing
-state-of-the-art methods in SSCR and providing user friendly API which
-mimics existing \proglang{R} functions (e.g., \texttt{glm}) attemp to
-bridge this aforementioned gap. In the next subsection we descirbe the
-available \proglang{R} packages that could be used for estimating
-population size based on SSCR methods.
+open-source software, for instance \pkg{Rcapture}
+\citep{baillargeon2007rcapture}, \pkg{marked} \citep{laake2013marked} or
+\pkg{VGAM} \citep{yee2015vgam} the single-source capture-recapture
+(SSCR) methods are less available being only partially implemented in
+existing \proglang{R} packages. The goal of the paper is to introduce
+the \pkg{singleRcapture} and \pkg{singleRcaptureExtra} packages which by
+implementing state-of-the-art methods in SSCR and providing user
+friendly API which mimics existing \proglang{R} functions (e.g.,
+\texttt{glm}) attemp to bridge this aforementioned gap. In the next
+subsection we descirbe the available \proglang{R} packages that could be
+used for estimating population size based on SSCR methods.
 
 \subsection{Software for capture-recapture for single and multiple
 sources}\label{sec-software}
@@ -247,15 +248,13 @@ a given unit or limit possibilities of further captures (e.g.~due to
 incarceration). To solve these issues, \citet{godwin2017estimation} and
 \citet{ztoi-oizt-poisson} introduced one-inflated distributions that
 explicitly model probability of the singletons by giving additional mass
-\(\omega\) for singletons denoted as \(\mathcal{I}_{\{1\}}(y)\):
+\(\omega\) for singletons denoted as \(\mathcal{I}_{\{1\}}(y)\)
+\citep[cf.][]{bohning2024one}
 
 \begin{equation*}
   \mathbb{P}^{\ast}[Y=y|Y>0] =
   \omega\mathcal{I}_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y|Y>0].
 \end{equation*}
-
-For more about the one-inflation in the context SSCR see recent review
-of \citet{bohning2024one}.
 
 The analytic variance estimation is then done by computing two parts of
 the decomposition due to the law of total variance given by:
@@ -342,7 +341,7 @@ functions:
         \left(1-\exp\left(-2\exp\left(\boldsymbol{x}_{k}\hat{\boldsymbol{\beta}}\right)\right)\right)^{-1}.
         \tag{\text{Zelterman's estimator}}
     \end{align}
-    \item Zero-truncated (\code{zt}$^\ast$) and zero-one-truncated (\code{ztoi}$^\ast$) Poisson \citep[cf. ][]{zotmodels}, geometric, NB type II (NB2) regression where the non-truncated distribution is parameterized as:
+    \item Zero-truncated (\code{zt}$^\ast$) and zero-one-truncated (\code{zot}$^\ast$) Poisson \citep[cf. ][]{zotmodels}, geometric, NB type II (NB2) regression where the non-truncated distribution is parameterized as:
     \begin{equation*}
         \mathbb{P}[Y=y|\lambda,\alpha] = \frac{\Gamma\left(y+\alpha^{-1}\right)}{\Gamma\left(\alpha^{-1}\right)y!}
         \left(\frac{\alpha^{-1}}{\alpha^{-1}+\lambda}\right)^{\alpha^{-1}}
@@ -508,7 +507,7 @@ which is often just
     else \code{iter}$\leftarrow 1+$\code{iter} and return to step 2.
 \end{algorithm}
 
-\subsection{Variance estimation using bootstrap}\label{sec-boostrap}
+\subsection{Bootstrap variance estimators}\label{sec-boostrap}
 
 We have implemented three types of bootstrap algorithms: parametric,
 semi-parametric and nonparametric with the nonparametric being bootstrap
@@ -563,17 +562,28 @@ algorithm is the default in \pkg{singleRcapture}.
 The main function that \pkg{singleRcapture} is built around is
 \code{estimatePopsize}. The leading design principle was to make using
 \code{estimatePopsize} as close to standard \code{stats::glm} as
-possible. The most important arguments are:
+possible. The most important arguments are given in Table
+\ref{tab-arguments-popsize}.
 
-\begin{itemize}
-    \item \code{formula} -- the main formula (i.e for the Poisson $\lambda$ parameter),
-    \item \code{data} -- the \code{data.frame} (or \code{data.frame} coercible) object,
-    \item \code{model} -- either a function a string or a family class object specifying which model should be used possible values are listed in documentation. The supplied argument should have the form \code{model =  "ztpoisson"}, \code{model = ztpoisson} or if link function should be specified then \code{model = ztpoisson(lambdaLink = "log")} can be used,
-    \item \code{method} -- numerical method used to fit regression \code{IRLS} or \code{optim},
-    \item \code{popVar} -- a method for estimating variance of $\hat{N}$ and confidence interval creation (either bootstrap, analytic or skipping the estimation entirely),
-    \item \code{controlMethod, controlModel, controlPopVar} -- control parameters for numerical fitting, specifying additional formulas (inflation, dispersion) and population size estimation respectively,
-    \item \code{offset} -- a matrix of offset values with number of columns matching the number of distribution parameters providing offset values to each of linear predictors.
-\end{itemize}
+\begin{table}[ht!]
+\centering
+\begin{tabular}{p{3cm}p{11cm}}
+\hline
+Argument & Description \\
+\hline
+\code{formula} & The main formula (i.e for the Poisson $\lambda$ parameter) \\
+\code{data} & the \code{data.frame} (or \code{data.frame} coercible) object \\
+\code{model} & either a function a string or a family class object specifying which model should be used possible values are listed in documentation. The supplied argument should have the form \code{model =  "ztpoisson"}, \code{model = ztpoisson} or if link function should be specified then \code{model = ztpoisson(lambdaLink = "log")} can be used \\
+\code{method} & numerical method used to fit regression \code{IRLS} or \code{optim} \\
+\code{popVar} & a method for estimating variance of $\hat{N}$ and confidence interval creation (either bootstrap, analytic or skipping the estimation entirely) \\
+\code{controlMethod}, \code{controlModel} or \code{controlPopVar} & control parameters for numerical fitting, specifying additional formulas (inflation, dispersion) and population size estimation respectively \\
+\code{offset} &  a matrix of offset values with number of columns matching the number of distribution parameters providing offset values to each of linear predictors\\
+\code{...} & additional optional arguments passed to other methods eg. \code{estimatePopsizeFit} \\
+\hline
+\end{tabular}
+\caption{\code{estimatePopsize()} arguments description}
+\label{tab-arguments-popsize}
+\end{table}
 
 With the \code{formula, data, model} being the three arguments which
 must be provided in \code{estimatePopsize} syntax.
@@ -673,6 +683,12 @@ R> basicModel <- estimatePopsize(
 +   model   = ztpoisson(),
 +   data    = netherlandsimmigrant
 + )
+\end{CodeInput}
+\begin{CodeOutput}
+Warning in singleRcaptureinternalIRLSmultipar(dependent = y, covariates = X, :
+Convergence at halfstepsize
+\end{CodeOutput}
+\begin{CodeInput}
 R> summary(basicModel)
 \end{CodeInput}
 \begin{CodeOutput}
@@ -710,15 +726,15 @@ Number of iterations: 8
 Population size estimation results: 
 Point estimate 12690.35
 Observed proportion: 14.8% (N obs = 1880)
-Std. Error 2808.169
+Std. Error 2808.165
 95% CI for the population size:
           lowerBound upperBound
-normal      7186.444   18194.26
-logNormal   8431.275   19718.32
+normal      7186.449   18194.25
+logNormal   8431.277   19718.31
 95% CI for the share of observed population:
           lowerBound upperBound
-normal     10.332927   26.16037
-logNormal   9.534281   22.29793
+normal     10.332933   26.16035
+logNormal   9.534288   22.29793
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -908,7 +924,7 @@ age\textgreater40yrs & -2.0010 & 0.0179 & 0.0379 & 0.0691 & 16.0061 \\
 nationAsia & -9.5559 & -0.0529 & 0.0066 & 0.0120 & 17.9914 \\
 nationNorth Africa & -9.6605 & -0.0842 & -0.0177 & 0.0087 & 3.1260 \\
 nationRest of Africa & -9.4497 & -0.0244 & 0.0030 & 0.0083 & 10.9787 \\
-nationSurinam & -9.3140 & -0.0066 & 0.0020 & 0.0035 & 99.3383 \\
+nationSurinam & -9.3138 & -0.0065 & 0.0021 & 0.0037 & 99.3383 \\
 nationTurkey & -9.6198 & -0.0220 & 0.0079 & 0.0143 & 32.0980 \\
 \end{longtable}
 
@@ -930,7 +946,7 @@ Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
--4236.412 & 2.663536 & 2.663536 & 5.448042 & 17.28424 & 117.4479 \\
+-4236.407 & 2.660421 & 2.660421 & 5.444929 & 17.28112 & 117.4448 \\
 \end{longtable}
 
 The comparison of deletion effect on population size estimate and
@@ -1003,15 +1019,15 @@ UpperBound
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-gender==female & 398 & 3811.09 & 2189.04 & 6902.14 \\
-gender==male & 1482 & 8879.26 & 6090.78 & 13354.89 \\
-age==\textless40yrs & 1769 & 10506.90 & 7359.41 & 15426.47 \\
+gender==female & 398 & 3811.09 & 2189.04 & 6902.13 \\
+gender==male & 1482 & 8879.26 & 6090.78 & 13354.88 \\
+age==\textless40yrs & 1769 & 10506.90 & 7359.42 & 15426.45 \\
 age==\textgreater40yrs & 111 & 2183.45 & 872.01 & 5754.88 \\
 nation==American and Australia & 173 & 708.37 & 504.61 & 1037.33 \\
 nation==Asia & 284 & 2742.31 & 1755.25 & 4391.59 \\
 nation==North Africa & 1023 & 3055.20 & 2697.49 & 3489.33 \\
 nation==Rest of Africa & 243 & 2058.15 & 1318.75 & 3305.79 \\
-nation==Surinam & 64 & 2386.45 & 505.25 & 12288.01 \\
+nation==Surinam & 64 & 2386.45 & 505.25 & 12287.98 \\
 nation==Turkey & 93 & 1739.86 & 638.05 & 5068.96 \\
 \end{longtable}
 
@@ -1070,7 +1086,7 @@ UpperBound
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-gender==female & 398 & 3811.09 & 2275.64 & 6602.17 \\
+gender==female & 398 & 3811.09 & 2275.64 & 6602.16 \\
 gender==male & 1482 & 8879.26 & 6745.57 & 11877.89 \\
 genderfemale:nationAmerican and Australia & 67 & 328.88 & 255.77 &
 430.30 \\
@@ -1082,13 +1098,13 @@ genderfemale:nationNorth Africa & 169 & 644.05 & 517.56 & 816.45 \\
 gendermale:nationNorth Africa & 854 & 2411.15 & 2242.89 & 2599.80 \\
 genderfemale:nationRest of Africa & 65 & 682.18 & 527.30 & 888.94 \\
 gendermale:nationRest of Africa & 178 & 1375.98 & 1155.80 & 1645.73 \\
-genderfemale:nationSurinam & 20 & 931.47 & 234.36 & 3895.64 \\
-gendermale:nationSurinam & 44 & 1454.99 & 502.11 & 4389.90 \\
+genderfemale:nationSurinam & 20 & 931.47 & 234.36 & 3895.63 \\
+gendermale:nationSurinam & 44 & 1454.98 & 502.11 & 4389.89 \\
 genderfemale:nationTurkey & 15 & 448.61 & 241.64 & 844.56 \\
 gendermale:nationTurkey & 78 & 1291.25 & 836.66 & 2018.24 \\
 genderfemale:age\textless40yrs & 378 & 3169.83 & 2617.47 & 3858.42 \\
-gendermale:age\textless40yrs & 1391 & 7337.07 & 5543.48 & 9905.38 \\
-genderfemale:age\textgreater40yrs & 20 & 641.27 & 288.73 & 1456.27 \\
+gendermale:age\textless40yrs & 1391 & 7337.07 & 5543.48 & 9905.37 \\
+genderfemale:age\textgreater40yrs & 20 & 641.26 & 288.73 & 1456.27 \\
 gendermale:age\textgreater40yrs & 91 & 1542.19 & 899.88 & 2694.54 \\
 \end{longtable}
 
@@ -1097,7 +1113,7 @@ gendermale:age\textgreater40yrs & 91 & 1542.19 & 899.88 & 2694.54 \\
 We provide integration with the \pkg{sandwich} \citep{sandwich} package
 to correct variance-covariance matrix in the \(\delta\) method. In the
 code we have used the \code{vcovHC} method for
-\code{singleRStaticCountData} class from the \pkg{sandwitch} package,
+\code{singleRStaticCountData} class from the \pkg{sandwich} package,
 different significance levels for confidence intervals in each strata
 and a formula to specify that we wanted estimates for both males and
 females subdivided by \code{nation} and \code{age}. The \code{stratas}
@@ -1151,11 +1167,11 @@ R> (popEst <- popSizeEst(basicModel))
 \end{CodeInput}
 \begin{CodeOutput}
 Point estimate: 12690.35
-Variance: 7885812
+Variance: 7885790
 95% confidence intervals:
           lowerBound upperBound
-normal      7186.444   18194.26
-logNormal   8431.275   19718.32
+normal      7186.449   18194.25
+logNormal   8431.277   19718.31
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1187,7 +1203,7 @@ age>40yrs            -0.9746058  0.4082420 -2.3873235 1.697155e-02
 nationAsia           -1.0925990  0.3016259 -3.6223642 2.919228e-04
 nationNorth Africa    0.1899980  0.1940007  0.9793677 3.273983e-01
 nationRest of Africa -0.9106361  0.3008092 -3.0272880 2.467587e-03
-nationSurinam        -2.3363962  1.0135645 -2.3051282 2.115939e-02
+nationSurinam        -2.3363949  1.0135639 -2.3051284 2.115938e-02
 nationTurkey         -1.6753917  0.6027744 -2.7794674 5.444812e-03
 \end{CodeOutput}
 \end{CodeChunk}
@@ -1217,25 +1233,32 @@ R> summary(data.frame(gender, eta, counts))
 \end{CodeChunk}
 
 The full list of explicitly defined methods for
-\code{singleRStaticCountData} methods is:
+\code{singleRStaticCountData} methods is
 
-\begin{itemize}
-  \item \code{AIC, BIC, extractAIC, family, confint, df.residual, model.frame, hatvalues, nobs, print} -- 
-  Which work exactly like \code{glm} counterparts.
-  \item \code{fitted} -- Which work almost exactly like \code{glm} counterparts but return more information, namely on fitted values for the truncated and non-truncated probability distribution.
-  \item \code{logLik} -- which compared to \code{glm} method has the possiblity of returning not just the value of the fitted loglikelihood mut also the entire function (argument \code{type = "function"}) along with two first derivatives (argument \code{deriv = 0:2}).
-  \item \code{model.matrix} -- which has the possibility of returning the $X_{\text{vlm}}$ matrix defined in \ref{X_vlm-definition}.
-  \item \code{simulate} -- which calls \code{simulate} method for the chosen model and fitted $\boldsymbol{\eta}$.
-  \item \code{predict} -- which has the possibility of returning either of fitted ditribution parameters for each unit (\code{type = "response"}), just linear predictors (\code{type = "link"}), means of the fitted distributnios of $Y$ and $Y|Y>0$ (\code{type = "mean"}) and the inverse probability weights (\code{type = "contr"}). There us also the \code{se.fit} argument which can be set to \code{TRUE} to obtain standard errors for each of those by using the $\delta$ method. Also it is possible to use a custom covariance matrix for standard error computation (argument \code{cov}).
-  \item \code{redoPopEstimation} -- A function that applies all post-hoc procedures that were taken (such as heteroscedastic consistent covariance matrix estimation or bias reduction) to population size estimation and standard error estimation.
-  \item \code{residuals} -- for obtaining residuals of several types, we refer interested readers to the manual \code{?singleRcapture:::residuals.singleRStaticCountData}.
-  \item \code{stratifyPopsize, summary} -- which were already discussed. Compared to \code{glm} class summary has the possibility of adding confidence interval to the coefficient matrix (argument \code{confint = TRUE}) and using custom covariance matrix (argument \code{cov = someMatrix}).
-  \item \code{plot} -- which was already discussed.
-  \item \code{popSizeEst} -- an extractor showcased above.
-  \item \code{cooks.distance} -- which works only for single predictor models
-  \item \code{dfbeta, dfpopsize} -- Multithreading in \code{dfbeta} is available and \code{dfpopsize} calls \code{dfbeta} if no \code{dfbeta} object was provided at call.
-  \item \code{bread, estfun, vcovHC} -- for (almost) full \pkg{sandwitch} compatibility.
-\end{itemize}
+\begin{table}[ht!]
+\centering
+\begin{tabular}{p{5cm}p{11cm}}
+\hline 
+Function & Description \\
+\hline
+\code{fitted} & Which work almost exactly like \code{glm} counterparts but return more information, namely on fitted values for the truncated and non-truncated probability distribution. \\
+\code{logLik} & which compared to \code{glm} method has the possiblity of returning not just the value of the fitted loglikelihood mut also the entire function (argument \code{type = "function"}) along with two first derivatives (argument \code{deriv = 0:2}) \\
+\code{model.matrix} & which has the possibility of returning the $X_{\text{vlm}}$ matrix defined in \ref{X_vlm-definition}\\
+\code{simulate} & which calls \code{simulate} method for the chosen model and fitted $\boldsymbol{\eta}$ \\
+\code{predict} &  which has the possibility of returning either of fitted ditribution parameters for each unit (\code{type = "response"}), just linear predictors (\code{type = "link"}), means of the fitted distributnios of $Y$ and $Y|Y>0$ (\code{type = "mean"}) and the inverse probability weights (\code{type = "contr"}). There us also the \code{se.fit} argument which can be set to \code{TRUE} to obtain standard errors for each of those by using the $\delta$ method. Also it is possible to use a custom covariance matrix for standard error computation (argument \code{cov}). \\
+\code{redoPopEstimation} & A function that applies all post-hoc procedures that were taken (such as heteroscedastic consistent covariance matrix estimation or bias reduction) to population size estimation and standard error estimation. \\
+\code{residuals} & for obtaining residuals of several types, we refer interested readers to the manual \code{?singleRcapture:::residuals.singleRStaticCountData}. \\
+\code{stratifyPopsize, summary} & which were already discussed. Compared to \code{glm} class summary has the possibility of adding confidence interval to the coefficient matrix (argument \code{confint = TRUE}) and using custom covariance matrix (argument \code{cov = someMatrix}) \\
+\code{plot} & which was already discussed \\
+\code{popSizeEst} & an extractor showcased above. \\
+\code{cooks.distance} & which works only for single predictor models \\
+\code{dfbeta, dfpopsize} & Multithreading in \code{dfbeta} is available and \code{dfpopsize} calls \code{dfbeta} if no \code{dfbeta} object was provided at call. \\
+\code{bread, estfun, vcovHC} & for (almost) full \pkg{sandwich} compatibility. \\
+\code{AIC, BIC, extractAIC, family, confint, df.residual, model.frame, hatvalues, nobs, print}  & Which work exactly like \code{glm} counterparts.\\
+\hline 
+\end{tabular}
+\caption{\code{S3Methods} implemented in the \pkg{singleRcapture}}
+\end{table}
 
 \section[Integration with the]{Integration with the \pkg{VGAM, countreg}
 packages}\label{VGAMcountreg-packages}
@@ -1983,7 +2006,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x134a65620>
+<bytecode: 0x11a8a4eb0>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}
