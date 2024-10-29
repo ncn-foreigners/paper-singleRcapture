@@ -206,7 +206,7 @@ conclusions and an appendix that shows how to a implement custom model
 and how one can use the \code{estimatePopsizeFit} which is faster than
 the main function but only estimates regression, which could be of
 interest to users interested in using any new bootstrap methods not
-programmed in the package.
+programmed in the package (see Appendix \ref{sec-estimatePopsizeFit}).
 
 \section{Theoretical background}\label{sec-theory}
 
@@ -1535,9 +1535,22 @@ s(log_size, df = 3):s(log_distance, df = 2):C_TYPE
 
 \section{Concluding remarks}\label{concluding-remarks}
 
-TBA
+In this paper we have introduced two packages for single source
+capture-recapture models, namely \pkg{singleRcapture} and
+\pkg{singleRcaptureExtra}. The packages implement state of the art
+methods for estimating population size based on a single data set with
+multiple counts. The package allows for different methods to account for
+heterogeneity in capture probabilities, modelled using covariates, as
+well as behavioural change, modelled using one-inflation. We have build
+the package in a such way that it is easy to implement new models using
+\code{family} objects which is demonstrated in the Appendix
+\ref{sec-family}.
 
-Bayesian models -- Tiziana works
+In future work we plan to consider Bayesian estimation using
+\proglang{Stan} (e.g.~via the \pkg{brms} package;
+\cite{carpenter2017stan, brms}) and for one-inflation models we may use
+the recent approach proposed by \cite{tuoto2022bayesian} and implement
+our own families using the \pkg{brms} package.
 
 \section{Acknowledgements}\label{Acknowledgements}
 
@@ -1553,24 +1566,89 @@ functionality of the package.
 \section{Detailed information}\label{sec-details}
 
 \subsection[The estimatePopsizeFit function]{The
-\code{estimatePopsizeFit} function}\label{estimatePopsizeFit-function}
+\code{estimatePopsizeFit} function}\label{sec-estimatePopsizeFit}
+
+In this section we provide step-by-step description how to prepare data
+to use the \code{sec-estimatePopsizeFit} function that may be useful for
+instance for estimation of variance.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  We create data matrix \(\boldsymbol{X}_{vlm}\)
+\end{enumerate}
 
 \begin{CodeChunk}
 \begin{CodeInput}
 R> X <- matrix(data = 0, nrow = 2 * NROW(farmsubmission), ncol = 7)
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  We fill the first \(n\) rows with \code{model.matrix} according to the
+  specified formula and specify the attribute \code{attr(X, "hwm")} that
+  informs the function which elements of the design matrix correspond to
+  which linear predictor (covariates for counts and covariates for
+  one-inflation)
+\end{enumerate}
+
+\begin{CodeChunk}
+\begin{CodeInput}
 R> X[1:NROW(farmsubmission), 1:4] <- model.matrix(
 +   ~ 1 + log_size + log_distance + C_TYPE, 
 +   farmsubmission
 + )
-R> X[-(1:NROW(farmsubmission)), 5:7] <- X[1:NROW(farmsubmission), c(1, 3, 4)]
-R> # this attribute tells the function which elements of the design matrix 
-R> # correspond to which linear predictor 
+R> 
+R> X[-(1:NROW(farmsubmission)), 5:7] <- model.matrix(
++   ~ 1 + log_distance + C_TYPE, 
++   farmsubmission
++ )
+R> 
 R> attr(X, "hwm") <- c(4, 3)
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  We obtain starting \(\boldsymbol{\beta}\) parameters using
+  \code{glm.fit} function.
+\end{enumerate}
+
+\begin{CodeChunk}
+\begin{CodeInput}
 R> start <- glm.fit(# get starting points
 +   y = farmsubmission$TOTAL_SUB, 
 +   x = X[1:NROW(farmsubmission), 1:4], 
 +   family = poisson()
 + )$coefficients
+R> 
+R> start
+\end{CodeInput}
+\begin{CodeOutput}
+[1] -0.82583943  0.33254499 -0.03277732  0.32746933
+\end{CodeOutput}
+\end{CodeChunk}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  We use \code{estimatePopsizeFit} function to fit the model assuming
+  zero-truncated one-inflated geometric distribution as specified in the
+  \code{family} argument.
+\end{enumerate}
+
+\begin{CodeChunk}
+\begin{CodeInput}
 R> res <- estimatePopsizeFit(
 +   y            = farmsubmission$TOTAL_SUB, 
 +   X            = X, 
@@ -1582,16 +1660,27 @@ R> res <- estimatePopsizeFit(
 +   etaStart     = matrix(X %*% c(start, 0, 0, 0), ncol = 2),
 +   offset       = cbind(rep(0, NROW(farmsubmission)), 
 +                        rep(0, NROW(farmsubmission)))
-+ )# extract results
-R> ll <- ztoigeom()$makeMinusLogLike(y = farmsubmission$TOTAL_SUB, X = X)
-R> print(c(res$beta, -ll(res$beta), res$iter))
++ )
 \end{CodeInput}
-\begin{CodeOutput}
-[1] -2.784523e+00  6.170270e-01 -6.455925e-02  5.346108e-01 -3.174491e+00
-[6]  1.280589e-01 -1.086452e+00 -1.727876e+04  1.500000e+01
-\end{CodeOutput}
+\end{CodeChunk}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  We compare our results with those that can be obtained from
+  \code{stats::optim} function.
+\end{enumerate}
+
+\begin{CodeChunk}
 \begin{CodeInput}
-R> # Compare with optim call
+R> ll <- ztoigeom()$makeMinusLogLike(y = farmsubmission$TOTAL_SUB, X = X)
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
 R> res2 <- estimatePopsizeFit(
 +   y = farmsubmission$TOTAL_SUB, 
 +   X = X, 
@@ -1601,28 +1690,39 @@ R> res2 <- estimatePopsizeFit(
 +   coefStart = c(start, 0, 0, 0),
 +   control = controlMethod(silent = TRUE),
 +   offset = cbind(rep(0, NROW(farmsubmission)), rep(0, NROW(farmsubmission)))
-+ )# extract results
-R> c(res2$beta, -ll(res2$beta), res2$iter)
++ )
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> data.frame(singleRcapture = round(c(res$beta, -ll(res$beta), res$iter), 4),
++            optim = round(c(res2$beta, -ll(res2$beta), res2$iter[1]), 4))
 \end{CodeInput}
 \begin{CodeOutput}
-                                                                      
--2.640779e+00  6.258275e-01 -8.293688e-02  5.324707e-01 -1.243731e-01 
-                                               function      gradient 
--1.629884e-01 -1.105502e+00 -1.728034e+04  1.002000e+03            NA 
+  singleRcapture       optim
+1        -2.7845     -2.6408
+2         0.6170      0.6258
+3        -0.0646     -0.0829
+4         0.5346      0.5325
+5        -3.1745     -0.1244
+6         0.1281     -0.1630
+7        -1.0865     -1.1055
+8    -17278.7613 -17280.3414
+9        15.0000   1002.0000
 \end{CodeOutput}
 \end{CodeChunk}
 
-\subsection{Structure of a family
-function}\label{structure-of-a-family-function}
+\subsection{Structure of a family function}\label{sec-family}
 
 \itemize{
   \item \code{makeMinusLogLike} -- A factory function for creating the:
   \begin{equation*}
-    \ell(\bbeta), 
-    \frac{\partial\ell}{\partial\bbeta},
-    \frac{\partial^{2}\ell}{\partial\bbeta^\top\partial\bbeta}
+    \ell(\boldsymbol{\beta}), 
+    \frac{\partial\ell}{\partial\boldsymbol{\beta}},
+    \frac{\partial^{2}\ell}{\partial\boldsymbol{\beta}^\top\partial\boldsymbol{\beta}}
   \end{equation*}
-  functions from $\boldsymbol{y}$ vector and $\bX_{vlm}$ the argument \code{deriv} with possible 
+  functions from $\boldsymbol{y}$ vector and $\boldsymbol{X}_{vlm}$ the argument \code{deriv} with possible 
   values in \code{c(0, 1, 2)} provides which derivative to return with the default \code{0} being just the minus log-likelihood.
   \item \code{links} -- List with link functions.
   \item \code{mu.eta, variance} -- Functions of linear predictors that return expected value and variance. There is a `type` argument with 2 possible values \code{"trunc"} and \code{"nontrunc"} that specifies whether to return $\mathbb{E}[Y|Y>0], \text{var}[Y|Y>0]$ or $\mathbb{E}[Y], \text{var}[Y]$ respectively, also the \code{deriv} argument with values in \code{c(0, 1, 2)} is used for indicating the derivative with respect to the linear predictors with is used for providing standard error in \code{predict} method.
@@ -1630,7 +1730,7 @@ function}\label{structure-of-a-family-function}
   \item \code{valideta, validmu} -- For now only returns true. In near future will be used to check whether applied linear predictors are valid (i.e. are transformed into some elements of parameter space the subjected to inverse link function).
   \item \code{funcZ, Wfun} -- Functions that create pseudo residuals and working weights used in IRLS algorithm.
   \item \code{devResids} -- Function that given the linear predictors prior weights vector and response vector returns deviance residuals.
-  \item \code{pointEst, popVar} -- Functions that given prior weights linear predictors and in the later case also estimation of  $\text{cov}(\hat{\bbeta})$ and $\boldsymbol{X_{vlm}}$ matrix return point estimate for population size and analytic estimation of its variance.There is a additional boolean parameter \code{contr} in the former function that if set to true returns contribution of each unit.
+  \item \code{pointEst, popVar} -- Functions that given prior weights linear predictors and in the later case also estimation of  $\text{cov}(\hat{\boldsymbol{\beta}})$ and $\boldsymbol{X_{vlm}}$ matrix return point estimate for population size and analytic estimation of its variance.There is a additional boolean parameter \code{contr} in the former function that if set to true returns contribution of each unit.
   \item \code{etaNames} -- Names of linear predictors.
   \item \code{densityFunction} -- A function that given linear predictors returns value of PMF at values \code{x}. Additional argument \code{type} specifies whether to return $\mathbb{P}[Y|Y>0]$ or $\mathbb{P}[Y]$.
   \item \code{simulate} -- A function that generates values of dependent  vector given linear predictors.
@@ -2085,7 +2185,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x121c85bd8>
+<bytecode: 0x1284589f8>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}

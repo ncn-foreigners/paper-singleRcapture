@@ -5,45 +5,45 @@ The style file: jss.bst
 Database file #1: refs.bib
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Warning--missing school in baffour-awuah2009
-You've used 30 entries,
+You've used 33 entries,
             3215 wiz_defined-function locations,
-            826 strings with 10697 characters,
-and the built_in function-call counts, 28810 in all, are:
-= -- 2846
-> -- 630
-< -- 23
-+ -- 244
-- -- 205
-* -- 2101
-:= -- 3426
-add.period$ -- 120
-call.type$ -- 30
-change.case$ -- 192
-chr.to.int$ -- 31
-cite$ -- 31
-duplicate$ -- 3007
-empty$ -- 2349
-format.name$ -- 306
-if$ -- 5848
+            843 strings with 11234 characters,
+and the built_in function-call counts, 32854 in all, are:
+= -- 3249
+> -- 750
+< -- 24
++ -- 289
+- -- 247
+* -- 2412
+:= -- 3895
+add.period$ -- 133
+call.type$ -- 33
+change.case$ -- 218
+chr.to.int$ -- 34
+cite$ -- 34
+duplicate$ -- 3430
+empty$ -- 2655
+format.name$ -- 355
+if$ -- 6662
 int.to.chr$ -- 3
 int.to.str$ -- 1
-missing$ -- 314
-newline$ -- 167
-num.names$ -- 120
-pop$ -- 1434
+missing$ -- 355
+newline$ -- 183
+num.names$ -- 132
+pop$ -- 1642
 preamble$ -- 1
-purify$ -- 188
+purify$ -- 214
 quote$ -- 0
-skip$ -- 545
+skip$ -- 605
 stack$ -- 0
-substring$ -- 2999
-swap$ -- 777
+substring$ -- 3455
+swap$ -- 874
 text.length$ -- 1
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 264
+type$ -- 291
 warning$ -- 1
-while$ -- 197
+while$ -- 226
 width$ -- 0
-write$ -- 409
+write$ -- 450
 (There was 1 warning)
