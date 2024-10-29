@@ -1569,14 +1569,14 @@ functionality of the package.
 \code{estimatePopsizeFit} function}\label{sec-estimatePopsizeFit}
 
 In this section we provide step-by-step description how to prepare data
-to use the \code{sec-estimatePopsizeFit} function that may be useful for
+to use the \code{estimatePopsizeFit} function that may be useful for
 instance for estimation of variance.
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  We create data matrix \(\boldsymbol{X}_{vlm}\)
+  Create data matrix \(\boldsymbol{X}_{vlm}\)
 \end{enumerate}
 
 \begin{CodeChunk}
@@ -1590,7 +1590,7 @@ R> X <- matrix(data = 0, nrow = 2 * NROW(farmsubmission), ncol = 7)
 \setcounter{enumi}{1}
 \tightlist
 \item
-  We fill the first \(n\) rows with \code{model.matrix} according to the
+  Fill the first \(n\) rows with \code{model.matrix} according to the
   specified formula and specify the attribute \code{attr(X, "hwm")} that
   informs the function which elements of the design matrix correspond to
   which linear predictor (covariates for counts and covariates for
@@ -1618,8 +1618,8 @@ R> attr(X, "hwm") <- c(4, 3)
 \setcounter{enumi}{2}
 \tightlist
 \item
-  We obtain starting \(\boldsymbol{\beta}\) parameters using
-  \code{glm.fit} function.
+  Obtain starting \(\boldsymbol{\beta}\) parameters using \code{glm.fit}
+  function.
 \end{enumerate}
 
 \begin{CodeChunk}
@@ -1642,7 +1642,7 @@ R> start
 \setcounter{enumi}{3}
 \tightlist
 \item
-  We use \code{estimatePopsizeFit} function to fit the model assuming
+  Use \code{estimatePopsizeFit} function to fit the model assuming
   zero-truncated one-inflated geometric distribution as specified in the
   \code{family} argument.
 \end{enumerate}
@@ -1669,8 +1669,7 @@ R> res <- estimatePopsizeFit(
 \setcounter{enumi}{4}
 \tightlist
 \item
-  We compare our results with those that can be obtained from
-  \code{stats::optim} function.
+  Compare our results with those from \code{stats::optim} function.
 \end{enumerate}
 
 \begin{CodeChunk}
@@ -1715,27 +1714,41 @@ R> data.frame(singleRcapture = round(c(res$beta, -ll(res$beta), res$iter), 4),
 
 \subsection{Structure of a family function}\label{sec-family}
 
-\itemize{
-  \item \code{makeMinusLogLike} -- A factory function for creating the:
+In this section we provide details on the \code{family} object for the
+\pkg{singleRcapture} package. This object contains additional parameters
+in comparison to the standard \code{family} object from the \code{stats}
+package.
+
+\begin{table}[ht!]
+\centering
+\small
+\begin{tabular}{p{4cm}p{11cm}}
+\hline 
+Function & Description \\
+\hline
+\code{makeMinusLogLike} & 
+A factory function for creating the:
   \begin{equation*}
     \ell(\boldsymbol{\beta}), 
     \frac{\partial\ell}{\partial\boldsymbol{\beta}},
     \frac{\partial^{2}\ell}{\partial\boldsymbol{\beta}^\top\partial\boldsymbol{\beta}}
   \end{equation*}
   functions from $\boldsymbol{y}$ vector and $\boldsymbol{X}_{vlm}$ the argument \code{deriv} with possible 
-  values in \code{c(0, 1, 2)} provides which derivative to return with the default \code{0} being just the minus log-likelihood.
-  \item \code{links} -- List with link functions.
-  \item \code{mu.eta, variance} -- Functions of linear predictors that return expected value and variance. There is a `type` argument with 2 possible values \code{"trunc"} and \code{"nontrunc"} that specifies whether to return $\mathbb{E}[Y|Y>0], \text{var}[Y|Y>0]$ or $\mathbb{E}[Y], \text{var}[Y]$ respectively, also the \code{deriv} argument with values in \code{c(0, 1, 2)} is used for indicating the derivative with respect to the linear predictors with is used for providing standard error in \code{predict} method.
-  \item \code{family} -- Character that specifies name of the model.
-  \item \code{valideta, validmu} -- For now only returns true. In near future will be used to check whether applied linear predictors are valid (i.e. are transformed into some elements of parameter space the subjected to inverse link function).
-  \item \code{funcZ, Wfun} -- Functions that create pseudo residuals and working weights used in IRLS algorithm.
-  \item \code{devResids} -- Function that given the linear predictors prior weights vector and response vector returns deviance residuals.
-  \item \code{pointEst, popVar} -- Functions that given prior weights linear predictors and in the later case also estimation of  $\text{cov}(\hat{\boldsymbol{\beta}})$ and $\boldsymbol{X_{vlm}}$ matrix return point estimate for population size and analytic estimation of its variance.There is a additional boolean parameter \code{contr} in the former function that if set to true returns contribution of each unit.
-  \item \code{etaNames} -- Names of linear predictors.
-  \item \code{densityFunction} -- A function that given linear predictors returns value of PMF at values \code{x}. Additional argument \code{type} specifies whether to return $\mathbb{P}[Y|Y>0]$ or $\mathbb{P}[Y]$.
-  \item \code{simulate} -- A function that generates values of dependent  vector given linear predictors.
-  \item \code{getStart} -- Expression for generating starting points.
-}
+  values in \code{c(0, 1, 2)} provides which derivative to return with the default \code{0} being just the minus log-likelihood \\
+\code{links} & List with link functions \\
+\code{mu.eta, variance} & Functions of linear predictors that return expected value and variance. There is a `type` argument with 2 possible values \code{"trunc"} and \code{"nontrunc"} that specifies whether to return $\mathbb{E}[Y|Y>0], \text{var}[Y|Y>0]$ or $\mathbb{E}[Y], \text{var}[Y]$ respectively, also the \code{deriv} argument with values in \code{c(0, 1, 2)} is used for indicating the derivative with respect to the linear predictors with is used for providing standard error in \code{predict} method \\
+\code{family} & Character that specifies name of the model \\
+\code{valideta, validmu} & For now only returns true. In near future will be used to check whether applied linear predictors are valid (i.e. are transformed into some elements of parameter space the subjected to inverse link function) \\
+\code{funcZ, Wfun} & Functions that create pseudo residuals and working weights used in IRLS algorithm \\
+\code{devResids}  & Function that given the linear predictors prior weights vector and response vector returns deviance residuals \\
+\code{pointEst, popVar} & Functions that given prior weights linear predictors and in the later case also estimation of  $\text{cov}(\hat{\boldsymbol{\beta}})$ and $\boldsymbol{X_{vlm}}$ matrix return point estimate for population size and analytic estimation of its variance.There is a additional boolean parameter \code{contr} in the former function that if set to true returns contribution of each unit \\
+\code{etaNames} & Names of linear predictors \\
+\code{densityFunction} & A function that given linear predictors returns value of PMF at values \code{x}. Additional argument \code{type} specifies whether to return $\mathbb{P}[Y|Y>0]$ or $\mathbb{P}[Y]$ \\
+\code{simulate} & A function that generates values of dependent  vector given linear predictors \\
+\code{getStart} & Expression for generating starting points \\
+\hline
+\end{tabular}
+\end{table}
 
 \section[Implementing custom singleRcapture family function]{Implementing
 custom \pkg{singleRcapture} family
@@ -2185,7 +2198,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x1284589f8>
+<bytecode: 0x12dbd85c8>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}

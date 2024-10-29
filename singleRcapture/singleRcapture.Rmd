@@ -1003,34 +1003,41 @@ data.frame(singleRcapture = round(c(res$beta, -ll(res$beta), res$iter), 4),
            optim = round(c(res2$beta, -ll(res2$beta), res2$iter[1]), 4))
 ```
 
+
 ## Structure of a family function {#sec-family}
 
-In this section we provide details about the \code{family} object for the \pkg{singleRcapture} package. This object contains additional parameters in comparison to the standard \code{family} object from the \code{stats} package.
+In this section we provide details on the \code{family} object for the \pkg{singleRcapture} package. This object contains additional parameters in comparison to the standard \code{family} object from the \code{stats} package.
 
-\itemize{
-  \item \code{makeMinusLogLike} -- A factory function for creating the:
+\begin{table}[ht!]
+\centering
+\small
+\begin{tabular}{p{4cm}p{11cm}}
+\hline 
+Function & Description \\
+\hline
+\code{makeMinusLogLike} & 
+A factory function for creating the:
   \begin{equation*}
     \ell(\bbeta), 
     \frac{\partial\ell}{\partial\bbeta},
     \frac{\partial^{2}\ell}{\partial\bbeta^\top\partial\bbeta}
   \end{equation*}
   functions from $\boldsymbol{y}$ vector and $\bX_{vlm}$ the argument \code{deriv} with possible 
-  values in \code{c(0, 1, 2)} provides which derivative to return with the default \code{0} being just the minus log-likelihood.
-  \item \code{links} -- List with link functions.
-  \item \code{mu.eta, variance} -- Functions of linear predictors that return expected value and variance. There is a `type` argument with 2 possible values \code{"trunc"} and \code{"nontrunc"} that specifies whether to return $\mathbb{E}[Y|Y>0], \text{var}[Y|Y>0]$ or $\mathbb{E}[Y], \text{var}[Y]$ respectively, also the \code{deriv} argument with values in \code{c(0, 1, 2)} is used for indicating the derivative with respect to the linear predictors with is used for providing standard error in \code{predict} method.
-  \item \code{family} -- Character that specifies name of the model.
-  \item \code{valideta, validmu} -- For now only returns true. In near future will be used to check whether applied linear predictors are valid (i.e. are transformed into some elements of parameter space the subjected to inverse link function).
-  \item \code{funcZ, Wfun} -- Functions that create pseudo residuals and working weights used in IRLS algorithm.
-  \item \code{devResids} -- Function that given the linear predictors prior weights vector and response vector returns deviance residuals.
-  \item \code{pointEst, popVar} -- Functions that given prior weights linear predictors and in the later case also estimation of  $\text{cov}(\hat{\bbeta})$ and $\boldsymbol{X_{vlm}}$ matrix return point estimate for population size and analytic estimation of its variance.There is a additional boolean parameter \code{contr} in the former function that if set to true returns contribution of each unit.
-  \item \code{etaNames} -- Names of linear predictors.
-  \item \code{densityFunction} -- A function that given linear predictors returns value of PMF at values \code{x}. Additional argument \code{type} specifies whether to return $\mathbb{P}[Y|Y>0]$ or $\mathbb{P}[Y]$.
-  \item \code{simulate} -- A function that generates values of dependent  vector given linear predictors.
-  \item \code{getStart} -- Expression for generating starting points.
-}
-
-
-
+  values in \code{c(0, 1, 2)} provides which derivative to return with the default \code{0} being just the minus log-likelihood \\
+\code{links} & List with link functions \\
+\code{mu.eta, variance} & Functions of linear predictors that return expected value and variance. There is a `type` argument with 2 possible values \code{"trunc"} and \code{"nontrunc"} that specifies whether to return $\mathbb{E}[Y|Y>0], \text{var}[Y|Y>0]$ or $\mathbb{E}[Y], \text{var}[Y]$ respectively, also the \code{deriv} argument with values in \code{c(0, 1, 2)} is used for indicating the derivative with respect to the linear predictors with is used for providing standard error in \code{predict} method \\
+\code{family} & Character that specifies name of the model \\
+\code{valideta, validmu} & For now only returns true. In near future will be used to check whether applied linear predictors are valid (i.e. are transformed into some elements of parameter space the subjected to inverse link function) \\
+\code{funcZ, Wfun} & Functions that create pseudo residuals and working weights used in IRLS algorithm \\
+\code{devResids}  & Function that given the linear predictors prior weights vector and response vector returns deviance residuals \\
+\code{pointEst, popVar} & Functions that given prior weights linear predictors and in the later case also estimation of  $\text{cov}(\hat{\bbeta})$ and $\boldsymbol{X_{vlm}}$ matrix return point estimate for population size and analytic estimation of its variance.There is a additional boolean parameter \code{contr} in the former function that if set to true returns contribution of each unit \\
+\code{etaNames} & Names of linear predictors \\
+\code{densityFunction} & A function that given linear predictors returns value of PMF at values \code{x}. Additional argument \code{type} specifies whether to return $\mathbb{P}[Y|Y>0]$ or $\mathbb{P}[Y]$ \\
+\code{simulate} & A function that generates values of dependent  vector given linear predictors \\
+\code{getStart} & Expression for generating starting points \\
+\hline
+\end{tabular}
+\end{table}
 
 
 # Implementing custom \pkg{singleRcapture} family function {short-title="Implementing custom singleRcapture family function"}
@@ -1044,9 +1051,11 @@ function in the \pkg{singleRcapture} which corresponds to the following
     \frac{1}{2}\lambda & \text{when: } y=2,
   \end{cases}
 \end{equation} with $\lambda, \pi\in\left(0, 1\right)$ being dependent
-on covariates. The following would be one way of implementing it, with
+on covariates. 
+
+The following would be one way of implementing it, with
 \code{lambda, pi} in the code meaning
-$\frac{1}{2}\lambda,\frac{1}{2}\pi$ in the equation above:
+$\frac{1}{2}\lambda,\frac{1}{2}\pi$ in the equation above
 
 \footnotesize
 
@@ -1073,7 +1082,7 @@ myFamilyFunction <- function(lambdaLink = c("logit", "cloglog", "probit"),
   )
   
   links[1:2] <- c(lambdaLink, piLink)
-  
+
   mu.eta <- function(eta, type = "trunc", deriv = FALSE, ...) {
     pi     <-     piLink(eta[, 2], inverse = TRUE) / 2
     lambda <- lambdaLink(eta[, 1], inverse = TRUE) / 2
