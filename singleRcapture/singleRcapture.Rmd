@@ -33,14 +33,7 @@ title:
   plain:     "singleRcapture: A Package for Single-Source Capture-Recapture Models"
   short:     "\\pkg{singleRcapture}: Single-Source Capture-Recapture Models"
 abstract: >
-  Estimating population size is an important issue in official statistics, social sciences and natural sciences. One way to approach  
-  this problem is to use capture-recapture methods, which can be classified according to the number of sources used, the most important
-  distinction from the prespective of this work being between methods based on one source and those based on two or more sources.
-  In this presentation we will introduce the \pkg{singleRcapture} R package for fitting SSCR models. The package implements
-  state-of-the-art models as well as some new models proposed by the authors (e.g. extensions of zero-truncated one-inflated and
-  one-inflated zero-truncated models). The software is intended for users interested in estimating the size of populations,
-  particularly those that are difficult to reach or for which information is available from only one source and dual/multiple system
-  estimation cannot be used. 
+  The estimation of population size represents a significant challenge within the domains of official statistics, social sciences, and natural sciences. In such situations capture-recapture methods can be applied, which can be classified according to the number of sources utilized, particularly whether a single or multiple sources are employed. This paper focuses on the first group of methods and introduces the package \pkg{singleRcapture}. The package implements state-of-the-art single-source capture-recapture models (e.g. zero-truncated one-inflated regression), new developments proposed by the authors, and provides a user-friendly application programming interface (API). The package is self-contained, providing point estimates and their variance, as well as implementing several bootstrap variance estimators or diagnostics to assess quality and conduct sensitivity analysis. It is intended for users interested in estimating the size of populations, particularly those that are difficult to reach or measure, for which information is available from only one source and dual/multiple system estimation is not applicable. 
 keywords:
   # at least one keyword must be supplied
   formatted: [population size estimation, hidden populations, truncated distributuons, count regression models, "\\proglang{R}"]
@@ -127,9 +120,9 @@ open-source software, for instance \pkg{Rcapture} [@baillargeon2007rcapture], \p
 capture-recapture (SSCR) methods are less available being only partially
 implemented in existing \proglang{R} packages. The goal of the paper is 
 to introduce the \pkg{singleRcapture} and \pkg{singleRcaptureExtra}
-packages which by implementing state-of-the-art methods in SSCR and providing
+packages which by implementing *state-of-the-art* methods in SSCR and providing
 user friendly API which mimics existing \proglang{R} functions (e.g., `glm`)
-attemp to bridge this aforementioned gap. In the next subsection we descirbe 
+attempt to bridge this aforementioned gap. In the next subsection we describe 
 the available \proglang{R} packages that could be used for estimating 
 population size based on SSCR methods.
 
@@ -165,13 +158,10 @@ that allows for integration of \pkg{singleRcapture} with those packages.
 The remaining part of the paper is as follows. In Section \ref{sec-theory}
 a brief description of the theoretical background is given and information 
 on the fitting methods, the available methods and variance estimation is presented. 
-In Section \ref{sec-basic} the main functionalities of the package are introduced,
-and the main \code{S3} methods as well as implemented diagnostics and useful
-functions are covered. 
-Section \ref{VGAMcountreg-packages} covers integration with
+In Section \ref{sec-main} the main functionalities of the package are introduced. Section \ref{sec-study} provides a case study along with assessment of results, diagnostics and estimation of specific sub-populations. Section \ref{sec-methods} covers classes and \code{S3methods} implemented in the package.
+Section \ref{sec-vgam} covers integration with
 \pkg{countreg} and \pkg{VGAM} packages through \pkg{singleRcaptureExtra}
-package. 
-The paper ends with conclusions and an appendix that shows how
+package.  The paper ends with conclusions and an appendix that shows how
 to a implement custom model and how one can use the \code{estimatePopsizeFit}
 which is faster than the main function but only estimates regression, which
 could be of interest to users interested in using any new bootstrap methods
@@ -360,7 +350,7 @@ While not discussed in the literature yet the interpretation of heterogeneous $\
 
 The extra mass $\omega$ in the one-inflated models is an important extension to the researcher's toolbox for SSCR models. Since the inflation at $y=1$ is likely to occur in many types of applications. For example in estimating the number active people who committed criminal acts in a given time period being observed naturally induces a risk of no longer being able to be observed for all units with possibility of arrest. One constraint present in modelling via inflated models is that trying to include both the possibility of one inflation and one deflation leads to both numerical and theoretical problems since the parameter space (of $(\omega, \lambda)$ or $(\omega, \lambda, \alpha)$) is then a much more complicated set.
 
-Hurdle models are another approach to modelling the one-inflation, they can also model deflation as well as both inflation and deflation simultaneously so they are more flexible and situationally the Hurdle zero-truncated models seem to be more numerically stable.
+Hurdle models are another approach to modelling the one-inflation, they can also model deflation as well as both inflation and deflation simultaneously so they are more flexible and it seems that the Hurdle zero-truncated models are more numerically stable.
 
 Although interpretation of regression parameters tends to be somewhat overlooked in the SSCR studies we should point out that interpretation of the $\omega$ inflation parameter (in \code{ztoi}$^\ast$ or \code{oizt}$^\ast$) is more convenient that the interpretation of the $\pi$ probability parameter (in Hurdle models). Additionally the interpretation of the $\lambda$ parameter in (one) inflated models conforms to the intuition that given that unit $k$ comes from the non-inflated part of the population then it follows a poisson distribution (respectively geometric or negative binomial) with the $\lambda$ parameter (or $\lambda,\alpha$), in hurdle models one loses that interpretation. It is somewhat interesting is that the estimates from Hurdle zero-truncated and one-inflated zero-truncated models are "usually" quite close to one another, this however require more studies.
 
@@ -466,14 +456,20 @@ much less realistic than semi-parametric bootstrap. The parametric
 bootstrap algorithm is the default in \pkg{singleRcapture}.
 
 
-# Basic usage {#sec-basic}
+# The main function {#sec-main}
 
-## The main function
+\subsection[The estimatePopsize function]{The \code{estimatePopsize} function}
 
 The main function that \pkg{singleRcapture} is built around is
 \code{estimatePopsize}. The leading design principle was to make using
-\code{estimatePopsize} as close to standard \code{stats::glm} as
-possible. The most important arguments are given in Table \ref{tab-arguments-popsize}.
+\code{estimatePopsize} as close to standard \code{stats::glm()} as
+possible or packages for fitting zero-truncated regression models as \pkg{countreg} (e.g. \code{countreg::ztpoisson()} function). 
+This function is used to first fit an appropriate (vector) generalized linear model and then estimates the population size along with its variance. It is assumed that the response vector (i.e. the dependent variable) corresponds to the number of times a given unit was observed in the source. The most important arguments are given in Table \ref{tab-arguments-popsize} with the \code{formula, data, model} being the three arguments which must be provided in the \code{estimatePopsize} syntax.
+
+The most important part of the \code{estimatePopsize} is to specify the \code{model} parameter. This is a crucial part as it allows to select appropriate model to estimate the *unobserved* part of the population. For instance, to fit Chao's or Zelterman's model one should select \code{chao} or \code{zelterman} and if a researcher assumes that the one-inflation is present may select one of the zero-truncated one-inflated (\code{ztoi}$^\ast$) or one-inflated zero-truncated (\code{oizt}$^\ast$) such as \code{oiztpoisson} for Poisson or \code{ztoinegbin} for NB2.
+
+If researcher assumes that heterogeneity is observed for NB2 models one may specify formula in the \code{controlModel} argument with the \code{controlModel} function and the \code{alphaFormula} argument. This allows to provide a formula for dispersion parameter in the NB2 models. If heterogeneity is assumed for \code{ztoi}$^\ast$ or \code{oizt}$^\ast$ one may specify the \code{omegaFormula} argument which corresponds to $\omega$ parameter in these models. Finally, if covariates are assumed for the hurdle models (\code{ztHurdle}$^\ast$ or \code{Hurdlezt}$^\ast$) then \code{piFormula} can be specified as it provides a 	
+formula for probability parameter in these models. 
 
 \begin{table}[ht!]
 \centering
@@ -495,11 +491,26 @@ Argument & Description \\
 \label{tab-arguments-popsize}
 \end{table}
 
+\subsection[Controlling the variance estimation with the controlPopVar]{Controlling the variance estimation with the \code{controlPopVar}}
 
-With the \code{formula, data, model} being the three arguments which
-must be provided in \code{estimatePopsize} syntax.
+The \code{estimatePopsize} function allows to specify the variance estimation method via the \code{popVar} (e.g. analytic or variance bootstrap) as well as controlling the estimation process by specifying \code{controlPopVar}. In the control 
+function \code{controlPopVar} user may specify the \code{bootType} argument which has
+three possible values \code{"parametric", "semi-parametric"} and \code{"nonparametric"}. Additional arguments accepted by the \code{contorlPopVar} function which are relevant to bootstrap are:
 
-## Example with R code 
+\begin{itemize}
+  \item \code{alpha}, \code{B} -- significance level and number of bootstrap samples to be performed respectively with $0.05$ and $500$ being the default options.
+  \item \code{cores} -- number of process cores to use in bootstrap (1 by default) parallel computing is done via \pkg{doParallel} \citep{doParallel}, \pkg{foreach} \citep{foreach} or \pkg{parallel} packages \citep{parallel}.
+  \item \code{keepbootStat} --  logical value indicating whether to keep a vector of statistics produced by bootstrap.
+  \item \code{traceBootstrapSize}, \code{bootstrapVisualTrace} --  logical values indicating whether sample and population size should be tracked (\code{FALSE} by default) these work only when \code{cores} = 1.
+    \item \code{fittingMethod}, \code{bootstrapFitcontrol} -- fitting method (by default the same as used in the original call) and control parameters (\code{controlMethod}) for model fitting in bootstrap.
+\end{itemize}
+
+In addition, user may specify the type of confidence interval using \code{confType} and the type of covariance matrix by \code{covType} for analytical variance estimator (observed or Fisher information matrix).
+
+In the next sections we provide a case study on the usage of a simple zero-truncated Poisson regression and a more advanced model: one-inflated zero-truncated geometric regression with \code{cloglog} link function. First, we describe example dataset, then we present how to estimate the population size and assess the quality and diagnostics measures. Finally, we show how to estimate population size in a user-specified sub-populations.
+
+
+# Data analysis example {#sec-study}
 
 The package can be installed in a standard way using:
 
@@ -507,19 +518,27 @@ The package can be installed in a standard way using:
 install.packages("singleRcapture")
 ```
 
-To show the main function let us recreate the zero-truncated Poisson
-model from \cite{ztpoisson} on the same data included in the package
-under the name \code{netherlandsimmigrant}:
+Then, we need to load the package using the following code
 
-```{r, loading_singleRcapture, results='asis'}
+```{r}
 library(singleRcapture)
-knitr::kable(head(netherlandsimmigrant))
 ```
 
-This data set contains information about immigrants in four cities
+## Dataset 
+
+We will use dataset from \cite{ztpoisson} that contains information about immigrants in four cities
 (Amsterdam, Rotterdam, The Hague and Utrecht) in Netherlands that have
 been staying in the country without a legal permit in 1995 and have appeared in
-police records that year. The number of times each individual appeared
+police records that year. This dataset is included in the package
+under the name \code{netherlandsimmigrant}:
+
+```{r, loading_singleRcapture}
+data(netherlandsimmigrant)
+head(netherlandsimmigrant)
+```
+
+
+The number of times each individual appeared
 in the records is included in the \code{capture} variable with the
 available covariates being \code{gender, age, reason, nation} being
 respectively the persons gender and age, reason for being captured and
@@ -531,15 +550,15 @@ summary(netherlandsimmigrant)
 
 One point which we should make while analysing this data set is that
 there is a disproportionate number of individuals who were observed only
-once:
+once (i.e. `r sum(netherlandsimmigrant$capture==1)`).
 
-```{r, table_netherlands, results='asis'}
-knitr::kable(t(table(netherlandsimmigrant$capture)))
+```{r, table_netherlands}
+table(netherlandsimmigrant$capture)
 ```
 
 The basic syntax is vary similar to that of \code{glm} with the
 output of the summary method being also quite similar except for the
-additional results of the population size estimates:
+additional results of the population size estimates (denoted as \texttt{Population size estimation results}).
 
 ```{r, basic_model_netherlands}
 basicModel <- estimatePopsize(
@@ -549,6 +568,9 @@ basicModel <- estimatePopsize(
 )
 summary(basicModel)
 ```
+
+The output on the population size contains information on the point estimate, observed proportion (based on the input dataset), standard error and two confidence intervals: one with reference to the point estimated, the second to the observed proportion. 
+
 According to this simple model the population size is about 12.5k with about 15% of units observed in the register. The 95% CI under normality indicate that the true population size may be between 7k-18k with about 10% to 26% observed in the register.
 
 Since there is a reasonable suspicion that the act of observing a unit
@@ -571,7 +593,16 @@ modelInflated <- estimatePopsize(
 summary(modelInflated)
 ```
 
-This approach suggest that the population size is about 7k which is about 5k less than the naive Poisson approach. Comparison of AIC and BIC suggest that the one-inflation model fits the data better with BIC for \code{oiztgeom} `r round(BIC(modelInflated))` and `r round(BIC(basicModel))` for \code{ztpoisson}.
+This approach suggest that the population size is about 7k which is about 5k less than the naive Poisson approach. Comparison of AIC and BIC suggest that the one-inflation model fits the data better with BIC for \code{oiztgeom} `r round(BIC(modelInflated))` and `r round(BIC(basicModel))` for \code{ztpoisson}. 
+
+We can access the results of population size estimation using the following code which returns list with numerical results.
+
+```{r}
+basicModel$populationSize
+modelInflated$populationSize
+```
+
+Decision whether to use zero-truncated Poisson or one-inflated zero-truncated geometric should be on the assessment of the model and the assumptions on the data generation process. In the next sections we provide details how to assess the results using statistical tests and diagnostics.
 
 ## Testing marginal frequencies
 
@@ -620,79 +651,83 @@ dev.off()
 
 Plots suggest that the \code{otztgeom} model fits the data better. Furthermore, important issue in population size estimation is the diagnostics of the models in order to verify whether influential observations are present in the data. For this purpose leave-one-out (LOO) diagnostic implemented in the \code{dfbeta} from the \pkg{stats} package was adapted and demonstrated below:
 
-```{r, dfbeta_basic_model, results='asis'}
+```{r, dfbeta_basic_model}
 dfb <- dfbeta(basicModel)
-knitr::kable(as.data.frame(
-  t(apply(dfb, 2, quantile)*100)), digits = 4
-)
+round(t(apply(dfb, 2, quantile)*100), 4)
+```
+
+```{r, df_beta_inflated_model}
+dfi <- dfbeta(modelInflated)
+round(t(apply(dfi, 2, quantile)*100), 4)
 ```
 
 Furthermore, result of the \code{dfbeta} can be further used in the function \code{dfpopsize} which allows for quantification of LOO on the population size.
 
-```{r, dfpopsize_basic_model, results='asis'}
-dfp <- dfpopsize(basicModel, dfbeta = dfb)
-knitr::kable(as.data.frame(t(matrix(
-  summary(dfp), dimnames = list(attr(summary(dfp), "names"), 1)
-))))
+```{r, dfpopsize_basic_model}
+dfb_pop <- dfpopsize(basicModel, dfbeta = dfb)
+dfi_pop <- dfpopsize(modelInflated, dfbeta = dfi)
+summary(dfb_pop)
+summary(dfi_pop)
 ```
 
 The comparison of deletion effect on population size estimate and inverse probability weights, which refer to the contribution of a given observation to the population size estimation, is presented in the Figure bellow:
 
-```{r, dfpopsize_plot}
-plot(basicModel, plotType = "dfpopContr", dfpop = dfp)
+```{r, dfpopsize_plot, fig.show='hold', out.width="7.5cm"}
+plot(basicModel, plotType = "dfpopContr", dfpop = dfb_pop)
+plot(modelInflated, plotType = "dfpopContr", dfpop = dfi_pop)
 ```
 
-This plot informs on the change of the population size if a given observation will be removed. For instance if we remove observation `r which.min(dfp)` from the data then population size will rise by about `r abs(round(min(dfp)))`.
+```{r, dev_off-2, include=FALSE}
+dev.off()
+```
+
+These plot informs on the change of the population size if a given observation will be removed. For instance if we remove observation `r which.min(dfb_pop)` from the data then population size will rise by about `r abs(round(min(dfb_pop)))` for the \code{ztpoisson} model. While for the \code{oiztgeom} the largest change is `r abs(round(min(dfi_pop)))` for the `r which.min(dfi_pop)` observation.
 
 The full list of plot types along with the list of optional arguments
 which may be passed from the call to the \code{plot} method down to base
-\proglang{R} and \pkg{graphics} functions is listed in the help file
+\proglang{R} and \pkg{graphics} functions is listed in the help file of the \code{plot} method.
 
 ```{r, eval=FALSE}
 ?plot.singleRStaticCountData
 ```
 
-## The stratifyPopsize method
+\subsection[The stratifyPopsize function]{The \code{stratifyPopsize} function}
 
-Researchers may be interested on only in the total population size but also in specific subpopulations (e.g. males, females, group pages). For that reason we have created function \code{stratifyPopsize} which allows to estimate the size by stratas defined by the coefficients in the model (the default option).
+Researchers may be interested on only in the total population size but also in specific sub-populations (e.g. males, females, group pages). For that reason we have created the \code{stratifyPopsize} function which allows to estimate the size by stratas defined by the coefficients in the model (the default option). In the output below we present results based on the \code{ztpoisson} and \code{oiztgeom} models.
 
-
-```{r, stratas, results='asis'}
+```{r, stratas}
 popSizeStratas <- stratifyPopsize(basicModel)
-
 cols <- c("name", "Observed", "Estimated", "logNormalLowerBound", 
           "logNormalUpperBound")
+popSizeStratas_report <- popSizeStratas[, cols]
 cols_custom <- c("Name", "Obs", "Estimated", "LowerBound", "UpperBound")
-
-knitr::kable(popSizeStratas[, cols],  col.names = cols_custom, digits = 2)
+names(popSizeStratas_report) <- cols_custom
+popSizeStratas_report
 ```
 
-One may also specify \code{plotType = "strata"} in the \code{plot} function which results in a plot with point and CI estimates of the population size.
-
-```{r, strata_plot}
-par(mar = c(2.5, 8.5, 4.1, 2.5), cex.main = .7, cex.lab = .6)
-plot(basicModel, plotType = "strata")
+```{r, stratas-inflated}
+popSizeStratas_inflated <- stratifyPopsize(modelInflated)
+popSizeStratas_inflated_report <- popSizeStratas_inflated[, cols]
+names(popSizeStratas_inflated_report) <- cols_custom
+popSizeStratas_inflated_report
 ```
 
+The function \code{stratifyPopsize}, that is prepared for the objects of the \code{singleRStaticCountData} class, accepts three optional parameters \code{stratas, alpha, cov} which correspond to specification of sub-populations, the significance levels and the covariance matrix that will be used to compute standard errors. An example of the full call is presented below.
 
-The method for \code{singleRStaticCountData} class accepts three optional parameters
-\code{stratas, alpha, cov} which correspond to specification of sub
-populations, the significance levels and the covariance matrix that will
-be used to compute standard errors. An example of the full call is presented below.
 
-```{r, custom-strata, results='asis', message=F, warning=F}
+```{r, custom-strata, message=F, warning=F}
 library(sandwich)
 popSizeStratasCustom <- stratifyPopsize(
   object  = basicModel,
-  stratas = ~ gender / (nation + age), 
-  alpha   = rep(c(.1, .2, .3, .4, .5), length.out = 18),
+  stratas = ~ gender + age, 
+  alpha   = rep(c(0.1, 0.05), each=2), 
   cov     = vcovHC(basicModel, type = "HC4")
 )
 
-knitr::kable(popSizeStratasCustom[, cols], col.names = cols_custom, digits=2)
+popSizeStratasCustom_report <- popSizeStratasCustom[, c(cols, "confLevel")]
+names(popSizeStratasCustom_report) <- c(cols_custom, "alpha")
+popSizeStratasCustom_report
 ```
-
-\normalsize
 
 We provide integration with the \pkg{sandwich} \citep{sandwich} package to correct variance-covariance matrix in the $\delta$ method. In the code we have used the \code{vcovHC} method for \code{singleRStaticCountData}
 class from the \pkg{sandwich} package, different significance levels
@@ -701,36 +736,37 @@ wanted estimates for both males and females subdivided by \code{nation}
 and \code{age}. The \code{stratas} parameter may be specified either as:
 
 \begin{itemize}
-\item a formula with empty left hand side which we have seen here,
-\item a logical vector with number of entries equal to number of rows in the dataset in which case only one strata will be created,
-\item a (named) list where each element is a logical vector, names of the list will be used to specify names variable in returned object,
-\item a vector of names of explanatory variables which will result in every level of explanatory variable having its own sub population for each variable specified,
+\item a formula with empty left hand side which we have seen here (e.g. \code{~ gender * age}),
+\item a logical vector with number of entries equal to number of rows in the dataset in which case only one strata will be created (e.g. \code{netherlandsimmigrant$gender == "male"}),
+\item a (named) list where each element is a logical vector, names of the list will be used to specify names variable in returned object (e.g. \code{list("Strata 1" = netherlandsimmigrant$gender == "male" 
+\& netherlandsimmigrant$nation == "Suriname", 
+"Strata 2" = netherlandsimmigrant$gender == "female" 
+\& netherlandsimmigrant$nation == "North Africa")}),
+\item a vector of names of explanatory variables which will result in every level of explanatory variable having its own sub population for each variable specified (e.g. \code{c("gender", "age")}),
 \item or not supplied at all in which case stratas will correspond to levels of each factor in the data without any interactions (string vectors will be converted to factors for the convenience of the user).
 \end{itemize}
+
+One may also specify \code{plotType = "strata"} in the \code{plot} function which results in a plot with point and CI estimates of the population size.
+
+```{r, strata_plot, fig.show='hold', out.width="7.5cm"}
+par(mar = c(2.5, 8.5, 4.1, 2.5), cex.main = .7, cex.lab = .6)
+plot(basicModel, plotType = "strata")
+plot(modelInflated, plotType = "strata")
+```
+
+```{r, dev_off-3, include=FALSE}
+dev.off()
+```
 
 For plotting only the \code{logNormal} type of confidence interval is
 used since the studentized confidence intervals often result in negative
 lower bounds.
 
-## Implementation of Variance estimation
+# Classes and methods {#sec-methods}
 
-The package implements analytic and bootstrap variance estimators. In the control 
-function \code{controlPopVar} user may specify the \code{bootType} argument which has
-three possible values \code{"parametric", "semi-parametric"} and \code{"nonparametric"} 
-Additional arguments accepted by the \code{contorlPopVar} function which
-are relevant to bootstrap are:
+For the purpose of the package we have created classes \code{singleRStaticCountData}, \code{singleR} (for now the two former classes are the same, the distinction is made for future development), \code{singleRfamily}, \code{popSizeEstResults}, \code{summarysingleRStaticCountData} and \code{summarysingleRmargin} which allows for extracting relevant information regarding the population size. 
 
-\begin{itemize}
-  \item \code{alpha, B} -- significance level and number of bootstrap samples to be performed respectively with $0.05$ and $500$ being the default options.
-  \item \code{cores} -- number of process cores to use in bootstrap (1 by default) parallel computing is done via \pkg{doParallel, foreach, parallel} packages.
-  \item \code{keepbootStat} --  logical value indicating whether to keep a vector of statistics produced by bootstrap.
-  \item \code{traceBootstrapSize, bootstrapVisualTrace} --  logical values indicating whether sample and population size should be tracked (\code{FALSE} by default) these work only when \code{cores} = 1.
-    \item \code{fittingMethod, bootstrapFitcontrol} -- fitting method (by default the same as used in the original call) and control parameters (\code{controlMethod}) for model fitting in bootstrap.
-\end{itemize}
-
-## Methods
-
-For the purpose of the package we have created classes \code{singleRStaticCountData}, \code{singleR} (for now the two former classes are the same, the distinction is made for future development), \code{singleRfamily}, \code{popSizeEstResults}, \code{summarysingleRStaticCountData} and \code{summarysingleRmargin} which allows for extracting relevant information regarding the population size. For instance, function \code{popSizeEst} allows to extract information on the estimated size of the population as given below:
+For instance, function \code{popSizeEst} allows to extract information on the estimated size of the population as given below:
 
 ```{r, popsize_extract}
 (popEst <- popSizeEst(basicModel))
@@ -746,13 +782,13 @@ and the resulting object \code{popEst} is of the \code{popSizeEstResults} class 
   \item \code{control} -- a \code{controlPopVar} object with controls used to obtained the object.
 \end{itemize}
 
-The only explicitly defined method for \code{popSizeEstResults}, \code{summarysingleRmargin} and \code{summarysingleRStaticCountData} classes is the print method, but the former one also accepts \proglang{R} primitives like \code{coef}:
+The only explicitly defined method for \code{popSizeEstResults}, \code{summarysingleRmargin} and \code{summarysingleRStaticCountData} classes is the \code{print} method, but the former one also accepts \proglang{R} primitives like \code{coef}:
 
 ```{r}
 coef(summary(basicModel))
 ```
 
-analogously to \code{glm} from \pkg{stats}. The \code{singleRfamily} inherits the \code{family} class from \pkg{stats} and has explictly defined \code{print} and \code{simulate} methods defined. Example usage:
+analogously to \code{glm} from \pkg{stats}. The \code{singleRfamily} inherits the \code{family} class from \pkg{stats} and has explicitly defined \code{print} and \code{simulate} methods defined. Example usage is presented below
 
 ```{r}
 set.seed(1234567890)
@@ -767,12 +803,13 @@ The full list of explicitly defined methods for \code{singleRStaticCountData} me
 
 \begin{table}[ht!]
 \centering
-\begin{tabular}{p{5cm}p{11cm}}
+\small
+\begin{tabular}{p{4cm}p{11cm}}
 \hline 
 Function & Description \\
 \hline
 \code{fitted} & Which work almost exactly like \code{glm} counterparts but return more information, namely on fitted values for the truncated and non-truncated probability distribution. \\
-\code{logLik} & which compared to \code{glm} method has the possiblity of returning not just the value of the fitted loglikelihood mut also the entire function (argument \code{type = "function"}) along with two first derivatives (argument \code{deriv = 0:2}) \\
+\code{logLik} & which compared to \code{glm} method has the possibility of returning not just the value of the fitted log-likelihood but also the entire function (argument \code{type = "function"}) along with two first derivatives (argument \code{deriv = 0:2}) \\
 \code{model.matrix} & which has the possibility of returning the $X_{\text{vlm}}$ matrix defined in \ref{X_vlm-definition}\\
 \code{simulate} & which calls \code{simulate} method for the chosen model and fitted $\boeta$ \\
 \code{predict} &  which has the possibility of returning either of fitted ditribution parameters for each unit (\code{type = "response"}), just linear predictors (\code{type = "link"}), means of the fitted distributnios of $Y$ and $Y|Y>0$ (\code{type = "mean"}) and the inverse probability weights (\code{type = "contr"}). There us also the \code{se.fit} argument which can be set to \code{TRUE} to obtain standard errors for each of those by using the $\delta$ method. Also it is possible to use a custom covariance matrix for standard error computation (argument \code{cov}). \\
@@ -791,10 +828,12 @@ Function & Description \\
 \end{table}
 
 
-# Integration with the \pkg{VGAM, countreg} packages {#VGAMcountreg-packages short-title="Integration with the"}
+# Integration with the \pkg{VGAM, countreg} packages {#sec-vgam short-title="Integration with the"} 
 
 ```{=html}
 <!---
+Piotrze napisz jeszcze to swoimi swłowami po inglishu
+
 disadv singleRcapture w stosunku do VGAM to to że nie ma macierzy ograniczeń ogólnych, nie ma modeli addytywnych. i część VGAM jest zaprogramowana w C
 
 adv to to że nie trzeba manualnie liczyć wariancji, jest bootstrap i to 3 rodzaje zrobione pod SSCR (w vgam nie ma w ogóle trzeba samemu) nie ma rootogramów porównywania rozkładów brzegowych zaobserwowanych i dopasowanych itp i przez to że nie ma ogólnych macierzy ograniczeń i zamiast tego mamy formuły na omega i alpha i pi to łatwiej jest wyspecyfikować, mamy też więcej rozkładów zero truncated (z wyjątkiem tego GAITD)
@@ -805,7 +844,6 @@ a z różnic jest to że Yee używa do obliczania macierzy informacji fishera sy
 ```
 
 As noted at the beginning we provide an integration with the \pkg{VGAM} and \pkg{countreg} packages via the \pkg{singleRcaptureExtra} package available through Github at \url{https://github.com/ncn-foreigners/singleRcaptureExtra}. 
-
 
 ```{r, eval = FALSE}
 install.packages("pak")
@@ -826,7 +864,7 @@ by
 
 Using the fitted \code{zerotrunc, vglm, vgam} class objects in
 population size estimation such as the one additive models with smooth
-terms for dataset from \cite{chao-generalization}.
+terms for dataset from \cite{chao-generalization}. Note that we use a different dataset than the one presented in the case study as our goal is to show usage of additive models and how it handled in the \pkg{singleRcapture} package.
 
 ```{r, modelVGAM, warning=FALSE, message=FALSE, cache=T}
 library(VGAM)
@@ -847,12 +885,12 @@ Estimation of the population size can be accomplished with the following syntax 
 ```{r, singleRcaptureExtra_showcase, cache=TRUE}
 modelVgamPop <- estimatePopsize(modelVgam)
 ```
-The resulting object is of class \code{singleRforeign} to underline that the parameters were estimated outside the \pkg{singleRcapture}. The structure of the object is as follows
+
+The resulting object is of class \code{singleRforeign} to underline that the parameters were estimated outside the \pkg{singleRcapture}. Resulting object consist of the following elements
 
 ```{r}
 str(modelVgamPop,1)
 ```
-
 
 Compare with a similar linear model from base \pkg{singleRcapture}:
 \small
@@ -871,21 +909,15 @@ summary(modelVgamPop)
 
 # Concluding remarks
 
-Package \pkg{singleRcapture} 
+TBA
 
-... something more on the conclusions
+Bayesian models -- Tiziana works
 
 # Acknowledgements {#Acknowledgements}
 
 The authors' work has been financed by the National Science Centre in Poland, OPUS 20, grant no. 2020/39/B/HS4/00941. 
 
-```{=html}
-<!---
-To był dla mnie prawie jedyny feedback jak pracowałem więc myśle że można ją dodać
--->
-```
-
-The authors would like to thank Layna Dennett from University of Southampton for usefull comments that led to the improved of the functionaly of the package.
+The authors would like to thank Layna Dennett (University of Southampton) for useful comments that led to the improved of the functionality of the package. 
 
 \appendix
 

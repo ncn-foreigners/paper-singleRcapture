@@ -1,4 +1,4 @@
-\begin{thebibliography}{27}
+\begin{thebibliography}{30}
 \newcommand{\enquote}[1]{``#1''}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
@@ -114,12 +114,31 @@ Laake JL, Johnson DS, Conn PB, Isaac N (2013).
   Monte Carlo analysis of capture-recapture data.}
 \newblock \emph{Methods in Ecology \& Evolution}, \textbf{4}(9).
 
+\bibitem[{{Microsoft} and Weston(2022{\natexlab{a}})}]{doParallel}
+{Microsoft}, Weston S (2022{\natexlab{a}}).
+\newblock \emph{doParallel: Foreach Parallel Adaptor for the 'parallel'
+  Package}.
+\newblock R package version 1.0.17,
+  \urlprefix\url{https://CRAN.R-project.org/package=doParallel}.
+
+\bibitem[{{Microsoft} and Weston(2022{\natexlab{b}})}]{foreach}
+{Microsoft}, Weston S (2022{\natexlab{b}}).
+\newblock \emph{foreach: Provides Foreach Looping Construct}.
+\newblock R package version 1.5.2,
+  \urlprefix\url{https://CRAN.R-project.org/package=foreach}.
+
 \bibitem[{Norris and Pollock(1996)}]{norrpoll}
 Norris JL, Pollock KH (1996).
 \newblock \enquote{Including model uncertainty in estimating variances in
   multiple capture studies.}
 \newblock \emph{Environmental and Ecological Statistics}, \textbf{3}(3),
   235--244.
+
+\bibitem[{{R Core Team}(2023)}]{parallel}
+{R Core Team} (2023).
+\newblock \emph{R: A Language and Environment for Statistical Computing}.
+\newblock R Foundation for Statistical Computing, Vienna, Austria.
+\newblock \urlprefix\url{https://www.R-project.org/}.
 
 \bibitem[{van~der Heijden \emph{et~al.}(2003)van~der Heijden, Bustami, Cruyff,
   Engbersen, and van Houwelingen}]{ztpoisson}
