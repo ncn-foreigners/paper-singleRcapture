@@ -13,11 +13,11 @@ Beręsewicz~\orcidlink{0000-0002-8281-4301}\\Poznań University of
 Economics and Business\\
 Statistical Office in Poznań
 }
-\title{\pkg{singleRcapture}: A Package for Single-Source
+\title{\pkg{singleRcapture}: An \proglang{R} Package for Single-Source
 Capture-Recapture Models}
 
 \Plainauthor{Piotr Chlebicki, Maciej Beręsewicz}
-\Plaintitle{singleRcapture: A Package for Single-Source
+\Plaintitle{singleRcapture: An R Package for Single-Source
 Capture-Recapture Models}
 \Shorttitle{\pkg{singleRcapture}: Single-Source Capture-Recapture
 Models}
@@ -540,7 +540,7 @@ Algorithm \ref{algo-par-boot}.
 \nlset{2} Using the fitted model and regression coefficients $\hat{\boldsymbol{\beta}}$ draw for each covariate the $Y$ value from the corresponding probability measure on $\mathbb{N}\cup\{0\}$.\;
 \nlset{3} Truncate units with drawn $Y$ value equal to $0$.\;
 \nlset{4} Obtain population size estimate $N_b$ based on the truncated data.\;
-\nlset{5} Repeat $1-3$ $B$ times.
+\nlset{5} Repeat $1-3$ steps $B$ times.
 \end{algorithm}
 
 Note that for this type of algorithm to result in consistent standard
@@ -1932,7 +1932,8 @@ R> myFamilyFunction <- function(lambdaLink = c("logit", "cloglog", "probit"),
 +         
 +         if (NbyK) {
 +           XX <- 1:(attr(X, "hwm")[1])
-+           return(cbind(as.data.frame(X[1:nrow(eta), XX]) * G1, as.data.frame(X[-(1:nrow(eta)), -XX]) * G0))
++           return(cbind(as.data.frame(X[1:nrow(eta), XX]) * G1,
++                        as.data.frame(X[-(1:nrow(eta)), -XX]) * G0))
 +         }
 +         if (vectorDer) {
 +           return(cbind(G1, G0))
@@ -2009,7 +2010,7 @@ R> myFamilyFunction <- function(lambdaLink = c("logit", "cloglog", "probit"),
 +     bigTheta1 <- -pw / (pi + lambda) ^ 2 # w.r to pi
 +     bigTheta1 <- bigTheta1 * piLink(eta[, 2], inverse = TRUE, deriv = 1) / 2
 +     bigTheta2 <- -pw / (pi + lambda) ^ 2 # w.r to lambda
-+     bigTheta2 <- bigTheta2 * lambdaLink(eta[, 1], inverse = TRUE, deriv = 1) / 2# w.r to lambda
++     bigTheta2 <- bigTheta2 * lambdaLink(eta[, 1], inverse = TRUE, deriv = 1) / 2 # w.r to lambda
 +     
 +     bigTheta <- t(c(bigTheta2, bigTheta1) %*% Xvlm)
 +     
@@ -2206,7 +2207,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x10bd8a5c8>
+<bytecode: 0x10eb94c38>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}

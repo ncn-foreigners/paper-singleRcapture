@@ -29,8 +29,8 @@ author:
 title:
   # If you use tex in the formatted title, also supply version without
   # For running headers, if needed
-  formatted: "\\pkg{singleRcapture}: A Package for Single-Source Capture-Recapture Models"
-  plain:     "singleRcapture: A Package for Single-Source Capture-Recapture Models"
+  formatted: "\\pkg{singleRcapture}: An \\proglang{R} Package for Single-Source Capture-Recapture Models"
+  plain:     "singleRcapture: An R Package for Single-Source Capture-Recapture Models"
   short:     "\\pkg{singleRcapture}: Single-Source Capture-Recapture Models"
 abstract: >
   The estimation of population size represents a significant challenge within the domains of official statistics, social sciences, and natural sciences. In such situations capture-recapture methods can be applied, which can be classified according to the number of sources utilized, particularly whether a single or multiple sources are employed. This paper focuses on the first group of methods and introduces the package \pkg{singleRcapture}. The package implements state-of-the-art single-source capture-recapture models (e.g. zero-truncated one-inflated regression), new developments proposed by the authors, and provides a user-friendly application programming interface (API). The package is self-contained, providing point estimates and their variance, as well as implementing several bootstrap variance estimators or diagnostics to assess quality and conduct sensitivity analysis. It is intended for users interested in estimating the size of populations, particularly those that are difficult to reach or measure, for which information is available from only one source and dual/multiple system estimation is not applicable. 
@@ -445,7 +445,7 @@ from this population according to the selected model as described in Algorithm
 \nlset{2} Using the fitted model and regression coefficients $\hat{\bbeta}$ draw for each covariate the $Y$ value from the corresponding probability measure on $\mathbb{N}\cup\{0\}$.\;
 \nlset{3} Truncate units with drawn $Y$ value equal to $0$.\;
 \nlset{4} Obtain population size estimate $N_b$ based on the truncated data.\;
-\nlset{5} Repeat $1-3$ $B$ times.
+\nlset{5} Repeat $1-3$ steps $B$ times.
 \end{algorithm}
 
 Note that for this type of algorithm to result in consistent
@@ -1293,7 +1293,7 @@ myFamilyFunction <- function(lambdaLink = c("logit", "cloglog", "probit"),
     bigTheta1 <- -pw / (pi + lambda) ^ 2 # w.r to pi
     bigTheta1 <- bigTheta1 * piLink(eta[, 2], inverse = TRUE, deriv = 1) / 2
     bigTheta2 <- -pw / (pi + lambda) ^ 2 # w.r to lambda
-    bigTheta2 <- bigTheta2 * lambdaLink(eta[, 1], inverse = TRUE, deriv = 1) / 2# w.r to lambda
+    bigTheta2 <- bigTheta2 * lambdaLink(eta[, 1], inverse = TRUE, deriv = 1) / 2 # w.r to lambda
     
     bigTheta <- t(c(bigTheta2, bigTheta1) %*% Xvlm)
     
