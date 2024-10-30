@@ -1323,7 +1323,7 @@ Function & Description \\
 \code{model.matrix} & which has the possibility of returning the $X_{\text{vlm}}$ matrix defined in \ref{X_vlm-definition}\\
 \code{simulate} & which calls \code{simulate} method for the chosen model and fitted $\boldsymbol{\eta}$ \\
 \code{predict} &  which has the possibility of returning either of fitted ditribution parameters for each unit (\code{type = "response"}), just linear predictors (\code{type = "link"}), means of the fitted distributnios of $Y$ and $Y|Y>0$ (\code{type = "mean"}) and the inverse probability weights (\code{type = "contr"}). There us also the \code{se.fit} argument which can be set to \code{TRUE} to obtain standard errors for each of those by using the $\delta$ method. Also it is possible to use a custom covariance matrix for standard error computation (argument \code{cov}). \\
-\code{redoPopEstimation} & A function that applies all post-hoc procedures that were taken (such as heteroscedastic consistent covariance matrix estimation or bias reduction) to population size estimation and standard error estimation. \\
+\code{redoPopEstimation} & A function that applies all post-hoc procedures that were taken (such as heteroscedastic consistent covariance matrix estimation via \pkg{countreg}) to population size estimation and standard error estimation. \\
 \code{residuals} & for obtaining residuals of several types, we refer interested readers to the manual \code{?singleRcapture:::residuals.singleRStaticCountData}. \\
 \code{stratifyPopsize, summary} & which were already discussed. Compared to \code{glm} class summary has the possibility of adding confidence interval to the coefficient matrix (argument \code{confint = TRUE}) and using custom covariance matrix (argument \code{cov = someMatrix}) \\
 \code{plot} & which was already discussed \\
@@ -2207,7 +2207,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x10eb94c38>
+<bytecode: 0x11f1d1438>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}
