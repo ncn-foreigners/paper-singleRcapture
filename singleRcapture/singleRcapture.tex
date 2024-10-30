@@ -230,10 +230,11 @@ type estimator given by:
 \label{eq-ht-estimator}
 \end{equation}
 
-where \(I_{k}:=\mathcal{I}_{\mathbb{N}}(Y_{k})\), and maximum likelihood
-estimate of \(N\) is obtained after substituting regression parameters
-\(\boldsymbol{\beta}\) for \(\mathbb{P}[Y_{k}>0|\boldsymbol{x}_{k}]\)
-into \eqref{eq-ht-estimator}.
+where \(I_{k}:=\mathcal{I}_{\mathbb{N}}(Y_{k})\) and \(\mathcal{I}\) is
+the indicator function, and maximum likelihood estimate of \(N\) is
+obtained after substituting regression parameters \(\boldsymbol{\beta}\)
+for \(\mathbb{P}[Y_{k}>0|\boldsymbol{x}_{k}]\) into
+\eqref{eq-ht-estimator}.
 
 The basic SSCR assumes independence between counts which may be rather
 naive as the first capture may significantly influence the behaviour of
@@ -517,7 +518,7 @@ the Algorithm \ref{algo-semipar-boot}.
 \small
 \caption{Semi-parametric bootstrap}
 \label{algo-semipar-boot}\DontPrintSemicolon
-\nlset{1} Draw the sample size $N_{obs}'\sim\text{Be}\left(N', \frac{N_{obs}}{N'}\right)$, where $N'=\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$.\;
+\nlset{1} Draw the sample size $N_{obs}'\sim\text{Binomial}\left(N', \frac{N_{obs}}{N'}\right)$, where $N'=\lfloor\hat{N}\rfloor+\text{Bernoulli}\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$.\;
 \nlset{2} Draw $N_{obs}'$ units from the data uniformly without replacement.\;
 \nlset{3} Obtain new population size estimate $N_b$ using bootstrap data.\;
 \nlset{4} Repeat $1-3$ steps $B$ times.
@@ -536,7 +537,7 @@ Algorithm \ref{algo-par-boot}.
 \small
 \caption{Parametric bootstrap}
 \label{algo-par-boot}\DontPrintSemicolon
-\nlset{1} Draw the number of covariates equal to $\lfloor\hat{N}\rfloor+b\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$ proportional to the estimated contribution $(\mathbb{P}\left[Y_{k}>0|\boldsymbol{x}_{k}\right])^{-1}$ with replacement.\;
+\nlset{1} Draw the number of covariates equal to $\lfloor\hat{N}\rfloor+\text{Bernoulli}\left(\lfloor\hat{N}\rfloor-\hat{N}\right)$ proportional to the estimated contribution $(\mathbb{P}\left[Y_{k}>0|\boldsymbol{x}_{k}\right])^{-1}$ with replacement.\;
 \nlset{2} Using the fitted model and regression coefficients $\hat{\boldsymbol{\beta}}$ draw for each covariate the $Y$ value from the corresponding probability measure on $\mathbb{N}\cup\{0\}$.\;
 \nlset{3} Truncate units with drawn $Y$ value equal to $0$.\;
 \nlset{4} Obtain population size estimate $N_b$ based on the truncated data.\;
@@ -1558,10 +1559,10 @@ our own families using the \pkg{brms} package.
 The authors' work has been financed by the National Science Centre in
 Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
 
-The authors would like to thank Layna Dennett (University of
-Southampton) for useful comments that led to the improved of the
-functionality of the package. In addition we would like to thank Tymon
-Świtalski, \ldots{} for valuable comments that improved the paper.
+The authors would like to thank Peter van der Heijden, Maarten Cruyff,
+Dankmar Böhning and Layna Dennett for useful comments that led to the
+improved of the functionality of the package. In addition we would like
+to thank Tymon Świtalski for valuable comments that improved the paper.
 
 \appendix
 
@@ -2207,7 +2208,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x11f1d1438>
+<bytecode: 0x139c57200>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}
