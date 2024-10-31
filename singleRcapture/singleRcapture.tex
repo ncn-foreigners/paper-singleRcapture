@@ -152,14 +152,15 @@ While methods for two or more sources are implemented in various
 open-source software, for instance \pkg{Rcapture}
 \citep{baillargeon2007rcapture}, \pkg{marked} \citep{laake2013marked} or
 \pkg{VGAM} \citep{yee2015vgam} the single-source capture-recapture
-(SSCR) methods are less available being only partially implemented in
-existing \proglang{R} packages. The goal of the paper is to introduce
-the \pkg{singleRcapture} and \pkg{singleRcaptureExtra} packages which by
-implementing \emph{state-of-the-art} methods in SSCR and providing user
-friendly API which mimics existing \proglang{R} functions (e.g.,
-\texttt{glm}) attempt to bridge this aforementioned gap. In the next
-subsection we describe the available \proglang{R} packages that could be
-used for estimating population size based on SSCR methods.
+(SSCR) methods are not available at all or being only partially
+implemented in existing \proglang{R} packages. The goal of the paper is
+to introduce the \pkg{singleRcapture} and \pkg{singleRcaptureExtra}
+packages which by implementing \emph{state-of-the-art} methods in SSCR
+and providing user friendly API which mimics existing \proglang{R}
+functions (e.g., \texttt{glm}) attempt to bridge this aforementioned
+gap. In the next subsection we describe the available \proglang{R}
+packages that could be used for estimating population size based on SSCR
+methods.
 
 \subsection{Software for capture-recapture for single and multiple
 sources}\label{sec-software}
@@ -168,8 +169,10 @@ Majority of SSCR methods assume zero-truncated distributions or their
 extensions (e.g., inclusion of one-inflation). The \pkg{countreg}
 \citep{countreg}, \pkg{VGAM} \citep{VGAM-main} or \pkg{distributions3}
 \citep{distributions3} implement some of those truncated distributions
+(e.g.~\code{distributions3::ZTPoisson} or \code{countreg::ztpoisson})
 and the most general distributions such as Generally Altered, Inflated,
-Truncated and Deflated (GAITD) can be found in the \pkg{VGAM}. However,
+Truncated and Deflated can be found in the \pkg{VGAM} package
+(e.g.~\code{VGAM::gaitdpoisson} for poisson distribution). However,
 estimation of parameters of a given truncated (and possibly inflated)
 distribution is just a first step (similarly as in log-linear models in
 capture-recapture with two sources) and to best of our knowledge there
@@ -182,15 +185,16 @@ tool for estimation of population size based on SSCR methods. The
 package implements state-of-the-art methods as recently described by
 \citet{bohning2018capture} or \citet{bohning2024one} and its extensions
 (e.g., inclusion of covariates, different treatment of one-inflation)
-that we will cover in detail in Section 1. The package implements
-variance estimation based on various methods, allows for implementing
-custom models as well as diagnostics plots (e.g.~rootograms) with
-parameters estimated using a modified IRLS algorithm implemented by us
-to for estimation stability. Furthermore, as many \proglang{R} users are
-familiar with \pkg{countreg} or \pkg{VGAM} we have implemented a
-lightweight extension \pkg{singleRcaptureExtra}, available through
-Github (\url{https://github.com/ncn-foreigners/singleRcaptureExtra}),
-that allows for integration of \pkg{singleRcapture} with those packages.
+that we will cover in detail in Section \ref{sec-theory}. The package
+implements variance estimation based on various methods, allows for
+implementing custom models as well as diagnostics plots
+(e.g.~rootograms) with parameters estimated using a modified IRLS
+algorithm implemented by us to for estimation stability. Furthermore, as
+many \proglang{R} users are familiar with \pkg{countreg} or \pkg{VGAM}
+we have implemented a lightweight extension \pkg{singleRcaptureExtra},
+available through Github
+(\url{https://github.com/ncn-foreigners/singleRcaptureExtra}), that
+allows for integration of \pkg{singleRcapture} with those packages.
 
 The remaining part of the paper is as follows. In Section
 \ref{sec-theory} a brief description of the theoretical background is
@@ -459,7 +463,7 @@ matrix is created \(\boldsymbol{X}_{\text{vlm}}\) at call to
 \pkg{singleRcapture} this matrix can be written as:
 
 \begin{equation}\label{X_vlm-definition}
-  \boldsymbol{X}_{vlm}=
+  \boldsymbol{X}_{\text{vlm}}=
   \begin{pmatrix}
     \boldsymbol{X}_{1} & \boldsymbol{0}&\dotso &\boldsymbol{0}\cr
     \boldsymbol{0}& \boldsymbol{X}_{2} &\dotso &\boldsymbol{0}\cr
@@ -556,7 +560,7 @@ algorithm is the default in \pkg{singleRcapture}.
 
 The main function that \pkg{singleRcapture} is built around is
 \code{estimatePopsize}. The leading design principle was to make using
-\code{estimatePopsize} as close to standard \code{stats::glm()} as
+\code{estimatePopsize} as close to standard \code{stats::glm} as
 possible or packages for fitting zero-truncated regression models as
 \pkg{countreg} (e.g.~\code{countreg::zerotrunc} function). This function
 is used to first fit an appropriate (vector) generalized linear model
@@ -606,7 +610,7 @@ Argument & Description \\
 \code{...} & additional optional arguments passed to other methods eg. \code{estimatePopsizeFit} \\
 \hline
 \end{tabular}
-\caption{\code{estimatePopsize()} arguments description}
+\caption{\code{estimatePopsize} function arguments description}
 \label{tab-arguments-popsize}
 \end{table}
 
@@ -985,13 +989,17 @@ frequencies which we can get with the syntax:
 R> plot(   basicModel, plotType = "rootogram", main = "ZT Poisson model")
 R> plot(modelInflated, plotType = "rootogram", main = "OI ZT Geometric model")
 \end{CodeInput}
+\begin{figure}[ht]
 
+{\centering \includegraphics[width=7.5cm]{singleRcapture_files/figure-latex/rootogram-1} \includegraphics[width=7.5cm]{singleRcapture_files/figure-latex/rootogram-2} 
 
-\begin{center}\includegraphics[width=7.5cm]{singleRcapture_files/figure-latex/rootogram-1} \includegraphics[width=7.5cm]{singleRcapture_files/figure-latex/rootogram-2} \end{center}
+}
 
+\caption[Rootograms for ztpoisson (left) and oiztgeom (right) models]{Rootograms for ztpoisson (left) and oiztgeom (right) models}\label{fig:rootogram}
+\end{figure}
 \end{CodeChunk}
 
-Plots suggest that the \code{otztgeom} model fits the data better.
+Plots suggest that the \code{oiztgeom} model fits the data better.
 Furthermore, important issue in population size estimation is the
 diagnostics of the models in order to verify whether influential
 observations are present in the data. For this purpose leave-one-out
@@ -1037,7 +1045,8 @@ age>40yrs:omega      -30.2130 -0.2247 -0.1312 -0.0663  2.0393
 
 Furthermore, result of the \code{dfbeta} can be further used in the
 function \code{dfpopsize} which allows for quantification of LOO on the
-population size.
+population size. Note the warning when the bootstap variance estimation
+is applied.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1072,13 +1081,17 @@ Figure bellow:
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> plot(basicModel, plotType = "dfpopContr", dfpop = dfb_pop)
-R> plot(modelInflated, plotType = "dfpopContr", dfpop = dfi_pop)
+R> plot(basicModel, plotType = "dfpopContr", dfpop = dfb_pop, xlim = c(-4500, 150))
+R> plot(modelInflated, plotType = "dfpopContr", dfpop = dfi_pop, xlim = c(-4500, 150))
 \end{CodeInput}
+\begin{figure}[ht]
 
+{\centering \includegraphics[width=7.5cm]{singleRcapture_files/figure-latex/dfpopsize_plot-1} \includegraphics[width=7.5cm]{singleRcapture_files/figure-latex/dfpopsize_plot-2} 
 
-\begin{center}\includegraphics[width=7.5cm]{singleRcapture_files/figure-latex/dfpopsize_plot-1} \includegraphics[width=7.5cm]{singleRcapture_files/figure-latex/dfpopsize_plot-2} \end{center}
+}
 
+\caption[Results for ztpoisson (left) and oiztgeom (right) model]{Results for ztpoisson (left) and oiztgeom (right) model}\label{fig:dfpopsize_plot}
+\end{figure}
 \end{CodeChunk}
 
 These plot informs on the change of the population size if a given
@@ -1214,17 +1227,21 @@ R> par(mar = c(2.5, 8.5, 4.1, 2.5), cex.main = .7, cex.lab = .6)
 R> plot(basicModel, plotType = "strata")
 R> plot(modelInflated, plotType = "strata")
 \end{CodeInput}
+\begin{figure}[ht]
 
+{\centering \includegraphics[width=7.5cm]{singleRcapture_files/figure-latex/strata_plot-1} \includegraphics[width=7.5cm]{singleRcapture_files/figure-latex/strata_plot-2} 
 
-\begin{center}\includegraphics[width=7.5cm]{singleRcapture_files/figure-latex/strata_plot-1} \includegraphics[width=7.5cm]{singleRcapture_files/figure-latex/strata_plot-2} \end{center}
+}
 
+\caption[Population size by covariates for ztpoisson (left) and oiztgeom (right) model]{Population size by covariates for ztpoisson (left) and oiztgeom (right) model}\label{fig:strata_plot}
+\end{figure}
 \end{CodeChunk}
 
 For plotting only the \code{logNormal} type of confidence interval is
 used since the studentized confidence intervals often result in negative
 lower bounds.
 
-\section{Classes and methods}\label{sec-methods}
+\section[Classes and S3methods]{Classes and \code{S3methods}}\label{sec-methods}
 
 For the purpose of the package we have created classes
 \code{singleRStaticCountData}, \code{singleR} (for now the two former
@@ -1310,7 +1327,8 @@ R> summary(data.frame(gender, eta, counts))
 \end{CodeChunk}
 
 The full list of explicitly defined methods for
-\code{singleRStaticCountData} methods is
+\code{singleRStaticCountData} methods is presented in Table
+\ref{tab-methods}.
 
 \begin{table}[ht!]
 \centering
@@ -1336,6 +1354,7 @@ Function & Description \\
 \hline 
 \end{tabular}
 \caption{\code{S3Methods} implemented in the \pkg{singleRcapture}}
+\label{tab-methods}
 \end{table}
 
 \section[Integration with the]{Integration with the \pkg{VGAM, countreg}
@@ -1579,7 +1598,7 @@ instance for estimation of variance.
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Create data matrix \(\boldsymbol{X}_{vlm}\)
+  Create data matrix \(\boldsymbol{X}_{\text{vlm}}\)
 \end{enumerate}
 
 \begin{CodeChunk}
@@ -1757,8 +1776,8 @@ A factory function for creating the:
 \clearpage
 
 \section[Implementing custom singleRcapture family function]{Implementing
-custom \pkg{singleRcapture} family
-function}\label{implementing-custom-family-function}
+a custom \pkg{singleRcapture} family
+function}\label{implementing-a-custom-family-function}
 
 Suppose we want to implement a very specific zero truncated family
 function in the \pkg{singleRcapture} which corresponds to the following
@@ -2208,7 +2227,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x148cea800>
+<bytecode: 0x112603248>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}
