@@ -462,7 +462,7 @@ bootstrap algorithm is the default in \pkg{singleRcapture}.
 The main function that \pkg{singleRcapture} is built around is
 \code{estimatePopsize}. The leading design principle was to make using
 \code{estimatePopsize} as close to standard \code{stats::glm()} as
-possible or packages for fitting zero-truncated regression models as \pkg{countreg} (e.g. \code{countreg::ztpoisson()} function). 
+possible or packages for fitting zero-truncated regression models as \pkg{countreg} (e.g. \code{countreg::zerotrunc} function). 
 This function is used to first fit an appropriate (vector) generalized linear model and then estimates the population size along with its variance. It is assumed that the response vector (i.e. the dependent variable) corresponds to the number of times a given unit was observed in the source. The most important arguments are given in Table \ref{tab-arguments-popsize} with the \code{formula, data, model} being the three arguments which must be provided in the \code{estimatePopsize} syntax.
 
 The most important part of the \code{estimatePopsize} is to specify the \code{model} parameter. This is a crucial part as it allows to select appropriate model to estimate the *unobserved* part of the population. For instance, to fit Chao's or Zelterman's model one should select \code{chao} or \code{zelterman} and if a researcher assumes that the one-inflation is present may select one of the zero-truncated one-inflated (\code{ztoi}$^\ast$) or one-inflated zero-truncated (\code{oizt}$^\ast$) such as \code{oiztpoisson} for Poisson or \code{ztoinegbin} for NB2.
