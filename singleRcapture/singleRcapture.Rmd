@@ -957,7 +957,7 @@ The authors would like to thank Peter van der Heijden, Maarten Cruyff, Dankmar B
 In this section we provide step-by-step description how to prepare data to use the \code{estimatePopsizeFit} function that may be useful to some user e.g. those wishing to make modifications to $\hat{N}$ estimate or to the bootstrap. In order to demonstrate the usage we will fit a zero truncated geometric model on the data from @chao-generalization with covariate dependency:
 \begin{align*}
   \log(\lambda) &=
-  \beta_{1, 1} + \beta_{1, 2} \text{log\_distance} + \beta_{1, 3} \text{C\_TYPE}
+  \beta_{1, 1} + \beta_{1, 2} \text{log\_distance} + \beta_{1, 3} \text{C\_TYPE} +
   \beta_{1, 4} \text{log\_size} \\
   \text{logit}(\omega) &=
   \beta_{2, 1} + \beta_{2, 2} \text{log\_distance} + \beta_{2, 3} \text{C\_TYPE}.
