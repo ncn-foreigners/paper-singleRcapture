@@ -518,7 +518,6 @@ In addition, user may specify the type of confidence interval using \code{confTy
 
 In the next sections we provide a case study on the usage of a simple zero-truncated Poisson regression and a more advanced model: one-inflated zero-truncated geometric regression with \code{cloglog} link function. First, we describe example dataset, then we present how to estimate the population size and assess the quality and diagnostics measures. Finally, we show how to estimate population size in a user-specified sub-populations.
 
-
 # Data analysis example {#sec-study}
 
 The package can be installed in a standard way using:
@@ -761,7 +760,10 @@ and \code{age}. The \code{stratas} parameter may be specified either as:
 \begin{itemize}
 \item a formula with empty left hand side which we have seen here (e.g. \code{~ gender * age}),
 \item a logical vector with number of entries equal to number of rows in the dataset in which case only one strata will be created (e.g. \code{netherlandsimmigrant$gender == "male"}),
-\item a (named) list where each element is a logical vector, names of the list will be used to specify names variable in returned object, for example:
+\item a vector of names of explanatory variables which will result in every level of explanatory variable having its own sub population for each variable specified (e.g. \code{c("gender", "age")}),
+\item not supplied at all in which case stratas will correspond to levels of each factor in the data without any interactions (string vectors will be converted to factors for the convenience of the user),
+\item or a (named) list where each element is a logical vector, names of the list will be used to specify names variable in returned object, for example:
+\end{itemize}
 ```{r, eval=FALSE}
 list(
   "Strata 1" = netherlandsimmigrant$gender == "male"   & 
@@ -770,9 +772,6 @@ list(
     netherlandsimmigrant$nation == "North Africa"
 )
 ```
-\item a vector of names of explanatory variables which will result in every level of explanatory variable having its own sub population for each variable specified (e.g. \code{c("gender", "age")}),
-\item or not supplied at all in which case stratas will correspond to levels of each factor in the data without any interactions (string vectors will be converted to factors for the convenience of the user).
-\end{itemize}
 
 One may also specify \code{plotType = "strata"} in the \code{plot} function which results in a plot with point and CI estimates of the population size.
 

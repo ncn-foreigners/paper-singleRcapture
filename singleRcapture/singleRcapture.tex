@@ -1244,8 +1244,11 @@ parameter may be specified either as:
 \begin{itemize}
 \item a formula with empty left hand side which we have seen here (e.g. \code{~ gender * age}),
 \item a logical vector with number of entries equal to number of rows in the dataset in which case only one strata will be created (e.g. \code{netherlandsimmigrant$gender == "male"}),
-\item a (named) list where each element is a logical vector, names of the list will be used to specify names variable in returned object, for example:
-```{=latex}
+\item a vector of names of explanatory variables which will result in every level of explanatory variable having its own sub population for each variable specified (e.g. \code{c("gender", "age")}),
+\item not supplied at all in which case stratas will correspond to levels of each factor in the data without any interactions (string vectors will be converted to factors for the convenience of the user),
+\item or a (named) list where each element is a logical vector, names of the list will be used to specify names variable in returned object, for example:
+\end{itemize}
+
 \begin{CodeChunk}
 \begin{CodeInput}
 R> list(
@@ -1256,10 +1259,6 @@ R> list(
 + )
 \end{CodeInput}
 \end{CodeChunk}
-```
-\item a vector of names of explanatory variables which will result in every level of explanatory variable having its own sub population for each variable specified (e.g. \code{c("gender", "age")}),
-\item or not supplied at all in which case stratas will correspond to levels of each factor in the data without any interactions (string vectors will be converted to factors for the convenience of the user).
-\end{itemize}
 
 One may also specify \code{plotType = "strata"} in the \code{plot}
 function which results in a plot with point and CI estimates of the
@@ -2307,7 +2306,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x12765d5a0>
+<bytecode: 0x136e10500>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}
