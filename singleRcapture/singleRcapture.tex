@@ -117,11 +117,11 @@ illicit drug users, thereby addressing the inherent limitations of
 conventional census methodologies. These techniques are crucial for
 obtaining accurate data on populations that are typically
 under-represented or difficult to access through traditional sampling
-methods \citep{vincent2022estimating}. In ecology and epidemiology,
-researchers focus on estimating the size of specific species or
-disease-affected populations within defined geographical regions, which
-is vital for conservation efforts, ecosystem management, and public
-health interventions.
+methods \citep[cf.][]{vincent2022estimating}. In ecology and
+epidemiology, researchers focus on estimating the size of specific
+species or disease-affected populations within defined geographical
+regions, which is vital for conservation efforts, ecosystem management,
+and public health interventions.
 
 Population size estimation can be approached through various
 methodologies, each with distinct advantages and limitations.
@@ -131,8 +131,8 @@ are often resource-intensive and may result in delayed estimates,
 particularly for human populations. Alternative methods leverage
 existing data sources, such as administrative registers or carefully
 designed small-scale studies in wildlife research or census coverage
-surveys \citep{wolter1986some, zhang2019note}. Application of these
-sources often comes with statistical methods, known as
+surveys \citep[cf.][]{wolter1986some, zhang2019note}. Application of
+these sources often comes with statistical methods, known as
 \emph{capture-recapture} or \emph{multiple system estimation}, that
 utilizes data from multiple enumerations of the same population
 \citep[cf.][]{dunne2024system}. This can be implemented using a single
@@ -171,10 +171,11 @@ extensions (e.g., inclusion of one-inflation). The \pkg{countreg}
 \citep{distributions3} implement some of those truncated distributions
 (e.g.~\code{distributions3::ZTPoisson} or \code{countreg::ztpoisson})
 and the most general distributions such as Generally Altered, Inflated,
-Truncated and Deflated can be found in the \pkg{VGAM} package
-(e.g.~\code{VGAM::gaitdpoisson} for poisson distribution). However,
-estimation of parameters of a given truncated (and possibly inflated)
-distribution is just a first step (similarly as in log-linear models in
+Truncated and Deflated can be found in the \pkg{VGAM} package (e.g.~
+\code{VGAM::gaitdpoisson} for poisson distribution), see
+\citet{gaitdcount} for recent description. However, estimation of
+parameters of a given truncated (and possibly inflated) distribution is
+just a first step (similarly as in log-linear models in
 capture-recapture with two sources) and to best of our knowledge there
 is no open-source software that allows to estimate population size based
 on SSCR method, including variance estimator or diagnostics.
@@ -234,16 +235,18 @@ type estimator given by:
 \label{eq-ht-estimator}
 \end{equation}
 
-where \(I_{k}:=\mathcal{I}_{\mathbb{N}}(Y_{k})\) and \(\mathcal{I}\) is
-the indicator function, and maximum likelihood estimate of \(N\) is
-obtained after substituting regression parameters \(\boldsymbol{\beta}\)
-for \(\mathbb{P}[Y_{k}>0|\boldsymbol{x}_{k}]\) into
-\eqref{eq-ht-estimator}.
+where \(I_{k}:=\mathcal{I}_{\mathbb{N}}(Y_{k})\), \(N_{obs}\) is the
+number of observed units and \(\mathcal{I}\) is the indicator function,
+and maximum likelihood estimate of \(N\) is obtained after substituting
+regression parameters \(\boldsymbol{\beta}\) for
+\(\mathbb{P}[Y_{k}>0|\boldsymbol{x}_{k}]\) into \eqref{eq-ht-estimator}.
 
 The basic SSCR assumes independence between counts which may be rather
 naive as the first capture may significantly influence the behaviour of
 a given unit or limit possibilities of further captures (e.g.~due to
-incarceration). To solve these issues, \citet{godwin2017estimation} and
+incarceration).
+
+To solve these issues, \citet{godwin2017estimation} and
 \citet{ztoi-oizt-poisson} introduced one-inflated distributions that
 explicitly model probability of the singletons by giving additional mass
 \(\omega\) for singletons denoted as \(\mathcal{I}_{\{1\}}(y)\)
@@ -325,7 +328,10 @@ R> ?ztpoisson
 \end{CodeChunk}
 
 For the sake of simplicity we limit ourselves to just listing the family
-functions:
+functions with the briefest descriptions and instead direct interested
+reader to the relevant literature for elaboration.
+
+These family functions currently are:
 
 \begin{itemize}
     \item Generalized Chao's \citep{chao1987estimating} and Zelterman's \citep{zelterman1988robust} estimators via logistic regression on variable $Z$ defined as $Z=1$ if $Y=2$ and $Z=0$ if $Y=1$ with $Z\sim b(p)$ where $b(\cdot)$ is the Bernoulli distribution and $p$ can be modeled for each unit $k$ by $\text{logit}(p_k)=\ln(\lambda_k/2)$ with Poisson parameter $\lambda_k=\boldsymbol{x}_{k}\boldsymbol{\beta}$ (for covariate extension see \cite{chao-generalization} and \cite{zelterman}):
@@ -366,7 +372,7 @@ functions:
         \omega\frac{\mathcal{I}_{\{1\}}(y)}{1-(1-\omega)\mathbb{P}[Y=0]}+
         (1-\omega)\frac{\mathbb{P}[Y=y]}{1-(1-\omega)\mathbb{P}[Y=0]}.
     \end{equation*}
-    Note that \code{ztoi}$^\ast$ and \code{oizt}$^\ast$ distributions are equivalent as shown by \cite{bohning2023equivalence} but population size estimators are different.
+    Note that \code{ztoi}$^\ast$ and \code{oizt}$^\ast$ distributions are equivalent, in the sense that the maximum value of the likelihood function is equal for both of those distributions given any data, as shown by \cite{bohning2023equivalence} but population size estimators are different.
 \end{itemize}
 
 In addition, we have provided two new approaches that allow modelling
@@ -545,7 +551,7 @@ Algorithm \ref{algo-par-boot}.
 \nlset{2} Using the fitted model and regression coefficients $\hat{\boldsymbol{\beta}}$ draw for each covariate the $Y$ value from the corresponding probability measure on $\mathbb{N}\cup\{0\}$.\;
 \nlset{3} Truncate units with drawn $Y$ value equal to $0$.\;
 \nlset{4} Obtain population size estimate $N_b$ based on the truncated data.\;
-\nlset{5} Repeat $1-3$ steps $B$ times.
+\nlset{5} Repeat $1-4$ steps $B$ times.
 \end{algorithm}
 
 Note that for this type of algorithm to result in consistent standard
@@ -564,7 +570,7 @@ The main function that \pkg{singleRcapture} is built around is
 possible or packages for fitting zero-truncated regression models as
 \pkg{countreg} (e.g.~\code{countreg::zerotrunc} function). This function
 is used to first fit an appropriate (vector) generalized linear model
-and then estimates the population size along with its variance. It is
+and to estimate the population size along with its variance. It is
 assumed that the response vector (i.e.~the dependent variable)
 corresponds to the number of times a given unit was observed in the
 source. The most important arguments are given in Table
@@ -743,12 +749,6 @@ R> basicModel <- estimatePopsize(
 +   model   = ztpoisson(),
 +   data    = netherlandsimmigrant
 + )
-\end{CodeInput}
-\begin{CodeOutput}
-Warning in singleRcaptureinternalIRLSmultipar(dependent = y, covariates = X, :
-Convergence at halfstepsize
-\end{CodeOutput}
-\begin{CodeInput}
 R> summary(basicModel)
 \end{CodeInput}
 \begin{CodeOutput}
@@ -786,15 +786,15 @@ Number of iterations: 8
 Population size estimation results: 
 Point estimate 12690.35
 Observed proportion: 14.8% (N obs = 1880)
-Std. Error 2808.165
+Std. Error 2808.169
 95% CI for the population size:
           lowerBound upperBound
-normal      7186.449   18194.25
-logNormal   8431.277   19718.31
+normal      7186.444   18194.26
+logNormal   8431.275   19718.32
 95% CI for the share of observed population:
           lowerBound upperBound
-normal     10.332933   26.16035
-logNormal   9.534288   22.29793
+normal     10.332927   26.16037
+logNormal   9.534281   22.29793
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -893,18 +893,18 @@ following code which returns list with numerical results.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> basicModel$populationSize
+R> popSizeEst(basicModel)    #basicModel$populationSize
 \end{CodeInput}
 \begin{CodeOutput}
 Point estimate: 12690.35
-Variance: 7885790
+Variance: 7885812
 95% confidence intervals:
           lowerBound upperBound
-normal      7186.449   18194.25
-logNormal   8431.277   19718.31
+normal      7186.444   18194.26
+logNormal   8431.275   19718.32
 \end{CodeOutput}
 \begin{CodeInput}
-R> modelInflated$populationSize
+R> popSizeEst(modelInflated) #modelInflated$populationSize
 \end{CodeInput}
 \begin{CodeOutput}
 Point estimate: 6699.953
@@ -917,9 +917,42 @@ lowerBound upperBound
 
 Decision whether to use zero-truncated Poisson or one-inflated
 zero-truncated geometric should be on the assessment of the model and
-the assumptions on the data generation process. In the next sections we
-provide details how to assess the results using statistical tests and
-diagnostics.
+the assumptions on the data generation process. One possible method of
+method selection is based on likelihood ratio test which can be computed
+quickly and conveniently with the \pkg{lmtest} (\citet{lmtest})
+interface:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> library(lmtest)
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> lrtest(basicModel, modelInflated, 
++        name = function(x) {
++     if (family(x)$family == "ztpoisson")
++         "Basic model"
++     else "Inflated model"
++ })
+\end{CodeInput}
+\begin{CodeOutput}
+Likelihood ratio test
+
+Model 1: Basic model
+Model 2: Inflated model
+  #Df  LogLik Df  Chisq Pr(>Chisq)    
+1   8 -848.45                         
+2   9 -829.56  1 37.776  7.936e-10 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{CodeOutput}
+\end{CodeChunk}
+
+this is however not a standard method of model selection in SSCR. The
+next sections are dedicated to providing details how to assess the
+results using more standard statistical tests and diagnostics.
 
 \subsection{Testing marginal
 frequencies}\label{testing-marginal-frequencies}
@@ -1019,7 +1052,7 @@ age>40yrs            -2.0010  0.0179  0.0379 0.0691 16.0061
 nationAsia           -9.5559 -0.0529  0.0066 0.0120 17.9914
 nationNorth Africa   -9.6605 -0.0842 -0.0177 0.0087  3.1260
 nationRest of Africa -9.4497 -0.0244  0.0030 0.0083 10.9787
-nationSurinam        -9.3138 -0.0065  0.0021 0.0037 99.3383
+nationSurinam        -9.3140 -0.0066  0.0020 0.0035 99.3383
 nationTurkey         -9.6198 -0.0220  0.0079 0.0143 32.0980
 \end{CodeOutput}
 \end{CodeChunk}
@@ -1063,7 +1096,7 @@ R> summary(dfb_pop)
 \end{CodeInput}
 \begin{CodeOutput}
      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
--4236.407     2.660     2.660     5.445    17.281   117.445 
+-4236.412     2.664     2.664     5.448    17.284   117.448 
 \end{CodeOutput}
 \begin{CodeInput}
 R> summary(dfi_pop)
@@ -1081,8 +1114,10 @@ Figure bellow:
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> plot(basicModel, plotType = "dfpopContr", dfpop = dfb_pop, xlim = c(-4500, 150))
-R> plot(modelInflated, plotType = "dfpopContr", dfpop = dfi_pop, xlim = c(-4500, 150))
+R> plot(basicModel, plotType = "dfpopContr", 
++      dfpop = dfb_pop, xlim = c(-4500, 150))
+R> plot(modelInflated, plotType = "dfpopContr", 
++      dfpop = dfi_pop, xlim = c(-4500, 150))
 \end{CodeInput}
 \begin{figure}[ht]
 
@@ -1132,15 +1167,15 @@ R> popSizeStratas_report
 \end{CodeInput}
 \begin{CodeOutput}
                              Name  Obs  Estimated LowerBound UpperBound
-1                  gender==female  398  3811.0911  2189.0443   6902.133
-2                    gender==male 1482  8879.2594  6090.7762  13354.880
-3                     age==<40yrs 1769 10506.8971  7359.4155  15426.455
-4                     age==>40yrs  111  2183.4535   872.0130   5754.876
+1                  gender==female  398  3811.0924  2189.0439   6902.140
+2                    gender==male 1482  8879.2613  6090.7752  13354.889
+3                     age==<40yrs 1769 10506.8994  7359.4140  15426.465
+4                     age==>40yrs  111  2183.4543   872.0130   5754.881
 5  nation==American and Australia  173   708.3688   504.6086   1037.331
 6                    nation==Asia  284  2742.3147  1755.2548   4391.590
 7            nation==North Africa 1023  3055.2033  2697.4900   3489.333
 8          nation==Rest of Africa  243  2058.1533  1318.7466   3305.786
-9                 nation==Surinam   64  2386.4513   505.2457  12287.983
+9                 nation==Surinam   64  2386.4544   505.2460  12288.008
 10                 nation==Turkey   93  1739.8592   638.0497   5068.959
 \end{CodeOutput}
 \end{CodeChunk}
@@ -1190,10 +1225,10 @@ R> popSizeStratasCustom_report
 \end{CodeInput}
 \begin{CodeOutput}
             Name  Obs Estimated LowerBound UpperBound alpha
-1 gender==female  398  3811.091  2275.6416   6602.161  0.10
-2   gender==male 1482  8879.259  6261.5125  12930.751  0.10
-3    age==<40yrs 1769 10506.897  7297.2081  15580.138  0.05
-4    age==>40yrs  111  2183.453   787.0676   6464.009  0.05
+1 gender==female  398  3811.092  2275.6410   6602.168  0.10
+2   gender==male 1482  8879.261  6261.5109  12930.760  0.10
+3    age==<40yrs 1769 10506.899  7297.2057  15580.151  0.05
+4    age==>40yrs  111  2183.454   787.0673   6464.016  0.05
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1209,10 +1244,19 @@ parameter may be specified either as:
 \begin{itemize}
 \item a formula with empty left hand side which we have seen here (e.g. \code{~ gender * age}),
 \item a logical vector with number of entries equal to number of rows in the dataset in which case only one strata will be created (e.g. \code{netherlandsimmigrant$gender == "male"}),
-\item a (named) list where each element is a logical vector, names of the list will be used to specify names variable in returned object (e.g. \code{list("Strata 1" = netherlandsimmigrant$gender == "male" 
-\& netherlandsimmigrant$nation == "Suriname", 
-"Strata 2" = netherlandsimmigrant$gender == "female" 
-\& netherlandsimmigrant$nation == "North Africa")}),
+\item a (named) list where each element is a logical vector, names of the list will be used to specify names variable in returned object, for example:
+```{=latex}
+\begin{CodeChunk}
+\begin{CodeInput}
+R> list(
++   "Strata 1" = netherlandsimmigrant$gender == "male"   & 
++     netherlandsimmigrant$nation == "Suriname", 
++   "Strata 2" = netherlandsimmigrant$gender == "female" & 
++     netherlandsimmigrant$nation == "North Africa"
++ )
+\end{CodeInput}
+\end{CodeChunk}
+```
 \item a vector of names of explanatory variables which will result in every level of explanatory variable having its own sub population for each variable specified (e.g. \code{c("gender", "age")}),
 \item or not supplied at all in which case stratas will correspond to levels of each factor in the data without any interactions (string vectors will be converted to factors for the convenience of the user).
 \end{itemize}
@@ -1260,11 +1304,11 @@ R> (popEst <- popSizeEst(basicModel))
 \end{CodeInput}
 \begin{CodeOutput}
 Point estimate: 12690.35
-Variance: 7885790
+Variance: 7885812
 95% confidence intervals:
           lowerBound upperBound
-normal      7186.449   18194.25
-logNormal   8431.277   19718.31
+normal      7186.444   18194.26
+logNormal   8431.275   19718.32
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1296,7 +1340,7 @@ age>40yrs            -0.9746058  0.4082420 -2.3873235 1.697155e-02
 nationAsia           -1.0925990  0.3016259 -3.6223642 2.919228e-04
 nationNorth Africa    0.1899980  0.1940007  0.9793677 3.273983e-01
 nationRest of Africa -0.9106361  0.3008092 -3.0272880 2.467587e-03
-nationSurinam        -2.3363949  1.0135639 -2.3051284 2.115938e-02
+nationSurinam        -2.3363962  1.0135645 -2.3051282 2.115939e-02
 nationTurkey         -1.6753917  0.6027744 -2.7794674 5.444812e-03
 \end{CodeOutput}
 \end{CodeChunk}
@@ -1567,7 +1611,7 @@ the package in a such way that it is easy to implement new models using
 \code{family} objects which is demonstrated in the Appendix
 \ref{sec-family}.
 
-In future work we plan to consider Bayesian estimation using
+In future work we plan on implementing Bayesian estimation using
 \proglang{Stan} (e.g.~via the \pkg{brms} package;
 \cite{carpenter2017stan, brms}) and for one-inflation models we may use
 the recent approach proposed by \cite{tuoto2022bayesian} and implement
@@ -1591,8 +1635,32 @@ to thank Tymon Świtalski for valuable comments that improved the paper.
 \code{estimatePopsizeFit} function}\label{sec-estimatePopsizeFit}
 
 In this section we provide step-by-step description how to prepare data
-to use the \code{estimatePopsizeFit} function that may be useful for
-instance for estimation of variance.
+to use the \code{estimatePopsizeFit} function that may be useful to some
+user e.g.~those wishing to make modifications to \(\hat{N}\) estimate or
+to the bootstrap. In order to demonstrate the usage we will fit a zero
+truncated geometric model on the data from \citet{chao-generalization}
+with covariate dependency: \begin{align*}
+  \log(\lambda) &=
+  \beta_{1, 1} + \beta_{1, 2} \text{log\_distance} + \beta_{1, 3} \text{C\_TYPE}
+  \beta_{1, 4} \text{log\_size} \\
+  \text{logit}(\omega) &=
+  \beta_{2, 1} + \beta_{2, 2} \text{log\_distance} + \beta_{2, 3} \text{C\_TYPE}.
+\end{align*}
+
+This would be equivalent to \code{esimatePopsize} call:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> estimatePopsize(
++   TOTAL_SUB ~ .,
++   data = farmsubmission,
++   model = ztoigeom(),
++   controlModel(
++     omegaFormula = ~ 1 + log_size + C_TYPE
++   )
++ )
+\end{CodeInput}
+\end{CodeChunk}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -1629,7 +1697,6 @@ R> X[-(1:NROW(farmsubmission)), 5:7] <- model.matrix(
 +   ~ 1 + log_distance + C_TYPE, 
 +   farmsubmission
 + )
-R> 
 R> attr(X, "hwm") <- c(4, 3)
 \end{CodeInput}
 \end{CodeChunk}
@@ -1650,7 +1717,6 @@ R> start <- glm.fit(# get starting points
 +   x = X[1:NROW(farmsubmission), 1:4], 
 +   family = poisson()
 + )$coefficients
-R> 
 R> start
 \end{CodeInput}
 \begin{CodeOutput}
@@ -1708,7 +1774,7 @@ R> res2 <- estimatePopsizeFit(
 +   priorWeights = 1, 
 +   family = ztoigeom(), 
 +   coefStart = c(start, 0, 0, 0),
-+   control = controlMethod(silent = TRUE),
++   control = controlMethod(silent = TRUE, maxiter = 10000),
 +   offset = cbind(rep(0, NROW(farmsubmission)), rep(0, NROW(farmsubmission)))
 + )
 \end{CodeInput}
@@ -1716,22 +1782,36 @@ R> res2 <- estimatePopsizeFit(
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> data.frame(singleRcapture = round(c(res$beta, -ll(res$beta), res$iter), 4),
+R> data.frame(IRLS  = round(c(res$beta, -ll(res$beta), res$iter), 4),
 +            optim = round(c(res2$beta, -ll(res2$beta), res2$iter[1]), 4))
 \end{CodeInput}
 \begin{CodeOutput}
-  singleRcapture       optim
-1        -2.7845     -2.6408
-2         0.6170      0.6258
-3        -0.0646     -0.0829
-4         0.5346      0.5325
-5        -3.1745     -0.1244
-6         0.1281     -0.1630
-7        -1.0865     -1.1055
-8    -17278.7613 -17280.3414
-9        15.0000   1002.0000
+         IRLS       optim
+1     -2.7845     -2.5971
+2      0.6170      0.6163
+3     -0.0646     -0.0825
+4      0.5346      0.5431
+5     -3.1745     -0.1504
+6      0.1281     -0.1586
+7     -1.0865     -1.0372
+8 -17278.7613 -17280.1189
+9     15.0000   1696.0000
 \end{CodeOutput}
 \end{CodeChunk}
+
+The default \code{maxiter} parameter for \code{"optim"} fitting is
+\(1000\), here we needed to increase it since the \code{optim} did not
+converge in \(1000\) steps and still ``gets stuck'' in at a plateau
+resulting as we see indicating by lower log-likelihood value as compared
+to the standard \code{"IRLS"}.
+
+The situation above is rather typical, although we conducted no formal
+numerical analyses it seems that when one attempts to model more than
+one parameter of the distribution as covariate dependent \code{optim}
+algorithms, both \code{"Nelder-Mead"} and \code{"L-BFGS-B"} seem to be
+ill-suited for the task despite being provided with the analytically
+computed gradient. This is one of the reasons why \code{"IRLS"} is the
+default fitting method.
 
 \clearpage
 
@@ -2227,7 +2307,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x112603248>
+<bytecode: 0x12a66e5f8>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}

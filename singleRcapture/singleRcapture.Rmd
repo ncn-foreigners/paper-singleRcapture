@@ -84,7 +84,7 @@ populations, such as homeless individuals or illicit drug users, thereby
 addressing the inherent limitations of conventional census
 methodologies. These techniques are crucial for obtaining accurate data
 on populations that are typically under-represented or difficult to
-access through traditional sampling methods [@vincent2022estimating]. In
+access through traditional sampling methods [cf. @vincent2022estimating]. In
 ecology and epidemiology, researchers focus on estimating the size of
 specific species or disease-affected populations within defined
 geographical regions, which is vital for conservation efforts, ecosystem
@@ -98,7 +98,7 @@ are often resource-intensive and may result in delayed estimates,
 particularly for human populations. Alternative methods leverage
 existing data sources, such as administrative registers or carefully
 designed small-scale studies in wildlife research or census coverage
-surveys [@wolter1986some; @zhang2019note]. Application of these sources
+surveys [cf. @wolter1986some; @zhang2019note]. Application of these sources
 often comes with statistical methods, known as *capture-recapture* or
 *multiple system estimation*, that utilizes data from multiple
 enumerations of the same population [cf. @dunne2024system]. This can be
@@ -131,10 +131,13 @@ population size based on SSCR methods.
 Majority of SSCR methods assume zero-truncated distributions or their
 extensions (e.g., inclusion of one-inflation). The \pkg{countreg}
 [@countreg], \pkg{VGAM} [@VGAM-main] or \pkg{distributions3}
-[@distributions3] implement some of those truncated distributions (e.g. \code{distributions3::ZTPoisson} or \code{countreg::ztpoisson})
+[@distributions3] implement some of those truncated distributions 
+(e.g. \code{distributions3::ZTPoisson} or \code{countreg::ztpoisson})
 and the most general distributions such as Generally Altered, Inflated,
-Truncated and Deflated can be found in the \pkg{VGAM} package (e.g. \code{VGAM::gaitdpoisson} for poisson distribution). However,
-estimation of parameters of a given truncated (and possibly inflated)
+Truncated and Deflated can be found in the \pkg{VGAM} package (e.g. 
+\code{VGAM::gaitdpoisson} for poisson distribution), see @gaitdcount 
+for recent description. 
+However, estimation of parameters of a given truncated (and possibly inflated)
 distribution is just a first step (similarly as in log-linear models in
 capture-recapture with two sources) and to best of our knowledge there
 is no open-source software that allows to estimate population size based
@@ -188,17 +191,20 @@ given by:
 \label{eq-ht-estimator}
 \end{equation}
 
-where $I_{k}:=\1_{\mathbb{N}}(Y_{k})$ and $\1$ is the indicator function, and maximum likelihood estimate
+where $I_{k}:=\1_{\mathbb{N}}(Y_{k})$, $N_{obs}$ is the number of observed units 
+and $\1$ is the indicator function, and maximum likelihood estimate
 of $N$ is obtained after substituting regression parameters $\bbeta$ for
 $\mathbb{P}[Y_{k}>0|\bx_{k}]$ into \eqref{eq-ht-estimator}.
 
 The basic SSCR assumes independence between counts which may be rather
 naive as the first capture may significantly influence the behaviour of
 a given unit or limit possibilities of further captures (e.g. due to
-incarceration). To solve these issues, @godwin2017estimation and
-@ztoi-oizt-poisson introduced one-inflated distributions that explicitly
-model probability of the singletons by giving additional mass $\omega$
-for singletons denoted as $\1_{\{1\}}(y)$ [cf. @bohning2024one]
+incarceration). 
+
+To solve these issues, @godwin2017estimation and @ztoi-oizt-poisson 
+introduced one-inflated distributions that explicitly model probability of 
+the singletons by giving additional mass $\omega$ for singletons 
+denoted as $\1_{\{1\}}(y)$ [cf. @bohning2024one]
 
 \begin{equation*}
   \mathbb{P}^{\ast}[Y=y|Y>0] =
@@ -264,14 +270,18 @@ for which the probability of being included in the data is $0$ \citep[cf.][]{ztp
 ## Available models
 
 The full list of implemented models in \pkg{singleRcapture} along with
-the expressions for probability density functions and point estimates can be found
-in the collective help file for all family functions:
+the expressions for probability density functions and point estimates can be 
+found in the collective help file for all family functions:
 
 ```{r, eval=FALSE}
 ?ztpoisson
 ```
 
-For the sake of simplicity we limit ourselves to just listing the family functions:
+For the sake of simplicity we limit ourselves to just listing the family 
+functions with the briefest descriptions and instead direct interested reader to 
+the relevant literature for elaboration.
+
+These family functions currently are:
 
 \begin{itemize}
     \item Generalized Chao's \citep{chao1987estimating} and Zelterman's \citep{zelterman1988robust} estimators via logistic regression on variable $Z$ defined as $Z=1$ if $Y=2$ and $Z=0$ if $Y=1$ with $Z\sim b(p)$ where $b(\cdot)$ is the Bernoulli distribution and $p$ can be modeled for each unit $k$ by $\text{logit}(p_k)=\ln(\lambda_k/2)$ with Poisson parameter $\lambda_k=\bx_{k}\bbeta$ (for covariate extension see \cite{chao-generalization} and \cite{zelterman}):
@@ -312,7 +322,7 @@ For the sake of simplicity we limit ourselves to just listing the family functio
         \omega\frac{\1_{\{1\}}(y)}{1-(1-\omega)\mathbb{P}[Y=0]}+
         (1-\omega)\frac{\mathbb{P}[Y=y]}{1-(1-\omega)\mathbb{P}[Y=0]}.
     \end{equation*}
-    Note that \code{ztoi}$^\ast$ and \code{oizt}$^\ast$ distributions are equivalent as shown by \cite{bohning2023equivalence} but population size estimators are different.
+    Note that \code{ztoi}$^\ast$ and \code{oizt}$^\ast$ distributions are equivalent, in the sense that the maximum value of the likelihood function is equal for both of those distributions given any data, as shown by \cite{bohning2023equivalence} but population size estimators are different.
 \end{itemize}
     
 In addition, we have provided two new approaches that allow modelling singletons in a similar way as in Hurdle models. In particular we have proposed the following:
@@ -445,7 +455,7 @@ from this population according to the selected model as described in Algorithm
 \nlset{2} Using the fitted model and regression coefficients $\hat{\bbeta}$ draw for each covariate the $Y$ value from the corresponding probability measure on $\mathbb{N}\cup\{0\}$.\;
 \nlset{3} Truncate units with drawn $Y$ value equal to $0$.\;
 \nlset{4} Obtain population size estimate $N_b$ based on the truncated data.\;
-\nlset{5} Repeat $1-3$ steps $B$ times.
+\nlset{5} Repeat $1-4$ steps $B$ times.
 \end{algorithm}
 
 Note that for this type of algorithm to result in consistent
@@ -463,7 +473,7 @@ The main function that \pkg{singleRcapture} is built around is
 \code{estimatePopsize}. The leading design principle was to make using
 \code{estimatePopsize} as close to standard \code{stats::glm} as
 possible or packages for fitting zero-truncated regression models as \pkg{countreg} (e.g. \code{countreg::zerotrunc} function). 
-This function is used to first fit an appropriate (vector) generalized linear model and then estimates the population size along with its variance. It is assumed that the response vector (i.e. the dependent variable) corresponds to the number of times a given unit was observed in the source. The most important arguments are given in Table \ref{tab-arguments-popsize} with the \code{formula, data, model} being the three arguments which must be provided in the \code{estimatePopsize} syntax.
+This function is used to first fit an appropriate (vector) generalized linear model and to estimate the population size along with its variance. It is assumed that the response vector (i.e. the dependent variable) corresponds to the number of times a given unit was observed in the source. The most important arguments are given in Table \ref{tab-arguments-popsize} with the \code{formula, data, model} being the three arguments which must be provided in the \code{estimatePopsize} syntax.
 
 The most important part of the \code{estimatePopsize} is to specify the \code{model} parameter. This is a crucial part as it allows to select appropriate model to estimate the *unobserved* part of the population. For instance, to fit Chao's or Zelterman's model one should select \code{chao} or \code{zelterman} and if a researcher assumes that the one-inflation is present may select one of the zero-truncated one-inflated (\code{ztoi}$^\ast$) or one-inflated zero-truncated (\code{oizt}$^\ast$) such as \code{oiztpoisson} for Poisson or \code{ztoinegbin} for NB2.
 
@@ -597,11 +607,23 @@ This approach suggest that the population size is about 7k which is about 5k les
 We can access the results of population size estimation using the following code which returns list with numerical results.
 
 ```{r}
-basicModel$populationSize
-modelInflated$populationSize
+popSizeEst(basicModel)    #basicModel$populationSize
+popSizeEst(modelInflated) #modelInflated$populationSize
 ```
 
-Decision whether to use zero-truncated Poisson or one-inflated zero-truncated geometric should be on the assessment of the model and the assumptions on the data generation process. In the next sections we provide details how to assess the results using statistical tests and diagnostics.
+Decision whether to use zero-truncated Poisson or one-inflated zero-truncated geometric should be on the assessment of the model and the assumptions on the data generation process. One possible method of method selection is based on likelihood ratio test which can be computed quickly and conveniently with the \pkg{lmtest} (@lmtest) interface:
+```{r, message=FALSE}
+library(lmtest)
+```
+```{r}
+lrtest(basicModel, modelInflated, 
+       name = function(x) {
+    if (family(x)$family == "ztpoisson")
+        "Basic model"
+    else "Inflated model"
+})
+```
+this is however not a standard method of model selection in SSCR. The next sections are dedicated to providing details how to assess the results using more standard statistical tests and diagnostics.
 
 ## Testing marginal frequencies
 
@@ -672,8 +694,10 @@ summary(dfi_pop)
 The comparison of deletion effect on population size estimate and inverse probability weights, which refer to the contribution of a given observation to the population size estimation, is presented in the Figure bellow:
 
 ```{r, dfpopsize_plot, fig.pos="ht", fig.show='hold', out.width="7.5cm", fig.cap="Results for ztpoisson (left) and oiztgeom (right) model"}
-plot(basicModel, plotType = "dfpopContr", dfpop = dfb_pop, xlim = c(-4500, 150))
-plot(modelInflated, plotType = "dfpopContr", dfpop = dfi_pop, xlim = c(-4500, 150))
+plot(basicModel, plotType = "dfpopContr", 
+     dfpop = dfb_pop, xlim = c(-4500, 150))
+plot(modelInflated, plotType = "dfpopContr", 
+     dfpop = dfi_pop, xlim = c(-4500, 150))
 ```
 
 ```{r, dev_off-2, include=FALSE}
@@ -737,10 +761,15 @@ and \code{age}. The \code{stratas} parameter may be specified either as:
 \begin{itemize}
 \item a formula with empty left hand side which we have seen here (e.g. \code{~ gender * age}),
 \item a logical vector with number of entries equal to number of rows in the dataset in which case only one strata will be created (e.g. \code{netherlandsimmigrant$gender == "male"}),
-\item a (named) list where each element is a logical vector, names of the list will be used to specify names variable in returned object (e.g. \code{list("Strata 1" = netherlandsimmigrant$gender == "male" 
-\& netherlandsimmigrant$nation == "Suriname", 
-"Strata 2" = netherlandsimmigrant$gender == "female" 
-\& netherlandsimmigrant$nation == "North Africa")}),
+\item a (named) list where each element is a logical vector, names of the list will be used to specify names variable in returned object, for example:
+```{r, eval=FALSE}
+list(
+  "Strata 1" = netherlandsimmigrant$gender == "male"   & 
+    netherlandsimmigrant$nation == "Suriname", 
+  "Strata 2" = netherlandsimmigrant$gender == "female" & 
+    netherlandsimmigrant$nation == "North Africa"
+)
+```
 \item a vector of names of explanatory variables which will result in every level of explanatory variable having its own sub population for each variable specified (e.g. \code{c("gender", "age")}),
 \item or not supplied at all in which case stratas will correspond to levels of each factor in the data without any interactions (string vectors will be converted to factors for the convenience of the user).
 \end{itemize}
@@ -911,7 +940,7 @@ summary(modelVgamPop)
 
 In this paper we have introduced two packages for single source capture-recapture models, namely \pkg{singleRcapture} and \pkg{singleRcaptureExtra}. The packages implement state of the art methods for estimating population size based on a single data set with multiple counts. The package allows for different methods to account for heterogeneity in capture probabilities, modelled using covariates, as well as behavioural change, modelled using one-inflation. We have build the package in a such way that it is easy to implement new models using \code{family} objects which is demonstrated in the Appendix \ref{sec-family}.
 
-In future work we plan to consider Bayesian estimation using \proglang{Stan} (e.g. via the \pkg{brms} package; \cite{carpenter2017stan, brms}) and for one-inflation models we may use the recent approach proposed by \cite{tuoto2022bayesian} and implement our own families using the \pkg{brms} package.
+In future work we plan on implementing Bayesian estimation using \proglang{Stan} (e.g. via the \pkg{brms} package; \cite{carpenter2017stan, brms}) and for one-inflation models we may use the recent approach proposed by \cite{tuoto2022bayesian} and implement our own families using the \pkg{brms} package.
 
 # Acknowledgements {#Acknowledgements}
 
@@ -925,7 +954,26 @@ The authors would like to thank Peter van der Heijden, Maarten Cruyff, Dankmar B
 
 ## The \code{estimatePopsizeFit} function {#sec-estimatePopsizeFit short-title="The estimatePopsizeFit function"}
 
-In this section we provide step-by-step description how to prepare data to use the \code{estimatePopsizeFit} function that may be useful for instance for estimation of variance.
+In this section we provide step-by-step description how to prepare data to use the \code{estimatePopsizeFit} function that may be useful to some user e.g. those wishing to make modifications to $\hat{N}$ estimate or to the bootstrap. In order to demonstrate the usage we will fit a zero truncated geometric model on the data from @chao-generalization with covariate dependency:
+\begin{align*}
+  \log(\lambda) &=
+  \beta_{1, 1} + \beta_{1, 2} \text{log\_distance} + \beta_{1, 3} \text{C\_TYPE}
+  \beta_{1, 4} \text{log\_size} \\
+  \text{logit}(\omega) &=
+  \beta_{2, 1} + \beta_{2, 2} \text{log\_distance} + \beta_{2, 3} \text{C\_TYPE}.
+\end{align*}
+
+This would be equivalent to \code{esimatePopsize} call:
+```{r, eval=FALSE}
+estimatePopsize(
+  TOTAL_SUB ~ .,
+  data = farmsubmission,
+  model = ztoigeom(),
+  controlModel(
+    omegaFormula = ~ 1 + log_size + C_TYPE
+  )
+)
+```
 
 1. Create data matrix $\bX_{\text{vlm}}$ 
 
@@ -945,7 +993,6 @@ X[-(1:NROW(farmsubmission)), 5:7] <- model.matrix(
   ~ 1 + log_distance + C_TYPE, 
   farmsubmission
 )
-
 attr(X, "hwm") <- c(4, 3)
 ```
 
@@ -957,7 +1004,6 @@ start <- glm.fit(# get starting points
   x = X[1:NROW(farmsubmission), 1:4], 
   family = poisson()
 )$coefficients
-
 start
 ```
 4. Use \code{estimatePopsizeFit} function to fit the model assuming zero-truncated one-inflated geometric distribution as specified in the \code{family} argument.
@@ -991,16 +1037,19 @@ res2 <- estimatePopsizeFit(
   priorWeights = 1, 
   family = ztoigeom(), 
   coefStart = c(start, 0, 0, 0),
-  control = controlMethod(silent = TRUE),
+  control = controlMethod(silent = TRUE, maxiter = 10000),
   offset = cbind(rep(0, NROW(farmsubmission)), rep(0, NROW(farmsubmission)))
 )
 ```
 
-
 ```{r}
-data.frame(singleRcapture = round(c(res$beta, -ll(res$beta), res$iter), 4),
+data.frame(IRLS  = round(c(res$beta, -ll(res$beta), res$iter), 4),
            optim = round(c(res2$beta, -ll(res2$beta), res2$iter[1]), 4))
 ```
+
+The default \code{maxiter} parameter for \code{"optim"} fitting is $1000$, here we needed to increase it since the \code{optim} did not converge in $1000$ steps and still "gets stuck" in at a plateau resulting as we see indicating by lower log-likelihood value as compared to the standard \code{"IRLS"}.
+
+The situation above is rather typical, although we conducted no formal numerical analyses it seems that when one attempts to model more than one parameter of the distribution as covariate dependent \code{optim} algorithms, both \code{"Nelder-Mead"} and \code{"L-BFGS-B"} seem to be ill-suited for the task despite being provided with the analytically computed gradient. This is one of the reasons why \code{"IRLS"} is the default fitting method.
 
 \clearpage
 
