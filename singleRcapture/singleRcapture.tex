@@ -28,7 +28,7 @@ Population size estimation is a major challenge in official statistics,
 social sciences, and natural sciences. The problem can be tackled by
 applying capture-recapture methods, which vary depending on the number
 of sources used, particularly on whether a single or multiple sources
-are involved. This article focuses on the first group of methods and
+are involved. This paper focuses on the first group of methods and
 introduces the \pkg{singleRcapture} package. The package implements
 state-of-the-art single-source capture-recapture models
 (e.g.~zero-truncated one-inflated regression) together with new
@@ -106,21 +106,22 @@ ul. Wojska Polskiego 27/29\\
 Population size estimation is a methodological approach employed across
 multiple scientific disciplines, which serves as the basis for research,
 policy formulation, and decision-making processes
-\citep{bohning2018capture}. In the field of statistics, particularly
-official statistics, precise population estimates are essential in order
-to develop robust economic models, optimize resource allocation, and
-inform evidence-based policy \citep[cf.][]{baffour-awuah2009}. Social
-scientists utilize advanced population estimation techniques to
-investigate \emph{hard-to-reach} populations, such as homeless
-individuals or illicit drug users in an effort to overcome the inherent
-limitations of conventional census methodologies. These techniques are
-crucial for obtaining accurate data on populations that are typically
-under-represented or difficult to access using traditional sampling
-methods \citep[cf.][]{vincent2022estimating}. In ecology and
-epidemiology, researchers focus on estimating the size of individual
-species or disease-affected populations within defined geographical
-regions as part of conservation efforts, ecosystem management, and
-public health interventions.
+\citep[cf.][]{bohning2018capture}. In the field of statistics,
+particularly official statistics, precise population estimates are
+essential in order to develop robust economic models, optimize resource
+allocation, and inform evidence-based policy
+\citep[cf.][]{baffour-awuah2009}. Social scientists utilize advanced
+population estimation techniques to investigate \emph{hard-to-reach}
+populations, such as homeless individuals or illicit drug users in an
+effort to overcome the inherent limitations of conventional census
+methodologies. These techniques are crucial for obtaining accurate data
+on populations that are typically under-represented or difficult to
+access using traditional sampling methods
+\citep[cf.][]{vincent2022estimating}. In ecology and epidemiology,
+researchers focus on estimating the size of individual species or
+disease-affected populations within defined geographical regions as part
+of conservation efforts, ecosystem management, and public health
+interventions.
 
 Population size estimation can be approached using various
 methodologies, each with distinct advantages and limitations.
@@ -138,10 +139,10 @@ rely on data from multiple enumerations of the same population
 either a single source with repeated observations, two sources, or
 multiple sources.
 
-In this article we focus on methods that involve a single data source
-with multiple enumerations of the same units \citep[cf.][]{ztpoisson}.
-In human population studies, such data can be derived from police
-records, health system databases, or border control logs; in the case of
+In this paper we focus on methods that involve a single data source with
+multiple enumerations of the same units \citep[cf.][]{ztpoisson}. In
+human population studies, such data can be derived from police records,
+health system databases, or border control logs; in the case of
 non-human populations, data of this kind can come from veterinary
 records or specialized field data. These methods are often applied to
 estimate hard-to-reach or hidden populations, where standard sampling
@@ -153,7 +154,7 @@ open-source software packages, for instance \pkg{Rcapture}
 \citep{baillargeon2007rcapture}, \pkg{marked} \citep{laake2013marked} or
 \pkg{VGAM} \citep{yee2015vgam}, single-source capture-recapture (SSCR)
 methods are either not available at all or are only partially
-implemented in existing \proglang{R} packages. Therefore, the article
+implemented in existing \proglang{R} packages. Therefore, the paper
 attempts to bridge this gap by introducing the \pkg{singleRcapture} and
 \pkg{singleRcaptureExtra} packages, which implement
 \emph{state-of-the-art} SSCR methods and offer a user friendly API
@@ -168,7 +169,7 @@ The majority of SSCR methods assume zero-truncated distributions or
 their extensions (e.g., inclusion of one-inflation). The \pkg{countreg}
 \citep{countreg}, \pkg{VGAM} \citep{VGAM-main} or \pkg{distributions3}
 \citep{distributions3} implement some of those truncated distributions
-(e.g.~\code{distributions3::ZTPoisson} or \code{countreg::ztpoisson})
+(e.g.~\code{distributions3::ZTPoisson} or \code{countreg::zerotrunc})
 and the most general distributions, such as Generally Altered, Inflated,
 Truncated and Deflated, can be found in the \pkg{VGAM} package
 (e.g.~\code{VGAM::gaitdpoisson} for the Poisson distribution), see
@@ -197,7 +198,7 @@ since many \proglang{R} users are familiar with \pkg{countreg} or
 (\url{https://github.com/ncn-foreigners/singleRcaptureExtra}), which can
 be used to integrate \pkg{singleRcapture} with these packages.
 
-The remaining part of the article is structured as follows. Section
+The remaining part of the paper is structured as follows. Section
 \ref{sec-theory} contains a brief description of the theoretical
 background and information about fitting methods and available methods
 of variance estimation. Section \ref{sec-main} introduces the main
@@ -437,14 +438,18 @@ first time following an arrest is associated with the risk of no longer
 being able to be captured a second time. One constraint present in
 modelling via inflated models is that attempts to include both the
 possibility of one inflation and one deflation lead to both numerical
-and theoretical problems since the parameter space (of
-\((\omega, \lambda)\) or \((\omega, \lambda, \alpha)\)) is then a much
-more complicated set.
+and inferential problems since the parameter space (of
+\((\omega, \lambda)\) or \((\omega, \lambda, \alpha)\)) is then given by
+\(\{(\omega, \lambda, \alpha) | \forall x\in \mathbb{N}: p(x|\omega, \lambda, \alpha)\geq0\}\)
+for the PMF \(p\). The boundary of this set is then a \(1\) or
+\(2-\)dimentional manifold, transforming this parameter space into
+\(\mathbb{R}^{3}\) would require using ``link'' functions that depend on
+more than one parameter.
 
 Hurdle models represent another approach to modelling one-inflation.
 They can also model deflation as well as inflation and deflation
 simultaneously, so they are more flexible and, in the case of hurdle
-zero-truncated models, apparently more numerically stable.
+zero-truncated models, appear to be more numerically stable.
 
 Although the question of how to interpret regression parameters tends to
 be somewhat overlooked in SSCR studies, we should point out that the
@@ -458,8 +463,8 @@ follows a Poisson distribution (respectively geometric or negative
 binomial) with the \(\lambda\) parameter (or \(\lambda,\alpha\)); no
 such interpretation exists for hurdle models. Interestingly, estimates
 from hurdle zero-truncated and one-inflated zero-truncated models tend
-to be quite close to one another, although more studies are required to
-confirm this observation.
+to be quite close to one another, although more rigorous studies are
+required to confirm this observation.
 
 \subsection{Fitting method}\label{fitting-method}
 
@@ -582,9 +587,9 @@ source. The most important arguments are given in Table
 \ref{tab-arguments-popsize}; the obligatory ones are
 \code{formula, data, model}.
 
-The most important step in using \code{estimatePopsize} is to specify
-the \code{model} parameter, which indicates the type of model that will
-be used for estimating the \emph{unobserved} part of the population. For
+An important step in using \code{estimatePopsize} is specifying the
+\code{model} parameter, which indicates the type of model that will be
+used for estimating the \emph{unobserved} part of the population. For
 instance, to fit Chao's or Zelterman's model one should select
 \code{chao} or \code{zelterman} and, assuming that one-inflation is
 present, one can select one of the zero-truncated one-inflated
@@ -637,7 +642,7 @@ values: \code{"parametric", "semi-parametric"} and
 
 \begin{itemize}
   \item \code{alpha}, \code{B} -- the significance level and the number of bootstrap samples to be performed, respectively, with $0.05$ and $500$ being the default options.
-  \item \code{cores} -- the number of process cores to be used in bootstrap (1 by default); parallel computing is enabled by \pkg{doParallel} \citep{doParallel}, \pkg{foreach} \citep{foreach} or \pkg{parallel} packages \citep{parallel}.
+  \item \code{cores} -- the number of process cores to be used in bootstrap (1 by default); parallel computing is enabled by \pkg{doParallel} \citep{doParallel}, \pkg{foreach} \citep{foreach} and \pkg{parallel} packages \citep{parallel}.
   \item \code{keepbootStat} -- a logical value indicating whether to keep a vector of statistics produced by the bootstrap.
   \item \code{traceBootstrapSize}, \code{bootstrapVisualTrace} --  logical values indicating whether sample and population size should be tracked (\code{FALSE} by default); these work only when \code{cores} = 1.
     \item \code{fittingMethod}, \code{bootstrapFitcontrol} -- the fitting method (by default the same as the one used in the original call) and control parameters (\code{controlMethod}) for model fitting in the bootstrap.
@@ -753,12 +758,6 @@ R> basicModel <- estimatePopsize(
 +   model   = ztpoisson(),
 +   data    = netherlandsimmigrant
 + )
-\end{CodeInput}
-\begin{CodeOutput}
-Warning in singleRcaptureinternalIRLSmultipar(dependent = y, covariates = X, :
-Convergence at halfstepsize
-\end{CodeOutput}
-\begin{CodeInput}
 R> summary(basicModel)
 \end{CodeInput}
 \begin{CodeOutput}
@@ -796,15 +795,15 @@ Number of iterations: 8
 Population size estimation results: 
 Point estimate 12690.35
 Observed proportion: 14.8% (N obs = 1880)
-Std. Error 2808.165
+Std. Error 2808.169
 95% CI for the population size:
           lowerBound upperBound
-normal      7186.449   18194.25
-logNormal   8431.277   19718.31
+normal      7186.444   18194.26
+logNormal   8431.275   19718.32
 95% CI for the share of observed population:
           lowerBound upperBound
-normal     10.332933   26.16035
-logNormal   9.534288   22.29793
+normal     10.332927   26.16037
+logNormal   9.534281   22.29793
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -909,11 +908,11 @@ R> popSizeEst(basicModel)    #basicModel$populationSize
 \end{CodeInput}
 \begin{CodeOutput}
 Point estimate: 12690.35
-Variance: 7885790
+Variance: 7885812
 95% confidence intervals:
           lowerBound upperBound
-normal      7186.449   18194.25
-logNormal   8431.277   19718.31
+normal      7186.444   18194.26
+logNormal   8431.275   19718.32
 \end{CodeOutput}
 \begin{CodeInput}
 R> popSizeEst(modelInflated) #modelInflated$populationSize
@@ -1050,7 +1049,8 @@ better. Another important issue in population size estimation is to
 conduct model diagnostics in order to verify whether influential
 observations are present in the data. For this purpose the leave-one-out
 (LOO) diagnostic implemented in the \code{dfbeta} from the \pkg{stats}
-package has been adapted as shown below:
+package has been adapted as shown below (multiplied by a factor of a
+hundred for better readability):
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1065,7 +1065,7 @@ age>40yrs            -2.0010  0.0179  0.0379 0.0691 16.0061
 nationAsia           -9.5559 -0.0529  0.0066 0.0120 17.9914
 nationNorth Africa   -9.6605 -0.0842 -0.0177 0.0087  3.1260
 nationRest of Africa -9.4497 -0.0244  0.0030 0.0083 10.9787
-nationSurinam        -9.3138 -0.0065  0.0021 0.0037 99.3383
+nationSurinam        -9.3140 -0.0066  0.0020 0.0035 99.3383
 nationTurkey         -9.6198 -0.0220  0.0079 0.0143 32.0980
 \end{CodeOutput}
 \end{CodeChunk}
@@ -1109,7 +1109,7 @@ R> summary(dfb_pop)
 \end{CodeInput}
 \begin{CodeOutput}
      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
--4236.407     2.660     2.660     5.445    17.281   117.445 
+-4236.412     2.664     2.664     5.448    17.284   117.448 
 \end{CodeOutput}
 \begin{CodeInput}
 R> summary(dfi_pop)
@@ -1181,15 +1181,15 @@ R> popSizestrata_report
 \end{CodeInput}
 \begin{CodeOutput}
                              Name  Obs  Estimated LowerBound UpperBound
-1                  gender==female  398  3811.0911  2189.0443   6902.133
-2                    gender==male 1482  8879.2594  6090.7762  13354.880
-3                     age==<40yrs 1769 10506.8971  7359.4155  15426.455
-4                     age==>40yrs  111  2183.4535   872.0130   5754.876
+1                  gender==female  398  3811.0924  2189.0439   6902.140
+2                    gender==male 1482  8879.2613  6090.7752  13354.889
+3                     age==<40yrs 1769 10506.8994  7359.4140  15426.465
+4                     age==>40yrs  111  2183.4543   872.0130   5754.881
 5  nation==American and Australia  173   708.3688   504.6086   1037.331
 6                    nation==Asia  284  2742.3147  1755.2548   4391.590
 7            nation==North Africa 1023  3055.2033  2697.4900   3489.333
 8          nation==Rest of Africa  243  2058.1533  1318.7466   3305.786
-9                 nation==Surinam   64  2386.4513   505.2457  12287.983
+9                 nation==Surinam   64  2386.4544   505.2460  12288.008
 10                 nation==Turkey   93  1739.8592   638.0497   5068.959
 \end{CodeOutput}
 \end{CodeChunk}
@@ -1239,10 +1239,10 @@ R> popSizestrataCustom_report
 \end{CodeInput}
 \begin{CodeOutput}
             Name  Obs Estimated LowerBound UpperBound alpha
-1 gender==female  398  3811.091  2275.6416   6602.161  0.10
-2   gender==male 1482  8879.259  6261.5125  12930.751  0.10
-3    age==<40yrs 1769 10506.897  7297.2081  15580.138  0.05
-4    age==>40yrs  111  2183.453   787.0676   6464.009  0.05
+1 gender==female  398  3811.092  2275.6410   6602.168  0.10
+2   gender==male 1482  8879.261  6261.5109  12930.760  0.10
+3    age==<40yrs 1769 10506.899  7297.2057  15580.151  0.05
+4    age==>40yrs  111  2183.454   787.0673   6464.016  0.05
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1317,11 +1317,11 @@ R> (popEst <- popSizeEst(basicModel))
 \end{CodeInput}
 \begin{CodeOutput}
 Point estimate: 12690.35
-Variance: 7885790
+Variance: 7885812
 95% confidence intervals:
           lowerBound upperBound
-normal      7186.449   18194.25
-logNormal   8431.277   19718.31
+normal      7186.444   18194.26
+logNormal   8431.275   19718.32
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1352,7 +1352,7 @@ age>40yrs            -0.9746058  0.4082420 -2.3873235 1.697155e-02
 nationAsia           -1.0925990  0.3016259 -3.6223642 2.919228e-04
 nationNorth Africa    0.1899980  0.1940007  0.9793677 3.273983e-01
 nationRest of Africa -0.9106361  0.3008092 -3.0272880 2.467587e-03
-nationSurinam        -2.3363949  1.0135639 -2.3051284 2.115938e-02
+nationSurinam        -2.3363962  1.0135645 -2.3051282 2.115939e-02
 nationTurkey         -1.6753917  0.6027744 -2.7794674 5.444812e-03
 \end{CodeOutput}
 \end{CodeChunk}
@@ -1374,9 +1374,9 @@ Function & Description \\
 \code{model.matrix} & it has the possibility of returning the $X_{\text{vlm}}$ matrix defined in \ref{X_vlm-definition};\\
 \code{simulate} & it calls the \code{simulate} method for the chosen model and fitted $\boldsymbol{\eta}$; \\
 \code{predict} &  it has the possibility of returning either fitted distribution parameters for each unit (\code{type = "response"}), or just linear predictors (\code{type = "link"}), or means of the fitted distributions of $Y$ and $Y|Y>0$ (\code{type = "mean"}) or the inverse probability weights (\code{type = "contr"}). It is possible to set the \code{se.fit} argument to \code{TRUE} in order to obtain standard errors for each of those by using the $\delta$ method. Also, it is possible to use a custom covariance matrix for standard error computation (argument \code{cov}); \\
-\code{redoPopEstimation} & A function that applies all post-hoc procedures that were performed (such as heteroscedastic consistent covariance matrix estimation via \pkg{countreg}) to estimate the population size and standard errors; \\
-\code{residuals} & as regards obtaining residuals of several types, we refer interested readers to the manual \code{?singleRcapture:::residuals.singleRStaticCountData}; \\
-\code{stratifyPopsize, summary} & Compared to the \code{glm} class, summary has the possibility of adding confidence intervals to the coefficient matrix (argument \code{confint = TRUE}) and using a custom covariance matrix (argument \code{cov = someMatrix}); \\
+\code{redoPopEstimation} & a function that applies all post-hoc procedures that were performed (such as heteroscedastic consistent covariance matrix estimation via \pkg{countreg}) to estimate the population size and standard errors; \\
+\code{residuals} & used for obtaining residuals of several types, we refer interested readers to the manual \code{?singleRcapture:::residuals.singleRStaticCountData}; \\
+\code{stratifyPopsize, summary} & compared to the \code{glm} class, summary has the possibility of adding confidence intervals to the coefficient matrix (argument \code{confint = TRUE}) and using a custom covariance matrix (argument \code{cov = someMatrix}); \\
 \code{plot} & it has been discussed above;\\
 \code{popSizeEst} & an extractor showcased above; \\
 \code{cooks.distance} & it works only for single predictor models \\
@@ -1442,12 +1442,13 @@ R> ?controlEstPopVgam
 \end{CodeInput}
 \end{CodeChunk}
 
-Below we present how to use the \code{zerotrunc, vglm, vgam} class
-objects for population size estimation. We use additive models with
-smooth terms for dataset from \cite{chao-generalization}. Note that we
-use a different dataset than the one presented in the case study since
-our goal is to show the use of additive models and how it is handled in
-the \pkg{singleRcapture} package.
+Below we present how to use the \code{vglm, vgam} class objects for
+population size estimation. The usage of \code{zerotrunc} class objects
+is almost exactly analogous. We use additive models with smooth terms
+for dataset from \cite{chao-generalization}. Note that we use a
+different dataset than the one presented in the case study since our
+goal is to show the use of additive models and how it is handled in the
+\pkg{singleRcapture} package.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1610,6 +1611,54 @@ s(log_size, df = 3):s(log_distance, df = 2):C_TYPE
 \end{CodeChunk}
 
 \normalsize
+
+The most important features of \pkg{singleRcapture} such as three types
+of bootstrap, \code{dfpopsize} and \code{stratifyPopsize} are extended
+for objects created by calling \code{estimatePopsize} on
+\code{vglm, vgam, zerotrunc} class object. We direct interested readers
+to the manual.
+
+\subsection{A note on implementation and
+differences}\label{a-note-on-implementation-and-differences}
+
+One possible advantage of using \code{vglm} function from \pkg{VGAM}
+instead of \code{estimatingPopsize} is that in the latter one cannot fit
+models of the form analogous to: \begin{align*}
+  \log(\lambda)         &= \beta_{0} + \beta_{1}X_{1}\\
+  \text{logit}(\omega)  &= (e^{-\pi})\beta_{0} + \frac{1}{2}(\beta_{0}+\beta_{1})X_{2},
+\end{align*} It is possible to specify many quite ``unusual'' linear
+dependencies between elements of a coefficient matrix in the former
+function since implementation of \pkg{VGAM} allows the user to supply
+full constraint matrixes (cf. \citet{yee2015vgam}) while
+\pkg{singleRcapture} ``forces'' the user to use formulas. We have
+decided to limit the number of possible models for the sake of
+simplicity since these more complicated dependencies seem not to be that
+frequently used in SSCR. Additionally it is worth remembering that much
+of the implementation of the most computationally intensive code in
+\pkg{VGAM} is done in \proglang{C} making the implementation of
+\code{vglm} faster than that of \code{estimatePopsize}.
+
+An advantage of using \code{estimatingPopsize} to fit the model as
+compared to calling it on \code{vglm} class object are that:
+
+\begin{itemize}
+  \item The former is easier to use.
+  \item Many SSCR specific diagnostics are not implemented as methods for \code{vglm} class (though the authors may consider implementing them if the demand is strong enough).
+  \item Some important SSCR models such as \code{oizt}$^{\ast}$ models are not implemented in \pkg{VGAM}.
+\end{itemize}
+
+Finally \pkg{singleRcapture} and \pkg{VGAM} implementation differ in how
+the expected information matrixes for negative binomial type
+distributions are calculated (the latter uses a randomized algorithm
+where as the former does not).
+
+Comparison between \code{singleRcapture} and \pkg{countreg} is much
+simpler since as far as SSCR is concerned the latter offers just a small
+subset of what the former has to offer. In fact the implementation of
+bootstrap for \code{zerotrunc} uses \code{estimatePopsizeFit} function
+and not the original implementation which is not the case in
+\code{vglm, vgam} methods. So one would only use \code{zerotrunc} for
+fitting the model based on familiarity with the user interface.
 
 \section{Concluding remarks}\label{concluding-remarks}
 
@@ -2323,7 +2372,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x13a5c1a98>
+<bytecode: 0x150da02f8>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}
