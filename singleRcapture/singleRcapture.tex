@@ -1098,13 +1098,6 @@ is applied.
 \begin{CodeInput}
 R> dfb_pop <- dfpopsize(basicModel, dfbeta = dfb)
 R> dfi_pop <- dfpopsize(modelInflated, dfbeta = dfi)
-\end{CodeInput}
-\begin{CodeOutput}
-Warning in dfpopsize.singleRStaticCountData(modelInflated, dfbeta = dfi):
-dfpopsize may (in some cases) not work correctly when bootstrap was chosen as
-population variance estimate.
-\end{CodeOutput}
-\begin{CodeInput}
 R> summary(dfb_pop)
 \end{CodeInput}
 \begin{CodeOutput}
@@ -2372,7 +2365,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x150da02f8>
+<bytecode: 0x11dce5da0>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}
