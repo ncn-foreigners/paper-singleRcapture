@@ -1,7 +1,9 @@
-## readme
-## this code was extracted from the singleRcapture.Rmd file with small changes
+#' ---
+#' title: "singleRcapture: An R Package for Single-Source Capture-Recapture Models -- standalone replication script"
+#' author: "Piotr Chlebicki and Maciej Beręsewicz"
+#' output: html_document
+#' ---
 
-## ----installation, eval=FALSE--------------------------------------------------------------------------------------------------
 # install.packages("singleRcapture") ## 0.2.1.3 version
 
 ## load package
@@ -151,12 +153,10 @@ counts <- simulate(ztpoisson(), eta = cbind(eta), seed = 1)
 summary(data.frame(gender, eta, counts))
 
 
-## ----eval = FALSE--------------------------------------------------------------------------------------------------------------
 # install.packages("pak")
 # pak::pak("ncn-foreigners/singleRcaptureExtra")
 
 
-## ----eval=FALSE----------------------------------------------------------------------------------------------------------------
 # ?estimatePopsize.vgam
 # ?controlEstPopVgam
 
@@ -193,7 +193,6 @@ summary(modelBase)
 summary(modelVgamPop)
 
 
-## ----eval=FALSE----------------------------------------------------------------------------------------------------------------
 # estimatePopsize(
 #   TOTAL_SUB ~ .,
 #   data = farmsubmission,
@@ -208,7 +207,6 @@ summary(modelVgamPop)
 X <- matrix(data = 0, nrow = 2 * NROW(farmsubmission), ncol = 7)
 
 
-## ------------------------------------------------------------------------------------------------------------------------------
 X[1:NROW(farmsubmission), 1:4] <- model.matrix(
   ~ 1 + log_size + log_distance + C_TYPE,
   farmsubmission
@@ -220,7 +218,7 @@ X[-(1:NROW(farmsubmission)), 5:7] <- model.matrix(
 attr(X, "hwm") <- c(4, 3)
 
 
-## ------------------------------------------------------------------------------------------------------------------------------
+##
 start <- glm.fit(# get starting points
   y = farmsubmission$TOTAL_SUB,
   x = X[1:NROW(farmsubmission), 1:4],
@@ -229,7 +227,7 @@ start <- glm.fit(# get starting points
 start
 
 
-## ------------------------------------------------------------------------------------------------------------------------------
+##
 res <- estimatePopsizeFit(
   y            = farmsubmission$TOTAL_SUB,
   X            = X,
@@ -244,11 +242,11 @@ res <- estimatePopsizeFit(
 )
 
 
-## ------------------------------------------------------------------------------------------------------------------------------
+##
 ll <- ztoigeom()$makeMinusLogLike(y = farmsubmission$TOTAL_SUB, X = X)
 
 
-## ------------------------------------------------------------------------------------------------------------------------------
+##
 res2 <- estimatePopsizeFit(
   y = farmsubmission$TOTAL_SUB,
   X = X,
@@ -261,12 +259,12 @@ res2 <- estimatePopsizeFit(
 )
 
 
-## ------------------------------------------------------------------------------------------------------------------------------
+##
 data.frame(IRLS  = round(c(res$beta, -ll(res$beta), res$iter), 4),
            optim = round(c(res2$beta, -ll(res2$beta), res2$iter[1]), 4))
 
 
-## ----family_function-----------------------------------------------------------------------------------------------------------
+## family_function
 myFamilyFunction <- function(lambdaLink = c("logit", "cloglog", "probit"),
                              piLink     = c("logit", "cloglog", "probit"),
                              ...) {
@@ -602,7 +600,8 @@ myFamilyFunction <- function(lambdaLink = c("logit", "cloglog", "probit"),
 }
 
 
-## ----family_function_showcase--------------------------------------------------------------------------------------------------
+## family_function_showcase
+
 set.seed(123)
 Y <- simulate(
     myFamilyFunction(lambdaLink = "logit", piLink = "logit"),
@@ -620,3 +619,8 @@ mm <- estimatePopsize(
 )
 summary(mm)
 
+
+
+# sessionInfo
+
+sessionInfo()
