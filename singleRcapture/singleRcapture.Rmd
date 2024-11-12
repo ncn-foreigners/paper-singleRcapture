@@ -13,10 +13,12 @@ author:
   - name: Maciej Beręsewicz
     orcid: 0000-0002-8281-4301
     email: \email{maciej.beresewicz@ue.poznan.pl}
+    url: https://github.com/BERENZ, https://ue.poznan.pl/en/people/dr-maciej-beresewicz/
     affiliation: |
       | Poznań University of Economics and Business 
       | Statistical Office in Poznań
     address: |
+      |
       | Poznań University of Economics and Business
       | Department of Statistics
       | Institute of Informatics and Quantitative Economics
@@ -391,7 +393,7 @@ install.packages("singleRcapture")
 
 Then, we need to load the package using the following code:
 
-```{r}
+```{r, loading-package, warning=FALSE}
 library(singleRcapture)
 ```
 

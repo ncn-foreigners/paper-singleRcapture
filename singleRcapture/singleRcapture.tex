@@ -67,7 +67,8 @@ Albano hus 1\\
       Maciej Beręsewicz\\
     Poznań University of Economics and Business\\
 Statistical Office in Poznań\\
-    Poznań University of Economics and Business\\
+    \hfill\break
+Poznań University of Economics and Business\\
 Department of Statistics\\
 Institute of Informatics and Quantitative Economics\\
 Al. Niepodległosci 10\\
@@ -77,7 +78,8 @@ Statistical Office in Poznań\\
 ul. Wojska Polskiego 27/29\\
 60-624 Poznań, Poland\\
   E-mail: \email{maciej.beresewicz@ue.poznan.pl}\\
-  
+  URL: \url{https://github.com/BERENZ},
+\url{https://ue.poznan.pl/en/people/dr-maciej-beresewicz/}\\~\\
   }
 
 
@@ -758,6 +760,12 @@ R> basicModel <- estimatePopsize(
 +   model   = ztpoisson(),
 +   data    = netherlandsimmigrant
 + )
+\end{CodeInput}
+\begin{CodeOutput}
+Warning in singleRcaptureinternalIRLSmultipar(dependent = y, covariates = X, :
+Convergence at halfstepsize
+\end{CodeOutput}
+\begin{CodeInput}
 R> summary(basicModel)
 \end{CodeInput}
 \begin{CodeOutput}
@@ -795,15 +803,15 @@ Number of iterations: 8
 Population size estimation results: 
 Point estimate 12690.35
 Observed proportion: 14.8% (N obs = 1880)
-Std. Error 2808.169
+Std. Error 2808.165
 95% CI for the population size:
           lowerBound upperBound
-normal      7186.444   18194.26
-logNormal   8431.275   19718.32
+normal      7186.449   18194.25
+logNormal   8431.277   19718.31
 95% CI for the share of observed population:
           lowerBound upperBound
-normal     10.332927   26.16037
-logNormal   9.534281   22.29793
+normal     10.332933   26.16035
+logNormal   9.534288   22.29793
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -908,11 +916,11 @@ R> popSizeEst(basicModel)    #basicModel$populationSize
 \end{CodeInput}
 \begin{CodeOutput}
 Point estimate: 12690.35
-Variance: 7885812
+Variance: 7885790
 95% confidence intervals:
           lowerBound upperBound
-normal      7186.444   18194.26
-logNormal   8431.275   19718.32
+normal      7186.449   18194.25
+logNormal   8431.277   19718.31
 \end{CodeOutput}
 \begin{CodeInput}
 R> popSizeEst(modelInflated) #modelInflated$populationSize
@@ -1065,7 +1073,7 @@ age>40yrs            -2.0010  0.0179  0.0379 0.0691 16.0061
 nationAsia           -9.5559 -0.0529  0.0066 0.0120 17.9914
 nationNorth Africa   -9.6605 -0.0842 -0.0177 0.0087  3.1260
 nationRest of Africa -9.4497 -0.0244  0.0030 0.0083 10.9787
-nationSurinam        -9.3140 -0.0066  0.0020 0.0035 99.3383
+nationSurinam        -9.3138 -0.0065  0.0021 0.0037 99.3383
 nationTurkey         -9.6198 -0.0220  0.0079 0.0143 32.0980
 \end{CodeOutput}
 \end{CodeChunk}
@@ -1102,7 +1110,7 @@ R> summary(dfb_pop)
 \end{CodeInput}
 \begin{CodeOutput}
      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
--4236.412     2.664     2.664     5.448    17.284   117.448 
+-4236.407     2.660     2.660     5.445    17.281   117.445 
 \end{CodeOutput}
 \begin{CodeInput}
 R> summary(dfi_pop)
@@ -1174,15 +1182,15 @@ R> popSizestrata_report
 \end{CodeInput}
 \begin{CodeOutput}
                              Name  Obs  Estimated LowerBound UpperBound
-1                  gender==female  398  3811.0924  2189.0439   6902.140
-2                    gender==male 1482  8879.2613  6090.7752  13354.889
-3                     age==<40yrs 1769 10506.8994  7359.4140  15426.465
-4                     age==>40yrs  111  2183.4543   872.0130   5754.881
+1                  gender==female  398  3811.0911  2189.0443   6902.133
+2                    gender==male 1482  8879.2594  6090.7762  13354.880
+3                     age==<40yrs 1769 10506.8971  7359.4155  15426.455
+4                     age==>40yrs  111  2183.4535   872.0130   5754.876
 5  nation==American and Australia  173   708.3688   504.6086   1037.331
 6                    nation==Asia  284  2742.3147  1755.2548   4391.590
 7            nation==North Africa 1023  3055.2033  2697.4900   3489.333
 8          nation==Rest of Africa  243  2058.1533  1318.7466   3305.786
-9                 nation==Surinam   64  2386.4544   505.2460  12288.008
+9                 nation==Surinam   64  2386.4513   505.2457  12287.983
 10                 nation==Turkey   93  1739.8592   638.0497   5068.959
 \end{CodeOutput}
 \end{CodeChunk}
@@ -1232,10 +1240,10 @@ R> popSizestrataCustom_report
 \end{CodeInput}
 \begin{CodeOutput}
             Name  Obs Estimated LowerBound UpperBound alpha
-1 gender==female  398  3811.092  2275.6410   6602.168  0.10
-2   gender==male 1482  8879.261  6261.5109  12930.760  0.10
-3    age==<40yrs 1769 10506.899  7297.2057  15580.151  0.05
-4    age==>40yrs  111  2183.454   787.0673   6464.016  0.05
+1 gender==female  398  3811.091  2275.6416   6602.161  0.10
+2   gender==male 1482  8879.259  6261.5125  12930.751  0.10
+3    age==<40yrs 1769 10506.897  7297.2081  15580.138  0.05
+4    age==>40yrs  111  2183.453   787.0676   6464.009  0.05
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1310,11 +1318,11 @@ R> (popEst <- popSizeEst(basicModel))
 \end{CodeInput}
 \begin{CodeOutput}
 Point estimate: 12690.35
-Variance: 7885812
+Variance: 7885790
 95% confidence intervals:
           lowerBound upperBound
-normal      7186.444   18194.26
-logNormal   8431.275   19718.32
+normal      7186.449   18194.25
+logNormal   8431.277   19718.31
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1345,7 +1353,7 @@ age>40yrs            -0.9746058  0.4082420 -2.3873235 1.697155e-02
 nationAsia           -1.0925990  0.3016259 -3.6223642 2.919228e-04
 nationNorth Africa    0.1899980  0.1940007  0.9793677 3.273983e-01
 nationRest of Africa -0.9106361  0.3008092 -3.0272880 2.467587e-03
-nationSurinam        -2.3363962  1.0135645 -2.3051282 2.115939e-02
+nationSurinam        -2.3363949  1.0135639 -2.3051284 2.115938e-02
 nationTurkey         -1.6753917  0.6027744 -2.7794674 5.444812e-03
 \end{CodeOutput}
 \end{CodeChunk}
@@ -2365,7 +2373,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x11dce5da0>
+<bytecode: 0x123f8fee0>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}
