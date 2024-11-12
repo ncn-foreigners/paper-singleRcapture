@@ -4,6 +4,9 @@
 #' output: html_document
 #' ---
 
+# Timings
+## our machine: macOS Sonoma 14.5 + vecLib -- 159.492 sec
+
 # install.packages("singleRcapture") ## 0.2.1.3 version
 
 ## load package
