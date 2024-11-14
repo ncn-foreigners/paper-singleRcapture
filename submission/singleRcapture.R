@@ -1,13 +1,23 @@
 #' ---
 #' title: "singleRcapture: An R Package for Single-Source Capture-Recapture Models -- standalone replication script"
-#' author: "Piotr Chlebicki and Maciej Beręsewicz"
+#' author: "Piotr Chlebicki and Maciej Beresewicz"
 #' output: html_document
 #' ---
 
 # Timings
 ## our machine: macOS Sonoma 14.5 + vecLib -- 159.492 sec
 
+## the main package
 # install.packages("singleRcapture") ## 0.2.1.3 version
+
+## github package
+# install.packages("pak")
+# pak::pak("ncn-foreigners/singleRcaptureExtra")
+
+# additional packages
+# install.packages(c("lmtest", "sandwich", "VGAM"))
+
+## codes are in the same order as in the paper
 
 ## load package
 library(singleRcapture)
