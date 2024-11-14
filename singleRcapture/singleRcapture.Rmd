@@ -457,15 +457,17 @@ According to this approach, the population size is about 7000, which is about 50
 
 We can access population size estimates using the following code, which returns a list with numerical results.
 
-```{r}
+```{r, extract_pop_size}
 popSizeEst(basicModel)    #basicModel$populationSize
 popSizeEst(modelInflated) #modelInflated$populationSize
 ```
 
 The decision whether to use a zero-truncated Poisson or one-inflated zero-truncated geometric model should be based on the assessment of the model and the assumptions regarding the data generation process. One possible method of selection is based on the likelihood ratio test, which can be computed quickly and conveniently with the \pkg{lmtest} (@lmtest) interface:
+
 ```{r, message=FALSE}
 library(lmtest)
 ```
+
 ```{r}
 lrtest(basicModel, modelInflated, 
        name = function(x) {
@@ -642,7 +644,7 @@ and the resulting object \code{popEst} of the \code{popSizeEstResults} class con
 
 The only explicitly defined method for \code{popSizeEstResults}, \code{summarysingleRmargin} and \code{summarysingleRStaticCountData} classes is the \code{print} method, but the former one also accepts \proglang{R} primitives like \code{coef}:
 
-```{r}
+```{r, extract-coefs}
 coef(summary(basicModel))
 ```
 
@@ -675,7 +677,7 @@ Function & Description \\
 \label{tab-methods}
 \end{table}
 
-```{r}
+```{r, simulate-method}
 set.seed(1234567890)
 N <- 10000
 gender <- rbinom(N, 1, 0.2)
@@ -688,23 +690,6 @@ The full list of explicitly defined methods for \code{singleRStaticCountData} me
 
 
 # Integration with the \pkg{VGAM, countreg} packages {#sec-vgam short-title="Integration with the"} 
-
-```{=html}
-<!---
-Piotrze napisz jeszcze to swoimi swłowami po inglishu
-
-disadv singleRcapture w stosunku do VGAM to to że nie ma macierzy ograniczeń ogólnych, nie ma modeli addytywnych. i część VGAM jest zaprogramowana w C
-
-adv to to że nie trzeba manualnie liczyć wariancji, jest bootstrap i to 3 rodzaje zrobione pod SSCR (w vgam nie ma w ogóle trzeba samemu) nie ma rootogramów porównywania rozkładów brzegowych zaobserwowanych i dopasowanych itp i przez to że nie ma ogólnych macierzy ograniczeń i zamiast tego mamy formuły na omega i alpha i pi to łatwiej jest wyspecyfikować, mamy też więcej rozkładów zero truncated (z wyjątkiem tego GAITD)
-
-a z różnic jest to że Yee używa do obliczania macierzy informacji fishera symulacji monte carlo ja używam normalnego deterministycznego algorytmu do obliczania wartości szeregów i różnice w sumie nie są aż tak bardzo istotnie bo istenieje singleRcaptureExtra
-
-
-Piotrek 10.11.2024:
-Zrobione zobacz niżej.
--->
-```
-
 As noted at the beginning, we provide an integration with the \pkg{VGAM} and \pkg{countreg} packages via the \pkg{singleRcaptureExtra} package available through Github at \url{https://github.com/ncn-foreigners/singleRcaptureExtra}. 
 
 ```{r, eval = FALSE}
@@ -743,7 +728,7 @@ modelVgamPop <- estimatePopsize(modelVgam)
 
 The resulting object is of class \code{singleRforeign} to indicate that the parameters were estimated outside the \pkg{singleRcapture}. The resulting object consists of the following elements:
 
-```{r}
+```{r, structure-vgam-singleRcapture}
 str(modelVgamPop,1)
 ```
 
@@ -812,7 +797,7 @@ In this section we provide a step-by-step description of how to prepare data in 
 \end{align*}
 
 This would be equivalent to the following \code{esimatePopsize} call:
-```{r, eval=FALSE}
+```{r, example-code-farm, eval=FALSE}
 estimatePopsize(
   TOTAL_SUB ~ .,
   data = farmsubmission,
@@ -825,14 +810,14 @@ estimatePopsize(
 
 1. Create a data matrix $\bX_{\text{vlm}}$ 
 
-```{r, estimatePopsizeFit}
+```{r, estimatePopsizeFit-1}
 X <- matrix(data = 0, nrow = 2 * NROW(farmsubmission), ncol = 7)
 ```
 
 2. Fill the first $n$ rows with \code{model.matrix} according to the specified formula and specify the attribute \code{attr(X, "hwm")} that informs the function which elements of the design matrix correspond to which linear  predictor (covariates for counts and covariates for one-inflation)
 
 
-```{r}
+```{r, estimatePopsizeFit-2}
 X[1:NROW(farmsubmission), 1:4] <- model.matrix(
   ~ 1 + log_size + log_distance + C_TYPE, 
   farmsubmission
@@ -846,7 +831,7 @@ attr(X, "hwm") <- c(4, 3)
 
 3. Obtain starting $\bbeta$ parameters using the \code{glm.fit} function.
 
-```{r}
+```{r, estimatePopsizeFit-3}
 start <- glm.fit(# get starting points
   y = farmsubmission$TOTAL_SUB, 
   x = X[1:NROW(farmsubmission), 1:4], 
@@ -856,7 +841,7 @@ start
 ```
 4. Use the \code{estimatePopsizeFit} function to fit the model assuming a zero-truncated one-inflated geometric distribution as specified in the \code{family} argument.
 
-```{r}
+```{r, estimatePopsizeFit-4}
 res <- estimatePopsizeFit(
   y            = farmsubmission$TOTAL_SUB, 
   X            = X, 
@@ -873,11 +858,11 @@ res <- estimatePopsizeFit(
 
 5. Compare our results with those obtained by applying the \code{stats::optim} function.
 
-```{r}
+```{r, estimatePopsizeFit-5}
 ll <- ztoigeom()$makeMinusLogLike(y = farmsubmission$TOTAL_SUB, X = X)
 ```
 
-```{r}
+```{r, estimatePopsizeFit-6}
 res2 <- estimatePopsizeFit(
   y = farmsubmission$TOTAL_SUB, 
   X = X, 
@@ -890,7 +875,7 @@ res2 <- estimatePopsizeFit(
 )
 ```
 
-```{r}
+```{r, estimatePopsizeFit-7}
 data.frame(IRLS  = round(c(res$beta, -ll(res$beta), res$iter), 4),
            optim = round(c(res2$beta, -ll(res2$beta), res2$iter[1]), 4))
 ```
