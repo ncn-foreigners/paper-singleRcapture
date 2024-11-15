@@ -319,6 +319,8 @@ population, since we have no means of estimating the number of units in
 the population for which the probability of being included in the data
 is \(0\) \citep[cf.][]{ztpoisson}.
 
+\clearpage
+
 \subsection{Available models}\label{available-models}
 
 The full list of models implemented in \pkg{singleRcapture} along with
@@ -472,12 +474,12 @@ required to confirm this observation.
 
 As previously noted, the \pkg{singleRcapture} package can be used to
 model the (linear) dependence of all parameters on covariates. A
-modified IRLS algorithm is employed for this purpose; full details are
-available in \cite{VGAM-main}. In order to apply the algorithm, a
-modified model matrix \(\boldsymbol{X}_{\text{vlm}}\) is created when
-the \code{estimatePopsize} function is called. In the context of the
-models implemented in \pkg{singleRcapture}, this matrix can be written
-as:
+modified IRLS algorithm is employed for this purpose as presented in
+Algorithm \ref{algo-estimation}; full details are available in
+\cite{VGAM-main}. In order to apply the algorithm, a modified model
+matrix \(\boldsymbol{X}_{\text{vlm}}\) is created when the
+\code{estimatePopsize} function is called. In the context of the models
+implemented in \pkg{singleRcapture}, this matrix can be written as:
 
 \begin{equation}\label{X_vlm-definition}
   \boldsymbol{X}_{\text{vlm}}=
@@ -492,6 +494,25 @@ as:
 where each \(\boldsymbol{X}_{i}\) corresponds to a model matrix
 associated with a user specified formula.
 
+\begin{algorithm}[ht!]
+\small
+\caption{The modified IRLS algorithm used in the \pkg{singleRcapture} package}
+\label{algo-estimation}\DontPrintSemicolon
+\nlset{1} Initialize with \code{iter}$\leftarrow 1, \boldsymbol{\eta}\leftarrow$\code{start}
+    $, \boldsymbol{W}\leftarrow I, \ell\leftarrow\ell(\boldsymbol{\beta})$.\;
+\nlset{2} Store values from the previous step: 
+    $\ell_{-}\leftarrow\ell, \boldsymbol{W}_{-}\leftarrow\boldsymbol{W}, \boldsymbol{\beta}_{-}\leftarrow\boldsymbol{\beta}$ 
+    (the last assignment is omitted during the first iteration), and assign values in the current iteration  (where $\boldsymbol{o}$ denotes offset)
+    $\displaystyle\boldsymbol{\eta}\leftarrow\boldsymbol{X}_{\text{vlm}}\boldsymbol{\beta}+\boldsymbol{o}, \boldsymbol{W}_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boldsymbol{\eta}_{(k)}^\top\partial\boldsymbol{\eta}_{(k)}}\right], Z\leftarrow\boldsymbol{\eta}_{(k)}+\frac{\partial\ell}{\partial\boldsymbol{\eta}_{(k)}}\boldsymbol{W}_{(k)}^{-1}-\boldsymbol{o}_{(k)}$.\;
+\nlset{3} Assign the current coefficient value: 
+    $\boldsymbol{\beta}\leftarrow\left(\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{X}_{\text{vlm}}\right)^{-1}\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{Z}$.\;
+\nlset{4} If $\ell(\boldsymbol{\beta})<\ell(\boldsymbol{\beta}_{-})$ try selecting the smallest value $h$ such that for
+    $\boldsymbol{\beta}_{h}\leftarrow2^{-h}\left(\boldsymbol{\beta}+\boldsymbol{\beta}_{-}\right)$ the inequality $\ell(\boldsymbol{\beta}_{h})>\ell(\boldsymbol{\beta}_{-})$
+    holds if this is successful $\boldsymbol{\beta}\leftarrow\boldsymbol{\beta}_{h}$, else stop the algorithm.\;
+\nlset{5} If convergence is achieved or \code{iter} is higher than \code{maxiter}, stop the algorithm, 
+    else \code{iter}$\leftarrow 1+$\code{iter} and return to step 2.
+\end{algorithm}
+
 In the case of multi-parameter families, we get a matrix of linear
 predictors \(\boldsymbol{\eta}\) instead of a vector, with the number of
 columns matching the number of parameters in the distribution.
@@ -503,25 +524,6 @@ where \(\ell\) is the log-likelihood function and
 \(\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\eta_{k}^{2}}\right]\),
 which is often just
 \(\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}\).
-
-\begin{algorithm}[ht!]
-\small
-\caption{The modified IRLS algorithm used in the \pkg{singleRcapture} package}
-\label{algo-estimation}\DontPrintSemicolon
-\nlset{1} Initialize with \code{iter}$\leftarrow 1, \boldsymbol{\eta}\leftarrow$\code{start}
-    $, \boldsymbol{W}\leftarrow I, \ell\leftarrow\ell(\boldsymbol{\beta})$.\;
-\nlset{2} Store values from the previous step: 
-    $\ell_{-}\leftarrow\ell, \boldsymbol{W}_{-}\leftarrow\boldsymbol{W}, \boldsymbol{\beta}_{-}\leftarrow\boldsymbol{\beta}$ 
-    (the last assignment is omitted during the first iteration), and assign values in the current iteration 
-    $\displaystyle\boldsymbol{\eta}\leftarrow\boldsymbol{X}_{\text{vlm}}\boldsymbol{\beta}+\boldsymbol{o}, \boldsymbol{W}_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boldsymbol{\eta}_{(k)}^\top\partial\boldsymbol{\eta}_{(k)}}\right], Z\leftarrow\boldsymbol{\eta}_{(k)}+\frac{\partial\ell}{\partial\boldsymbol{\eta}_{(k)}}\boldsymbol{W}_{(k)}^{-1}-\boldsymbol{o}_{(k)}$.\;
-\nlset{3} Assign the current coefficient value: 
-    $\boldsymbol{\beta}\leftarrow\left(\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{X}_{\text{vlm}}\right)^{-1}\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{Z}$.\;
-\nlset{4} If $\ell(\boldsymbol{\beta})<\ell(\boldsymbol{\beta}_{-})$ try selecting the smallest value $h$ such that for
-    $\boldsymbol{\beta}_{h}\leftarrow2^{-h}\left(\boldsymbol{\beta}+\boldsymbol{\beta}_{-}\right)$ the inequality $\ell(\boldsymbol{\beta}_{h})>\ell(\boldsymbol{\beta}_{-})$
-    holds if this is successful $\boldsymbol{\beta}\leftarrow\boldsymbol{\beta}_{h}$, else stop the algorithm.\;
-\nlset{5} If convergence is achieved or \code{iter} is higher than \code{maxiter}, stop the algorithm, 
-    else \code{iter}$\leftarrow 1+$\code{iter} and return to step 2.
-\end{algorithm}
 
 \subsection{Bootstrap variance estimators}\label{sec-boostrap}
 
@@ -1299,7 +1301,7 @@ Only the \code{logNormal} type of confidence interval is used for
 plotting since the studentized confidence intervals often result in
 negative lower bounds.
 
-\section[Classes and S3methods]{Classes and \code{S3methods}}\label{sec-methods}
+\section[Classes and S3Methods]{Classes and \code{S3Methods}}\label{sec-methods}
 
 We have created a number of classes: \code{singleRStaticCountData},
 \code{singleR} in the package (for the time being the two classes are
@@ -2373,7 +2375,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x140dfad40>
+<bytecode: 0x112867ab0>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}

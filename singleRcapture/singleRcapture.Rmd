@@ -171,6 +171,8 @@ where:
 
 and where $z$ is the quantile function of the standard normal distribution. The estimator $\hat{N}$ is best interpreted as being an estimator of the total number of \underline{observable} units in the population, since we have no means of estimating the number of units in the population for which the probability of being included in the data is $0$ \citep[cf.][]{ztpoisson}.
 
+\clearpage
+
 ## Available models
 
 The full list of models implemented in \pkg{singleRcapture} along with corresponding expressions for probability density functions and point estimates can be found in the collective help file for all family functions:
@@ -265,7 +267,7 @@ Although the question of how to interpret regression parameters tends to be some
 
 ## Fitting method
 
-As previously noted, the \pkg{singleRcapture} package can be used to model the (linear) dependence of all parameters on covariates. A modified IRLS algorithm is employed for this purpose; full details are available in \cite{VGAM-main}. In order to apply the algorithm, a modified model matrix $\bX_{\text{vlm}}$ is created when the \code{estimatePopsize} function is called. In the context of the models implemented in \pkg{singleRcapture}, this matrix can be written as: 
+As previously noted, the \pkg{singleRcapture} package can be used to model the (linear) dependence of all parameters on covariates. A modified IRLS algorithm is employed for this purpose as presented in Algorithm \ref{algo-estimation}; full details are available in \cite{VGAM-main}. In order to apply the algorithm, a modified model matrix $\bX_{\text{vlm}}$ is created when the \code{estimatePopsize} function is called. In the context of the models implemented in \pkg{singleRcapture}, this matrix can be written as: 
 
 \begin{equation}\label{X_vlm-definition}
   \bX_{\text{vlm}}=
@@ -279,9 +281,6 @@ As previously noted, the \pkg{singleRcapture} package can be used to model the (
 
 where each $\bX_{i}$ corresponds to a model matrix associated with a user specified formula.
 
-In the case of multi-parameter families, we get a matrix of linear predictors $\boeta$ instead of a vector, with the number of columns matching the number of parameters in the distribution. "Weights" are then modified to be information matrices $\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boeta_{(k)}^\top\partial\boeta_{(k)}}\right]$, where $\ell$ is the log-likelihood function and $\boeta_{(k)}$ is the $k$-th row of $\boeta$, while in the typical IRLS they are scalars $\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\eta_{k}^{2}}\right]$, which is often just
-$\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}$.
-
 
 \begin{algorithm}[ht!]
 \small
@@ -291,7 +290,7 @@ $\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}$.
     $, \bW\leftarrow I, \ell\leftarrow\ell(\bbeta)$.\;
 \nlset{2} Store values from the previous step: 
     $\ell_{-}\leftarrow\ell, \bW_{-}\leftarrow\bW, \bbeta_{-}\leftarrow\bbeta$ 
-    (the last assignment is omitted during the first iteration), and assign values in the current iteration 
+    (the last assignment is omitted during the first iteration), and assign values in the current iteration  (where $\bo$ denotes offset)
     $\displaystyle\boeta\leftarrow\bX_{\text{vlm}}\bbeta+\bo, \bW_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boeta_{(k)}^\top\partial\boeta_{(k)}}\right], Z\leftarrow\boeta_{(k)}+\frac{\partial\ell}{\partial\boeta_{(k)}}\bW_{(k)}^{-1}-\bo_{(k)}$.\;
 \nlset{3} Assign the current coefficient value: 
     $\bbeta\leftarrow\left(\bX_{\text{vlm}}\bW\bX_{\text{vlm}}\right)^{-1}\bX_{\text{vlm}}\bW\boldsymbol{Z}$.\;
@@ -301,6 +300,9 @@ $\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}$.
 \nlset{5} If convergence is achieved or \code{iter} is higher than \code{maxiter}, stop the algorithm, 
     else \code{iter}$\leftarrow 1+$\code{iter} and return to step 2.
 \end{algorithm}
+
+In the case of multi-parameter families, we get a matrix of linear predictors $\boeta$ instead of a vector, with the number of columns matching the number of parameters in the distribution. "Weights" are then modified to be information matrices $\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boeta_{(k)}^\top\partial\boeta_{(k)}}\right]$, where $\ell$ is the log-likelihood function and $\boeta_{(k)}$ is the $k$-th row of $\boeta$, while in the typical IRLS they are scalars $\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\eta_{k}^{2}}\right]$, which is often just
+$\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}$. 
 
 
 ## Bootstrap variance estimators {#sec-boostrap}
@@ -623,7 +625,7 @@ dev.off()
 
 Only the \code{logNormal} type of confidence interval is used for plotting since the studentized confidence intervals often result in negative lower bounds.
 
-\section[Classes and S3methods]{Classes and \code{S3methods}}\label{sec-methods}
+\section[Classes and S3Methods]{Classes and \code{S3Methods}}\label{sec-methods}
 
 We have created a number of classes: \code{singleRStaticCountData}, \code{singleR} in the package (for the time being the two classes are the same, the distinction is made for future development), \code{singleRfamily}, \code{popSizeEstResults}, \code{summarysingleRStaticCountData} and \code{summarysingleRmargin}, which make it possible to extract relevant information regarding the population size. 
 
