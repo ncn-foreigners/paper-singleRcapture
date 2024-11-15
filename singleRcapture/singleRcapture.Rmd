@@ -80,7 +80,7 @@ formulation, and decision-making processes [cf. @bohning2018capture]. In the
 field of statistics, particularly official statistics, precise
 population estimates are essential in order to develop robust economic
 models, optimize resource allocation, and inform evidence-based
-policy [cf. @baffour-awuah2009]. Social scientists utilize
+policy [cf. @baffour2013modern]. Social scientists utilize
 advanced population estimation techniques to investigate *hard-to-reach*
 populations, such as homeless individuals or illicit drug users in an effort to overcome the inherent limitations of conventional census
 methodologies. These techniques are crucial for obtaining accurate data

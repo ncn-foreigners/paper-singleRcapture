@@ -9,49 +9,52 @@
   \urlstyle{rm}\Url}\fi
 \providecommand{\eprint}[2][]{\url{#2}}
 
-\bibitem[{Baffour-Awuah(2009)}]{baffour-awuah2009}
-Baffour-Awuah B (2009).
-\newblock \emph{Estimation of population totals from imperfect census, survey
-  and administrative records}.
-\newblock Ph.D. thesis.
+\bibitem[{Baffour \emph{et~al.}(2013)Baffour, King, and
+  Valente}]{baffour2013modern}
+Baffour B, King T, Valente P (2013).
+\newblock \enquote{The Modern Census: Evolution, Examples and Evaluation.}
+\newblock \emph{International Statistical Review}, \textbf{81}(3), 407--425.
+\newblock \doi{10.1111/insr.12036}.
 
 \bibitem[{Baillargeon and Rivest(2007)}]{baillargeon2007rcapture}
 Baillargeon S, Rivest LP (2007).
-\newblock \enquote{Rcapture: loglinear models for capture-recapture in R.}
-\newblock \emph{Journal of statistical software}, \textbf{19}, 1--31.
+\newblock \enquote{Rcapture: Loglinear Models for Capture-Recapture in R.}
+\newblock \emph{Journal of Statistical Software}, \textbf{19}(5), 1--31.
+\newblock \doi{10.18637/jss.v019.i05}.
 
 \bibitem[{B{\"o}hning(2023)}]{bohning2023equivalence}
 B{\"o}hning D (2023).
-\newblock \enquote{On the equivalence of one-inflated zero-truncated and
-  zero-truncated one-inflated count data likelihoods.}
+\newblock \enquote{On the Equivalence of One-Inflated Zero-Truncated and
+  Zero-Truncated One-Inflated Count Data Likelihoods.}
 \newblock \emph{Biometrical Journal}, \textbf{65}(2), 2100343.
+\newblock \doi{10.1002/bimj.202100343}.
 
 \bibitem[{B{\"o}hning \emph{et~al.}(2018)B{\"o}hning, Bunge, and
   Heijden}]{bohning2018capture}
 B{\"o}hning D, Bunge J, Heijden PG (2018).
-\newblock \emph{Capture-recapture methods for the social and medical sciences}.
+\newblock \emph{Capture-Recapture Methods for the Social and Medical Sciences}.
 \newblock CRC Press Boca Raton.
 
 \bibitem[{B{\"o}hning and Friedl(2024)}]{bohning2024one}
 B{\"o}hning D, Friedl H (2024).
 \newblock \enquote{One-Inflation and Zero-Truncation Count Data Modelling
   Revisited With a View on Horvitz--Thompson Estimation of Population Size.}
-\newblock \emph{International Statistical Review}.
+\newblock \emph{International Statistical Review}, \textbf{92}(1), 148--165.
+\newblock \doi{10.1111/insr.12557}.
 
 \bibitem[{B{\"o}hning and van~der Heijden(2009)}]{zelterman}
 B{\"o}hning D, van~der Heijden PGM (2009).
-\newblock \enquote{{A covariate adjustment for zero-truncated approaches to
-  estimating the size of hidden and elusive populations}.}
-\newblock \emph{The Annals of Applied Statistics}, \textbf{3}(2), 595 -- 610.
+\newblock \enquote{A Covariate Adjustment for Zero-Truncated Approaches to
+  Estimating the Size of Hidden and Elusive Populations.}
+\newblock \emph{The Annals of Applied Statistics}, \textbf{3}(2), 595--610.
 \newblock \doi{10.1214/08-AOAS214}.
 
 \bibitem[{B{\"o}hning and van~der Heijden(2019)}]{zotmodels}
 B{\"o}hning D, van~der Heijden PGM (2019).
-\newblock \enquote{{The identity of the zero-truncated, one-inflated likelihood
-  and the zero-one-truncated likelihood for general count densities with an
-  application to drink-driving in Britain}.}
-\newblock \emph{The Annals of Applied Statistics}, \textbf{13}(2), 1198 --
-  1211.
+\newblock \enquote{The Identity of the Zero-Truncated, One-Inflated Likelihood
+  and the Zero-One-Truncated Likelihood for General Count Densities with an
+  Application to Drink-Driving in Britain.}
+\newblock \emph{The Annals of Applied Statistics}, \textbf{13}(2), 1198--1211.
 \newblock \doi{10.1214/18-AOAS1232}.
 
 \bibitem[{B{\"o}hning \emph{et~al.}(2013)B{\"o}hning, Vidal-Diez, Lerdsuwansri,
@@ -60,6 +63,7 @@ B{\"o}hning D, Vidal-Diez A, Lerdsuwansri R, Viwatwongkasem C, Arnold M (2013).
 \newblock \enquote{A Generalization of Chao's Estimator for Covariate
   Information.}
 \newblock \emph{Biometrics}, \textbf{69}(4), 1033--1042.
+\newblock \doi{10.1111/biom.12062}.
 
 \bibitem[{Bürkner(2017)}]{brms}
 Bürkner PC (2017).
@@ -72,41 +76,47 @@ Bürkner PC (2017).
   Goodrich, Betancourt, Brubaker, Guo, Li, and Riddell}]{carpenter2017stan}
 Carpenter B, Gelman A, Hoffman MD, Lee D, Goodrich B, Betancourt M, Brubaker M,
   Guo J, Li P, Riddell A (2017).
-\newblock \enquote{Stan: A probabilistic programming language.}
-\newblock \emph{Journal of statistical software}, \textbf{76}, 1--32.
+\newblock \enquote{Stan: A Probabilistic Programming Language.}
+\newblock \emph{Journal of Statistical Software}, \textbf{76}(1), 1--32.
+\newblock \doi{10.18637/jss.v076.i01}.
 
 \bibitem[{Chao(1987)}]{chao1987estimating}
 Chao A (1987).
-\newblock \enquote{Estimating the population size for capture-recapture data
-  with unequal catchability.}
-\newblock \emph{Biometrics}, pp. 783--791.
+\newblock \enquote{Estimating the Population Size for Capture-Recapture Data
+  with Unequal Catchability.}
+\newblock \emph{Biometrics}, \textbf{43}(4), 783--791.
+\newblock \doi{10.2307/2531532}.
 
 \bibitem[{Cruyff and van~der Heijden(2008)}]{ztnegbin}
 Cruyff MJLF, van~der Heijden PGM (2008).
 \newblock \enquote{Point and Interval Estimation of the Population Size Using a
   Zero-Truncated Negative Binomial Regression Model.}
 \newblock \emph{Biometrical Journal}, \textbf{50}(6), 1035--1050.
+\newblock \doi{10.1002/bimj.200810455}.
 
 \bibitem[{Dunne and Zhang(2024)}]{dunne2024system}
 Dunne J, Zhang LC (2024).
-\newblock \enquote{A system of population estimates compiled from
-  administrative data only.}
+\newblock \enquote{A System of Population Estimates Compiled from
+  Administrative Data Only.}
 \newblock \emph{Journal of the Royal Statistical Society Series A: Statistics
   in Society}, \textbf{187}(1), 3--21.
+\newblock \doi{10.1093/jrsssa/qnad067}.
 
 \bibitem[{Godwin and B{\"o}hning(2017{\natexlab{a}})}]{godwin2017estimation}
 Godwin RT, B{\"o}hning D (2017{\natexlab{a}}).
-\newblock \enquote{Estimation of the population size by using the one-inflated
-  positive Poisson model.}
+\newblock \enquote{Estimation of the Population Size by Using the One-Inflated
+  Positive Poisson Model.}
 \newblock \emph{Journal of the Royal Statistical Society Series C: Applied
   Statistics}, \textbf{66}(2), 425--448.
+\newblock \doi{10.1111/rssc.12192}.
 
 \bibitem[{Godwin and B{\"o}hning(2017{\natexlab{b}})}]{ztoi-oizt-poisson}
 Godwin RT, B{\"o}hning D (2017{\natexlab{b}}).
-\newblock \enquote{Estimation of the population size by using the one-inflated
-  positive Poisson model.}
-\newblock \emph{Journal of the Royal Statistical Society. Series C (Applied
-  Statistics)}, \textbf{66}(2), 425--448.
+\newblock \enquote{Estimation of the Population Size by Using the One-Inflated
+  Positive Poisson Model.}
+\newblock \emph{Journal of the Royal Statistical Society Series C: Applied
+  Statistics}, \textbf{66}(2), 425--448.
+\newblock \doi{10.1111/rssc.12192}.
 
 \bibitem[{Hayes \emph{et~al.}(2024)Hayes, Moller-Trane, Jordan, Northrop, Lang,
   and Zeileis}]{distributions3}
@@ -124,9 +134,10 @@ Kleiber C, Zeileis A (2016).
 \bibitem[{Laake \emph{et~al.}(2013)Laake, Johnson, Conn, and
   Isaac}]{laake2013marked}
 Laake JL, Johnson DS, Conn PB, Isaac N (2013).
-\newblock \enquote{marked: an R package for maximum likelihood and Markov Chain
-  Monte Carlo analysis of capture-recapture data.}
-\newblock \emph{Methods in Ecology \& Evolution}, \textbf{4}(9).
+\newblock \enquote{marked: An R Package for Maximum Likelihood and Markov Chain
+  Monte Carlo Analysis of Capture-Recapture Data.}
+\newblock \emph{Methods in Ecology \& Evolution}, \textbf{4}(9), 885--890.
+\newblock \doi{10.1111/2041-210X.12065}.
 
 \bibitem[{{Microsoft} and Weston(2022{\natexlab{a}})}]{doParallel}
 {Microsoft}, Weston S (2022{\natexlab{a}}).
@@ -143,10 +154,11 @@ Laake JL, Johnson DS, Conn PB, Isaac N (2013).
 
 \bibitem[{Norris and Pollock(1996)}]{norrpoll}
 Norris JL, Pollock KH (1996).
-\newblock \enquote{Including model uncertainty in estimating variances in
-  multiple capture studies.}
+\newblock \enquote{Including Model Uncertainty in Estimating Variances in
+  Multiple Capture Studies.}
 \newblock \emph{Environmental and Ecological Statistics}, \textbf{3}(3),
   235--244.
+\newblock \doi{10.1007/BF00569242}.
 
 \bibitem[{{R Core Team}(2023)}]{parallel}
 {R Core Team} (2023).
@@ -157,30 +169,34 @@ Norris JL, Pollock KH (1996).
 \bibitem[{Tuoto \emph{et~al.}(2022)Tuoto, Di~Cecco, and
   Tancredi}]{tuoto2022bayesian}
 Tuoto T, Di~Cecco D, Tancredi A (2022).
-\newblock \enquote{Bayesian analysis of one-inflated models for elusive
-  population size estimation.}
+\newblock \enquote{Bayesian Analysis of One-Inflated Models for Elusive
+  Population Size Estimation.}
 \newblock \emph{Biometrical Journal}, \textbf{64}(5), 912--933.
+\newblock \doi{10.1002/bimj.202100048}.
 
 \bibitem[{van~der Heijden \emph{et~al.}(2003)van~der Heijden, Bustami, Cruyff,
   Engbersen, and van Houwelingen}]{ztpoisson}
 van~der Heijden PG, Bustami R, Cruyff MJ, Engbersen G, van Houwelingen HC
   (2003).
-\newblock \enquote{Point and interval estimation of the population size using
-  the truncated Poisson regression model.}
+\newblock \enquote{Point and Interval Estimation of the Population Size Using
+  the Truncated Poisson Regression Model.}
 \newblock \emph{Statistical Modelling}, \textbf{3}(4), 305--322.
+\newblock \doi{10.1191/1471082X03st057oa}.
 
 \bibitem[{Vincent and Thompson(2022)}]{vincent2022estimating}
 Vincent K, Thompson S (2022).
-\newblock \enquote{Estimating the size and distribution of networked
-  populations with snowball sampling.}
+\newblock \enquote{Estimating the Size and Distribution of Networked
+  Populations with Snowball Sampling.}
 \newblock \emph{Journal of Survey Statistics and Methodology}, \textbf{10}(2),
   397--418.
+\newblock \doi{10.1093/jssam/smaa037}.
 
 \bibitem[{Wolter(1986)}]{wolter1986some}
 Wolter KM (1986).
-\newblock \enquote{Some coverage error models for census data.}
+\newblock \enquote{Some Coverage Error Models for Census Data.}
 \newblock \emph{Journal of the American Statistical Association},
   \textbf{81}(394), 337--346.
+\newblock \doi{10.1080/01621459.1986.10478277}.
 
 \bibitem[{Yee(2015)}]{VGAM-main}
 Yee TW (2015).
@@ -190,16 +206,17 @@ Yee TW (2015).
 
 \bibitem[{Yee and Ma(2024)}]{gaitdcount}
 Yee TW, Ma C (2024).
-\newblock \enquote{{Generally Altered, Inflated, Truncated and Deflated
-  Regression}.}
-\newblock \emph{Statistical Science}, \textbf{39}(4), 568 -- 588.
+\newblock \enquote{Generally Altered, Inflated, Truncated and Deflated
+  Regression.}
+\newblock \emph{Statistical Science}, \textbf{39}(4), 568--588.
 \newblock \doi{10.1214/24-STS925}.
 
 \bibitem[{Yee \emph{et~al.}(2015)Yee, Stoklosa, and Huggins}]{yee2015vgam}
 Yee TW, Stoklosa J, Huggins RM (2015).
-\newblock \enquote{The VGAM package for capture-recapture data using the
-  conditional likelihood.}
-\newblock \emph{Journal of Statistical Software}, \textbf{65}, 1--33.
+\newblock \enquote{The VGAM Package for Capture-Recapture Data Using the
+  Conditional Likelihood.}
+\newblock \emph{Journal of Statistical Software}, \textbf{65}(1), 1--33.
+\newblock \doi{10.18637/jss.v065.i05}.
 
 \bibitem[{Zeileis and Hothorn(2002)}]{lmtest}
 Zeileis A, Hothorn T (2002).
@@ -222,20 +239,23 @@ Zeileis A, K\"oll S, Graham N (2020).
 
 \bibitem[{Zelterman(1988)}]{zelterman1988robust}
 Zelterman D (1988).
-\newblock \enquote{Robust estimation in truncated discrete distributions with
-  application to capture-recapture experiments.}
-\newblock \emph{Journal of statistical planning and inference}, \textbf{18}(2),
+\newblock \enquote{Robust Estimation in Truncated Discrete Distributions with
+  Application to Capture-Recapture Experiments.}
+\newblock \emph{Journal of Statistical Planning and Inference}, \textbf{18}(2),
   225--237.
+\newblock \doi{10.1016/0378-3758(88)90097-9}.
 
 \bibitem[{Zhang(2019)}]{zhang2019note}
 Zhang LC (2019).
-\newblock \enquote{A note on dual system population size estimator.}
+\newblock \enquote{A Note on Dual System Population Size Estimator.}
 \newblock \emph{Journal of Official Statistics}, \textbf{35}(1), 279--283.
+\newblock \doi{10.2478/jos-2019-0013}.
 
 \bibitem[{Zwane and Van~der Heijden(2003)}]{zwane}
 Zwane E, Van~der Heijden P (2003).
-\newblock \enquote{Implementing the parametric bootstrap in capture--recapture
-  models with continuous covariates.}
-\newblock \emph{Statistics \& probability letters}, \textbf{65}(2), 121--125.
+\newblock \enquote{Implementing the Parametric Bootstrap in Capture--Recapture
+  Models with Continuous Covariates.}
+\newblock \emph{Statistics \& Probability Letters}, \textbf{65}(2), 121--125.
+\newblock \doi{10.1016/j.spl.2003.07.003}.
 
 \end{thebibliography}
