@@ -29,17 +29,24 @@ social sciences, and natural sciences. The problem can be tackled by
 applying capture-recapture methods, which vary depending on the number
 of sources used, particularly on whether a single or multiple sources
 are involved. This paper focuses on the first group of methods and
-introduces the \pkg{singleRcapture} package. The package implements
-state-of-the-art single-source capture-recapture models
-(e.g.~zero-truncated one-inflated regression) together with new
-developments proposed by the authors, and provides a user-friendly
-application programming interface (API). This self-contained package can
-be used to produce point estimates and their variance and implements
-several bootstrap variance estimators or diagnostics to assess quality
-and conduct sensitivity analysis. It is intended for users interested in
-estimating the size of populations, particularly those that are
-difficult to reach or measure, for which information is available only
-from one source and dual/multiple system estimation is not applicable.
+introduces a novel \proglang{R} package: \pkg{singleRcapture}. The
+package implements state-of-the-art single-source capture-recapture
+(SSCR) models (e.g.~zero-truncated one-inflated regression) together
+with new developments proposed by the authors, and provides a
+user-friendly application programming interface (API). This
+self-contained package can be used to produce point estimates and their
+variance and implements several bootstrap variance estimators or
+diagnostics to assess quality and conduct sensitivity analysis. It is
+intended for users interested in estimating the size of populations,
+particularly those that are difficult to reach or measure, for which
+information is available only from one source and dual/multiple system
+estimation is not applicable. Our package serves to bridge a significant
+gap, as the SSCR methods are either not available at all or are only
+partially implemented in existing R packages and other open-source
+software. Furthermore, since many \proglang{R} users are familiar with
+\pkg{countreg} or \pkg{VGAM} packages, we have implemented a lightweight
+extension called \pkg{singleRcaptureExtra} which can be used to
+integrate \pkg{singleRcapture} with these packages.
 }
 
 \Keywords{population size estimation, hidden populations, truncated
@@ -185,20 +192,25 @@ diagnostics.
 
 Therefore, the purpose of the \pkg{singleRcapture} \proglang{R} package
 is to bridge this gap by providing scientists and other practitioners
-with a tool for estimating population size with SSCR methods. The
-package implements state-of-the-art methods, as recently described by
-\citet{bohning2018capture} or \citet{bohning2024one} and their
+with a tool for estimating population size with SSCR methods. We have
+implemented state-of-the-art methods, as recently described by
+\citet{bohning2018capture} or \citet{bohning2024one} and provided their
 extensions (e.g., inclusion of covariates, different treatment of
 one-inflation), which will be covered in detail in Section
 \ref{sec-theory}. The package implements variance estimation based on
 various methods, can be used to create custom models and diagnostic
-plots (e.g.~rootograms) with parameters estimated using a modified IRLS
-algorithm we have implemented for estimation stability. Furthermore,
-since many \proglang{R} users are familiar with \pkg{countreg} or
-\pkg{VGAM} packages, we have implemented a lightweight extension called
+plots (e.g.~rootograms) with parameters estimated using a modified
+iteratively reweighted least squares (IRLS) algorithm we have
+implemented for estimation stability. Furthermore, since many
+\proglang{R} users are familiar with \pkg{countreg} or \pkg{VGAM}
+packages, we have implemented a lightweight extension called
 \pkg{singleRcaptureExtra}, available through Github
 (\url{https://github.com/ncn-foreigners/singleRcaptureExtra}), which can
-be used to integrate \pkg{singleRcapture} with these packages.
+be used to integrate \pkg{singleRcapture} with these packages. To the
+best of our knowledge, no existing open-source package allows the
+estimation of population size by selecting an appropriate SSCR model,
+conducting the estimation, and providing informative diagnostics of the
+results.
 
 The remaining part of the paper is structured as follows. Section
 \ref{sec-theory} contains a brief description of the theoretical
@@ -211,10 +223,10 @@ and \code{S3methods} implemented in the package. Section \ref{sec-vgam}
 deals with how the package can be integrated with the \pkg{countreg} and
 \pkg{VGAM} packages using the \pkg{singleRcaptureExtra} package. The
 paper ends with conclusions and an appendix showing how to implement a
-custom model and how to use the \code{estimatePopsizeFit} function,
-which is faster than the main function but only estimates regression.
-This option could be of interest to users wishing to apply any new
-bootstrap methods not implemented in the package (see Appendix
+custom model and how to use the \code{estimatePopsizeFit} function which
+is aimed to mimic the \code{glm.fit} or similar functions. This option
+could be of interest to users wishing to apply any new bootstrap methods
+not implemented in the package (see Appendix
 \ref{sec-estimatePopsizeFit}).
 
 \section{Theoretical background}\label{sec-theory}
@@ -287,7 +299,7 @@ while the second part of the decomposition in
 estimated by:
 
 \begin{equation*}
-  \text{var}\left(\mathbb{E}(\hat{N}|I_{1},\dots,I_{n})\right) =
+  \text{var}\left[\mathbb{E}(\hat{N}|I_{1},\dots,I_{n})\right] =
   \text{var}\left(\sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}(Y_{k}>0)}\right)
   \approx\sum_{k=1}^{N_{obs}}\frac{1-\mathbb{P}(Y_{k}>0)}{\mathbb{P}(Y_{k}>0)^{2}},
 \end{equation*}
@@ -309,7 +321,7 @@ where:
 
 \begin{equation*}
   \xi = \exp\left(z\left(1-\frac{\alpha}{2}\right)
-  \sqrt{\ln\left(1+\frac{\widehat{\text{Var}}(\hat{N})}{\left(\hat{N}-N_{obs}\right)^{2}}\right)}\right).
+  \sqrt{\ln\left(1+\frac{\widehat{\text{Var}}(\hat{N})}{\left(\hat{N}-N_{obs}\right)^{2}}\right)}\right),
 \end{equation*}
 
 and where \(z\) is the quantile function of the standard normal
@@ -318,8 +330,6 @@ estimator of the total number of \underline{observable} units in the
 population, since we have no means of estimating the number of units in
 the population for which the probability of being included in the data
 is \(0\) \citep[cf.][]{ztpoisson}.
-
-\clearpage
 
 \subsection{Available models}\label{available-models}
 
@@ -343,15 +353,16 @@ The current list of these family functions includes:
 \begin{itemize}
     \item Generalized Chao's \citep{chao1987estimating} and Zelterman's \citep{zelterman1988robust} estimators via logistic regression on variable $Z$ defined as $Z=1$ if $Y=2$ and $Z=0$ if $Y=1$ with $Z\sim b(p)$ where $b(\cdot)$ is the Bernoulli distribution and $p$ can be modeled for each unit $k$ by $\text{logit}(p_k)=\ln(\lambda_k/2)$ with Poisson parameter $\lambda_k=\boldsymbol{x}_{k}\boldsymbol{\beta}$ (for a covariate extension see \cite{chao-generalization} and \cite{zelterman}):
     \begin{align}
-        \hat{N} &= N_{obs}+
+        \hat{N}_{\text{Chao}} &= N_{obs}+
         \sum_{k=1}^{\boldsymbol{f}_{1}+\boldsymbol{f}_{2}}
         \left(2\exp\left(\boldsymbol{x}_{k}\hat{\boldsymbol{\beta}}\right)+
         2\exp\left(2\boldsymbol{x}_{k}\hat{\boldsymbol{\beta}}\right)\right)^{-1},
         \tag{\text{Chao's estimator}}\\
-        \hat{N}&=\sum_{k=1}^{N_{obs}}
+        \hat{N}_{\text{Zelt}}&=\sum_{k=1}^{N_{obs}}
         \left(1-\exp\left(-2\exp\left(\boldsymbol{x}_{k}\hat{\boldsymbol{\beta}}\right)\right)\right)^{-1}.
         \tag{\text{Zelterman's estimator}}
     \end{align}
+    where $\boldsymbol{f}_{1}$ and $\boldsymbol{f}_{2}$ denotes number of units observed once and twice.
     \item Zero-truncated (\code{zt}$^\ast$) and zero-one-truncated (\code{zot}$^\ast$) Poisson \citep[cf. ][]{zotmodels}, geometric, NB type II (NB2) regression, where the non-truncated distribution is parameterized as:
     \begin{equation*}
         \mathbb{P}[Y=y|\lambda,\alpha] = \frac{\Gamma\left(y+\alpha^{-1}\right)}{\Gamma\left(\alpha^{-1}\right)y!}
@@ -382,8 +393,8 @@ The current list of these family functions includes:
     Note that \code{ztoi}$^\ast$ and \code{oizt}$^\ast$ distributions are equivalent, in the sense that the maximum value of the likelihood function is equal for both of those distributions given any data, as shown by \cite{bohning2023equivalence} but population size estimators are different.
 \end{itemize}
 
-In addition, we have provided two new approaches to model singletons in
-a similar way as in hurdle models. In particular, we have proposed the
+In addition, we propose two new approaches to model singletons in a
+similar way as in hurdle models. In particular, we have proposed the
 following:
 
 \begin{itemize}
@@ -407,10 +418,12 @@ following:
         \end{cases}\\
         \mathbb{P}^{\ast}[Y=y|Y>0]&=\begin{cases}
             \pi\frac{1-\mathbb{P}[Y=1]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]} & y=1,\\
-            (1-\pi)\frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]} & y>1.
+            (1-\pi)\frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]} & y>1,
         \end{cases}
     \end{align*}
 \end{itemize}
+
+where \(\pi\) denotes conditional probability of observing singletons.
 
 The approaches presented above differ in their assumptions,
 computational complexity, or in the way they treat heterogeneity of
@@ -445,10 +458,10 @@ possibility of one inflation and one deflation lead to both numerical
 and inferential problems since the parameter space (of
 \((\omega, \lambda)\) or \((\omega, \lambda, \alpha)\)) is then given by
 \(\{(\omega, \lambda, \alpha) | \forall x\in \mathbb{N}: p(x|\omega, \lambda, \alpha)\geq0\}\)
-for the PMF \(p\). The boundary of this set is then a \(1\) or
-\(2-\)dimentional manifold, transforming this parameter space into
-\(\mathbb{R}^{3}\) would require using ``link'' functions that depend on
-more than one parameter.
+for the probability mass function \(p\). The boundary of this set is
+then a \(1\) or \(2-\)dimentional manifold, transforming this parameter
+space into \(\mathbb{R}^{3}\) would require using ``link'' functions
+that depend on more than one parameter.
 
 Hurdle models represent another approach to modelling one-inflation.
 They can also model deflation as well as inflation and deflation
@@ -502,8 +515,9 @@ associated with a user specified formula.
     $, \boldsymbol{W}\leftarrow I, \ell\leftarrow\ell(\boldsymbol{\beta})$.\;
 \nlset{2} Store values from the previous step: 
     $\ell_{-}\leftarrow\ell, \boldsymbol{W}_{-}\leftarrow\boldsymbol{W}, \boldsymbol{\beta}_{-}\leftarrow\boldsymbol{\beta}$ 
-    (the last assignment is omitted during the first iteration), and assign values in the current iteration  (where $\boldsymbol{o}$ denotes offset)
-    $\displaystyle\boldsymbol{\eta}\leftarrow\boldsymbol{X}_{\text{vlm}}\boldsymbol{\beta}+\boldsymbol{o}, \boldsymbol{W}_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boldsymbol{\eta}_{(k)}^\top\partial\boldsymbol{\eta}_{(k)}}\right], Z\leftarrow\boldsymbol{\eta}_{(k)}+\frac{\partial\ell}{\partial\boldsymbol{\eta}_{(k)}}\boldsymbol{W}_{(k)}^{-1}-\boldsymbol{o}_{(k)}$.\;
+    (the last assignment is omitted during the first iteration), and assign values in the current iteration 
+    $\displaystyle\boldsymbol{\eta}\leftarrow\boldsymbol{X}_{\text{vlm}}\boldsymbol{\beta}+\boldsymbol{o}, \boldsymbol{W}_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boldsymbol{\eta}_{(k)}^\top\partial\boldsymbol{\eta}_{(k)}}\right], Z_k\leftarrow\boldsymbol{\eta}_{(k)}+\frac{\partial\ell}{\partial\boldsymbol{\eta}_{(k)}}\boldsymbol{W}_{(k)}^{-1}-\boldsymbol{o}_{(k)}$,\;
+    where $\boldsymbol{o}$ denotes offset.\;
 \nlset{3} Assign the current coefficient value: 
     $\boldsymbol{\beta}\leftarrow\left(\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{X}_{\text{vlm}}\right)^{-1}\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{Z}$.\;
 \nlset{4} If $\ell(\boldsymbol{\beta})<\ell(\boldsymbol{\beta}_{-})$ try selecting the smallest value $h$ such that for
@@ -530,6 +544,7 @@ which is often just
 We have implemented three types of bootstrap algorithms: parametric,
 semi-parametric and nonparametric. The nonparametric version is the
 usual bootstrap algorithm, as noted in \cite{norrpoll} and \cite{zwane}.
+In this section, the focus is on the latter two approaches.
 
 The idea of semi-parametric bootstrap is to modify the usual bootstrap
 to include the additional uncertainty resulting from the fact that the
@@ -822,17 +837,18 @@ the observed proportion (based on the input dataset), the standard error
 and two confidence intervals: one relating to the point estimate, the
 second -- to the observed proportion.
 
-According to this simple model, the population size is about 12500, with
-about 15\% of units observed in the register. The 95\% CI under
-normality indicates that the true population size is likely between
-7000-18000, with about 10-26\% of the target population observed in the
-register.
+According to this simple model, the population size is about 12,500,
+with about 15\% of units observed in the register. The 95\% CI under
+normality indicates that the true population size is likely to be
+between 7,000-18,000, with about 10-26\% of the target population
+observed in the register.
 
 Since there is a reasonable suspicion that the act of observing a unit
 in the dataset may lead to undesirable consequences for the person
 concerned (in this case, a possible deportation, detention or something
 similar). For these reasons, the user may consider one-inflated models,
-such as \code{oiztgeom} and those presented below.
+such as one-inflated zero-truncated geometric model (specified by
+\code{oiztgeom} family) and those presented below.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -983,7 +999,7 @@ capture-recapture studies consists in comparing the fitted marginal
 frequencies
 \(\displaystyle\sum_{j=1}^{N_{obs}}\hat{\mathbb{P}}\left[Y_{j}=k|\boldsymbol{x}_{j}, Y_{j} > 0\right]\)
 with the observed marginal frequencies
-\(\displaystyle\sum_{j=1}^{N}\mathcal{I}_{\{k\}}(Y_{k})=\sum_{j=1}^{N_{obs}}\mathcal{I}_{\{k\}}(Y_{k})\)
+\(\displaystyle\sum_{k=1}^{N}\mathcal{I}_{\{k\}}(Y_{k})=\sum_{k=1}^{N_{obs}}\mathcal{I}_{\{k\}}(Y_{k})\)
 for \(k\geq1\). If the fitted model bears sufficient resemblance to the
 real data collection process, these quantities should be quite close and
 both \(G\) and \(\chi^{2}\) tests can be used to test the statistical
@@ -1627,12 +1643,12 @@ differences}\label{a-note-on-implementation-and-differences}
 One possible advantage of using \code{vglm} function from \pkg{VGAM}
 instead of \code{estimatingPopsize} is that in the latter one cannot fit
 models of the form analogous to: \begin{align*}
-  \log(\lambda)         &= \beta_{0} + \beta_{1}X_{1}\\
-  \text{logit}(\omega)  &= (e^{-\pi})\beta_{0} + \frac{1}{2}(\beta_{0}+\beta_{1})X_{2},
+  \log(\lambda)         &= \beta_{0} + \beta_{1}X\\
+  \text{logit}(\omega)  &= (e^{-\pi})\beta_{0} + \frac{1}{2}(\beta_{0}+\beta_{1})X,
 \end{align*} It is possible to specify many quite ``unusual'' linear
 dependencies between elements of a coefficient matrix in the former
 function since implementation of \pkg{VGAM} allows the user to supply
-full constraint matrixes (cf. \citet{yee2015vgam}) while
+full constraint matrices (cf. \citet{yee2015vgam}) while
 \pkg{singleRcapture} ``forces'' the user to use formulas. We have
 decided to limit the number of possible models for the sake of
 simplicity since these more complicated dependencies seem not to be that
@@ -1690,8 +1706,8 @@ Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
 The authors would like to thank Peter van der Heijden, Maarten Cruyff,
 Dankmar Böhning and Layna Dennett for useful comments that have helped
 to improve the functionality of the package. In addition, we would like
-to thank Tymon Świtalski for his valuable comments that have improved
-the paper.
+to thank Marcin Szymkowiak and Tymon Świtalski for his valuable comments
+that have improved the paper.
 
 \appendix
 
@@ -1709,7 +1725,7 @@ from \citet{chao-generalization} with covariate dependency:
 \begin{align*}
   \log(\lambda) &=
   \beta_{1, 1} + \beta_{1, 2} \text{log\_distance} + \beta_{1, 3} \text{C\_TYPE} +
-  \beta_{1, 4} \text{log\_size} \\
+  \beta_{1, 4} \text{log\_size}, \\
   \text{logit}(\omega) &=
   \beta_{2, 1} + \beta_{2, 2} \text{log\_distance} + \beta_{2, 3} \text{C\_TYPE}.
 \end{align*}
@@ -1912,7 +1928,7 @@ A factory function for creating the following functions:
 \code{valideta, validmu} & For now it only returns \code{TRUE}. In the near future, it will be used to check whether applied linear predictors are valid (i.e. are transformed into some elements of the parameter space subjected to the inverse link function); \\
 \code{funcZ, Wfun} & Functions that create pseudo residuals and working weights used in the IRLS algorithm; \\
 \code{devResids}  & A function that returns deviance residuals given a vector of prior weights of linear predictors and the response vector; \\
-\code{pointEst, popVar} & Functions that return the point estimate for the population size and analytic estimation of its variance given prior weights of linear predictors and, in the later case, also estimates of  $\text{cov}(\hat{\boldsymbol{\beta}})$ and $\boldsymbol{X_{vlm}}$ matrix. There is an additional boolean parameter \code{contr} in the former function, which, if set to \code{TRUE}, returns the contribution of each unit; \\
+\code{pointEst, popVar} & Functions that return the point estimate for the population size and analytic estimation of its variance given prior weights of linear predictors and, in the later case, also estimates of  $\text{cov}(\hat{\boldsymbol{\beta}})$ and $\boldsymbol{X}_{\text{vlm}}$ matrix. There is an additional boolean parameter \code{contr} in the former function, which, if set to \code{TRUE}, returns the contribution of each unit; \\
 \code{etaNames} & Names of linear predictors; \\
 \code{densityFunction} & A function that returns the value of PMF at values of \code{x} given linear predictors. The \code{type} argument specifies whether to return $\mathbb{P}[Y|Y>0]$ or $\mathbb{P}[Y]$; \\
 \code{simulate} & A function that generates values of a dependent  vector given linear predictors; \\
@@ -2375,7 +2391,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x11631c5b8>
+<bytecode: 0x10a5a1630>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}
