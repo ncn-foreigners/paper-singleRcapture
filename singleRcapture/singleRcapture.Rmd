@@ -241,6 +241,7 @@ In addition, we propose two new approaches to model singletons in a similar way 
         \mathbb{P}\left[Y^{\ast}=y|Y^{\ast}>0\right]=\pi\1_{\{1\}}(y)+
         (1-\pi)\1_{\mathbb{N}\setminus\{1\}}(y)\frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]}.
     \end{equation*}
+    where $\pi$ denotes the conditional probability of observing singletons.
     \item The hurdle zero-truncated model (\code{Hurdlezt}$^\ast$) for Poisson, geometric and NB2 is defined as:
     \begin{align*}
         \mathbb{P}\left[Y^{\ast}=y\right]&=\begin{cases}
@@ -252,9 +253,8 @@ In addition, we propose two new approaches to model singletons in a similar way 
             (1-\pi)\frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]} & y>1,
         \end{cases}
     \end{align*}
+    where $\pi$ denotes the unconditional probability of observing singletons.
 \end{itemize}
-
-where $\pi$ denotes conditional probability of observing singletons.
 
 The approaches presented above differ in their assumptions, computational complexity, or in the way they treat heterogeneity of captures and singletons. For instance, the dispersion parameter $\alpha$ in the NB2 type models is often interpreted as measuring the \textit{severity} of unobserved heterogeneity in the underlying Poisson process \citep[cf.][]{ztnegbin}. When using any truncated NB model, the hope is that given the class of models considered, the consistency is not lost despite the lack of information.
 
