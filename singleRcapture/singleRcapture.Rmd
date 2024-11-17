@@ -758,9 +758,10 @@ The most important features of \pkg{singleRcapture} such as three types of boots
 
 One possible advantage of using \code{vglm} function from \pkg{VGAM} instead of \code{estimatingPopsize} is that in the latter one cannot fit models of the form analogous to:
 \begin{align*}
-  \log(\lambda)         &= \beta_{0} + \beta_{1}X\\
-  \text{logit}(\omega)  &= (e^{-\pi})\beta_{0} + \frac{1}{2}(\beta_{0}+\beta_{1})X,
+  \log(\lambda)         &= \beta_{0} + \beta_{1}X_{1},\\
+  \text{logit}(\omega)  &= (e^{-e})\beta_{0} + \frac{1}{2}(\beta_{0}+\beta_{1})X_{2},
 \end{align*}
+for some explanatory variables $X_{1}, X_{2}$.
 It is possible to specify many quite "unusual" linear dependencies between elements of a coefficient matrix in the former function since implementation of \pkg{VGAM} allows the user to supply full constraint matrices (cf. @yee2015vgam) while \pkg{singleRcapture} "forces" the user to use formulas. We have decided to limit the number of possible models for the sake of simplicity since these more complicated dependencies seem not to be that frequently used in SSCR. Additionally it is worth remembering that much of the implementation of the most computationally intensive code in \pkg{VGAM} is done in \proglang{C} making the implementation of \code{vglm} faster than that of \code{estimatePopsize}.
 
 An advantage of using \code{estimatingPopsize} to fit the model as compared to calling it on \code{vglm} class object are that:
