@@ -122,10 +122,10 @@ where $I_{k}:=\1_{\mathbb{N}}(Y_{k})$, $N_{obs}$ is the number of observed units
 
 The basic SSCR assumes independence between counts, which is a rather naive assumption, since the first capture may significantly influence the behavior of a given unit or limit the possibility of subsequent captures (e.g. due to incarceration). 
 
-To solve these issues, @godwin2017estimation and @ztoi-oizt-poisson introduced one-inflated distributions, which explicitly model the probability of singletons by giving additional mass $\omega$ to singletons denoted as $\1_{\{1\}}(y)$ [cf. @bohning2024one]
+To solve these issues, @godwin2017estimation and @ztoi-oizt-poisson introduced one-inflated distributions, which explicitly model the probability of singletons by giving additional mass $\omega$ to singletons denoted as $\1_{\{1\}}(y)$ [cf. @bohning2024one]. In other words they considered a new random varialbe $Y^{\ast}$ that corresponds to the data collection process which exhibits one inflation:
 
 \begin{equation*}
-  \mathbb{P}^{\ast}[Y=y|Y>0] =
+  \mathbb{P}\left[Y^{\ast}=y|Y^{\ast}>0\right] =
   \omega\1_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y|Y>0].
 \end{equation*}
 
@@ -151,7 +151,7 @@ while the second part of the decomposition in \eqref{eq-law_of_total_variance_de
 
 \begin{equation*}
   \text{var}\left[\mathbb{E}(\hat{N}|I_{1},\dots,I_{n})\right] =
-  \text{var}\left(\sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}(Y_{k}>0)}\right)
+  \text{var}\left[\sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}(Y_{k}>0)}\right]
   \approx\sum_{k=1}^{N_{obs}}\frac{1-\mathbb{P}(Y_{k}>0)}{\mathbb{P}(Y_{k}>0)^{2}},
 \end{equation*}
 
@@ -202,9 +202,9 @@ The current list of these family functions includes:
         \left(\frac{\alpha^{-1}}{\alpha^{-1}+\lambda}\right)^{\alpha^{-1}}
         \left(\frac{\lambda}{\lambda + \alpha^{-1}}\right)^{y}.
     \end{equation*}
-    \item Zero-truncated one-inflated (\code{ztoi}$^\ast$) modifications, where the new probability $\mathbb{P}^{\ast}$ measure is defined as the $\mathbb{P}$ measure with support on $\mathbb{N}\cup\{0\}$:
+    \item Zero-truncated one-inflated (\code{ztoi}$^\ast$) modifications, where the count data variable $Y^{\ast}$ is defined such that its distribution statisfies:
     \begin{equation*}
-    \mathbb{P}^{\ast}[Y=y]=
+    \mathbb{P}\left[Y^{\ast}=y\right]=
     \begin{cases}
     \mathbb{P}[Y=0] & y=0, \\
     \omega\left(1-\mathbb{P}[Y=0]\right)+(1-\omega)\mathbb{P}[Y=1] & y=1, \\
@@ -212,14 +212,14 @@ The current list of these family functions includes:
     \end{cases}
     \end{equation*}
     \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y|Y>0]=\omega\1_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y|Y>0].
+        \mathbb{P}\left[Y^{\ast}=y|Y^{\ast}>0\right]=\omega\1_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y|Y>0].
     \end{equation*}
-    \item One-inflated zero-truncated (\code{oizt}$^\ast$) modifications, where the new probability $\mathbb{P}^{\ast}$ measure is defined as:
+    \item One-inflated zero-truncated (\code{oizt}$^\ast$) modifications, where the count data variable $Y^{\ast}$ is defined as:
     \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y] = \omega \1_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y],
+        \mathbb{P}\left[Y^{\ast}=y\right] = \omega \1_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y],
     \end{equation*}
     \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y|Y>0] = 
+        \mathbb{P}\left[Y^{\ast}=y|Y^{\ast}>0\right] = 
         \omega\frac{\1_{\{1\}}(y)}{1-(1-\omega)\mathbb{P}[Y=0]}+
         (1-\omega)\frac{\mathbb{P}[Y=y]}{1-(1-\omega)\mathbb{P}[Y=0]}.
     \end{equation*}
@@ -231,23 +231,23 @@ In addition, we propose two new approaches to model singletons in a similar way 
 \begin{itemize}
     \item The zero-truncated hurdle model (\code{ztHurdle}$^\ast$) for Poisson, geometric and NB2 is defined as:
     \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y]=\begin{cases}
+        \mathbb{P}\left[Y^{\ast}=y\right]=\begin{cases}
         \frac{\mathbb{P}[Y=0]}{1-\mathbb{P}[Y=1]} & y=0, \\
         \pi(1-\mathbb{P}[Y=1]) & y=1, \\
         (1-\pi) \frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=1]} & y>1,
         \end{cases}
     \end{equation*}
     \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y|Y>0]=\pi\1_{\{1\}}(y)+
+        \mathbb{P}\left[Y^{\ast}=y|Y^{\ast}>0\right]=\pi\1_{\{1\}}(y)+
         (1-\pi)\1_{\mathbb{N}\setminus\{1\}}(y)\frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]}.
     \end{equation*}
     \item The hurdle zero-truncated model (\code{Hurdlezt}$^\ast$) for Poisson, geometric and NB2 is defined as:
     \begin{align*}
-        \mathbb{P}^{\ast}[Y=y]&=\begin{cases}
+        \mathbb{P}\left[Y^{\ast}=y\right]&=\begin{cases}
         \pi & y=1, \\
         (1-\pi) \frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=1]} & y\neq1,
         \end{cases}\\
-        \mathbb{P}^{\ast}[Y=y|Y>0]&=\begin{cases}
+        \mathbb{P}\left[Y^{\ast}=y|Y^{\ast}>0\right]&=\begin{cases}
             \pi\frac{1-\mathbb{P}[Y=1]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]} & y=1,\\
             (1-\pi)\frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]} & y>1,
         \end{cases}
@@ -292,7 +292,7 @@ where each $\bX_{i}$ corresponds to a model matrix associated with a user specif
 \nlset{2} Store values from the previous step: 
     $\ell_{-}\leftarrow\ell, \bW_{-}\leftarrow\bW, \bbeta_{-}\leftarrow\bbeta$ 
     (the last assignment is omitted during the first iteration), and assign values in the current iteration 
-    $\displaystyle\boeta\leftarrow\bX_{\text{vlm}}\bbeta+\bo, \bW_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boeta_{(k)}^\top\partial\boeta_{(k)}}\right], Z_k\leftarrow\boeta_{(k)}+\frac{\partial\ell}{\partial\boeta_{(k)}}\bW_{(k)}^{-1}-\bo_{(k)}$,\;
+    $\displaystyle\boeta\leftarrow\bX_{\text{vlm}}\bbeta+\bo, \bW_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boeta_{(k)}^\top\partial\boeta_{(k)}}\right], \boldsymbol{Z}_{(k)}\leftarrow\boeta_{(k)}+\frac{\partial\ell}{\partial\boeta_{(k)}}\bW_{(k)}^{-1}-\bo_{(k)}$,\;
     where $\bo$ denotes offset.\;
 \nlset{3} Assign the current coefficient value: 
     $\bbeta\leftarrow\left(\bX_{\text{vlm}}\bW\bX_{\text{vlm}}\right)^{-1}\bX_{\text{vlm}}\bW\boldsymbol{Z}$.\;
@@ -431,7 +431,8 @@ The basic syntax of \code{estimatePopsize} is very similar to that of \code{glm}
 basicModel <- estimatePopsize(
   formula = capture ~ gender + age + nation,
   model   = ztpoisson(),
-  data    = netherlandsimmigrant
+  data    = netherlandsimmigrant,
+  controlMethod = controlMethod(silent = TRUE)
 )
 summary(basicModel)
 ```
@@ -484,7 +485,7 @@ However, the above is not a standard method of model selection in SSCR. The next
 
 ## Testing marginal frequencies
 
-A popular method of testing the model fit in single source capture-recapture studies consists in comparing the fitted marginal frequencies $\displaystyle\sum_{j=1}^{N_{obs}}\hat{\mathbb{P}}\left[Y_{j}=k|\bx_{j}, Y_{j} > 0\right]$ with the observed marginal frequencies $\displaystyle\sum_{k=1}^{N}\1_{\{k\}}(Y_{k})=\sum_{k=1}^{N_{obs}}\1_{\{k\}}(Y_{k})$ for $k\geq1$. If the fitted model bears sufficient resemblance to the real data collection process, these quantities should be quite close and both $G$ and $\chi^{2}$ tests can be used to test the statistical significance of the discrepancy with the following \pkg{singleRcapture} syntax for the Poisson model (rather poor fit):
+A popular method of testing the model fit in single source capture-recapture studies consists in comparing the fitted marginal frequencies $\displaystyle\sum_{j=1}^{N_{obs}}\hat{\mathbb{P}}\left[Y_{j}=k|\bx_{j}, Y_{j} > 0\right]$ with the observed marginal frequencies $\displaystyle\sum_{j=1}^{N}\1_{\{k\}}(Y_{j})=\sum_{j=1}^{N_{obs}}\1_{\{k\}}(Y_{j})$ for $k\geq1$. If the fitted model bears sufficient resemblance to the real data collection process, these quantities should be quite close and both $G$ and $\chi^{2}$ tests can be used to test the statistical significance of the discrepancy with the following \pkg{singleRcapture} syntax for the Poisson model (rather poor fit):
 
 ```{r, marginal_freq_basic_model}
 margFreq <- marginalFreq(basicModel)
