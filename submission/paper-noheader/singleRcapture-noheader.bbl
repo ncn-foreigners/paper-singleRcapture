@@ -1,4 +1,4 @@
-\begin{thebibliography}{35}
+\begin{thebibliography}{34}
 \newcommand{\enquote}[1]{``#1''}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
@@ -8,12 +8,6 @@
   \providecommand{\doi}{doi:\discretionary{}{}{}\begingroup
   \urlstyle{rm}\Url}\fi
 \providecommand{\eprint}[2][]{\url{#2}}
-
-\bibitem[{Baffour-Awuah(2009)}]{baffour-awuah2009}
-Baffour-Awuah B (2009).
-\newblock \emph{Estimation of population totals from imperfect census, survey
-  and administrative records}.
-\newblock Ph.D. thesis.
 
 \bibitem[{Baillargeon and Rivest(2007)}]{baillargeon2007rcapture}
 Baillargeon S, Rivest LP (2007).

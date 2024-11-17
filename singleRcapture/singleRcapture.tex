@@ -181,22 +181,22 @@ their extensions (e.g., inclusion of one-inflation). The \pkg{countreg}
 (e.g.~\code{distributions3::ZTPoisson} or \code{countreg::zerotrunc})
 and the most general distributions, such as Generally Altered, Inflated,
 Truncated and Deflated, can be found in the \pkg{VGAM} package
-(e.g.~\code{VGAM::gaitdpoisson} for the Poisson distribution), see
-\citet{gaitdcount} for a recent description. However, the estimation of
-parameters of a given truncated (and possibly inflated) distribution is
-just the first step (as in the case of log-linear models in
+(e.g.~\code{VGAM::gaitdpoisson} for the Poisson distribution, see
+\citet{gaitdcount} for a detailed description). However, the estimation
+of parameters of a given truncated (and possibly inflated) distribution
+is just the first step (as in the case of log-linear models in
 capture-recapture with two sources) and, to the best of our knowledge,
 there is no open-source software that can be used to estimate population
 size using on SSCR methods and includes variance estimators or
 diagnostics.
 
-Therefore, the purpose of the \pkg{singleRcapture} \proglang{R} package
-is to bridge this gap by providing scientists and other practitioners
-with a tool for estimating population size with SSCR methods. We have
-implemented state-of-the-art methods, as recently described by
-\citet{bohning2018capture} or \citet{bohning2024one} and provided their
-extensions (e.g., inclusion of covariates, different treatment of
-one-inflation), which will be covered in detail in Section
+Therefore, the purpose of the \pkg{singleRcapture}, an \proglang{R}
+package, is to bridge this gap by providing scientists and other
+practitioners with a tool for estimating population size with SSCR
+methods. We have implemented state-of-the-art methods, as recently
+described by \citet{bohning2018capture} or \citet{bohning2024one} and
+provided their extensions (e.g., inclusion of covariates, different
+treatment of one-inflation), which will be covered in detail in Section
 \ref{sec-theory}. The package implements variance estimation based on
 various methods, can be used to create custom models and diagnostic
 plots (e.g.~rootograms) with parameters estimated using a modified
@@ -242,7 +242,7 @@ assume that the conditional distribution of \(Y_{k}\) given a vector of
 covariates \(\boldsymbol{x}_{k}\) follows a version of the
 zero-truncated count data distribution (and its extensions). When we
 know the parameters of the distribution we can estimate the population
-size using a Horowitz-Thompson type estimator given by:
+size using a Horvitz-Thompson type estimator given by:
 
 \begin{equation}
 \hat{N}=
@@ -266,10 +266,12 @@ To solve these issues, \citet{godwin2017estimation} and
 \citet{ztoi-oizt-poisson} introduced one-inflated distributions, which
 explicitly model the probability of singletons by giving additional mass
 \(\omega\) to singletons denoted as \(\mathcal{I}_{\{1\}}(y)\)
-\citep[cf.][]{bohning2024one}
+\citep[cf.][]{bohning2024one}. In other words they considered a new
+random varialbe \(Y^{\ast}\) that corresponds to the data collection
+process which exhibits one inflation:
 
 \begin{equation*}
-  \mathbb{P}^{\ast}[Y=y|Y>0] =
+  \mathbb{P}\left[Y^{\ast}=y|Y^{\ast}>0\right] =
   \omega\mathcal{I}_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y|Y>0].
 \end{equation*}
 
@@ -300,7 +302,7 @@ estimated by:
 
 \begin{equation*}
   \text{var}\left[\mathbb{E}(\hat{N}|I_{1},\dots,I_{n})\right] =
-  \text{var}\left(\sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}(Y_{k}>0)}\right)
+  \text{var}\left[\sum_{k=1}^{N}\frac{I_{k}}{\mathbb{P}(Y_{k}>0)}\right]
   \approx\sum_{k=1}^{N_{obs}}\frac{1-\mathbb{P}(Y_{k}>0)}{\mathbb{P}(Y_{k}>0)^{2}},
 \end{equation*}
 
@@ -369,9 +371,9 @@ The current list of these family functions includes:
         \left(\frac{\alpha^{-1}}{\alpha^{-1}+\lambda}\right)^{\alpha^{-1}}
         \left(\frac{\lambda}{\lambda + \alpha^{-1}}\right)^{y}.
     \end{equation*}
-    \item Zero-truncated one-inflated (\code{ztoi}$^\ast$) modifications, where the new probability $\mathbb{P}^{\ast}$ measure is defined as the $\mathbb{P}$ measure with support on $\mathbb{N}\cup\{0\}$:
+    \item Zero-truncated one-inflated (\code{ztoi}$^\ast$) modifications, where the count data variable $Y^{\ast}$ is defined such that its distribution statisfies:
     \begin{equation*}
-    \mathbb{P}^{\ast}[Y=y]=
+    \mathbb{P}\left[Y^{\ast}=y\right]=
     \begin{cases}
     \mathbb{P}[Y=0] & y=0, \\
     \omega\left(1-\mathbb{P}[Y=0]\right)+(1-\omega)\mathbb{P}[Y=1] & y=1, \\
@@ -379,14 +381,14 @@ The current list of these family functions includes:
     \end{cases}
     \end{equation*}
     \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y|Y>0]=\omega\mathcal{I}_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y|Y>0].
+        \mathbb{P}\left[Y^{\ast}=y|Y^{\ast}>0\right]=\omega\mathcal{I}_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y|Y>0].
     \end{equation*}
-    \item One-inflated zero-truncated (\code{oizt}$^\ast$) modifications, where the new probability $\mathbb{P}^{\ast}$ measure is defined as:
+    \item One-inflated zero-truncated (\code{oizt}$^\ast$) modifications, where the count data variable $Y^{\ast}$ is defined as:
     \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y] = \omega \mathcal{I}_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y],
+        \mathbb{P}\left[Y^{\ast}=y\right] = \omega \mathcal{I}_{\{1\}}(y)+(1-\omega)\mathbb{P}[Y=y],
     \end{equation*}
     \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y|Y>0] = 
+        \mathbb{P}\left[Y^{\ast}=y|Y^{\ast}>0\right] = 
         \omega\frac{\mathcal{I}_{\{1\}}(y)}{1-(1-\omega)\mathbb{P}[Y=0]}+
         (1-\omega)\frac{\mathbb{P}[Y=y]}{1-(1-\omega)\mathbb{P}[Y=0]}.
     \end{equation*}
@@ -400,30 +402,30 @@ following:
 \begin{itemize}
     \item The zero-truncated hurdle model (\code{ztHurdle}$^\ast$) for Poisson, geometric and NB2 is defined as:
     \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y]=\begin{cases}
+        \mathbb{P}\left[Y^{\ast}=y\right]=\begin{cases}
         \frac{\mathbb{P}[Y=0]}{1-\mathbb{P}[Y=1]} & y=0, \\
         \pi(1-\mathbb{P}[Y=1]) & y=1, \\
         (1-\pi) \frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=1]} & y>1,
         \end{cases}
     \end{equation*}
     \begin{equation*}
-        \mathbb{P}^{\ast}[Y=y|Y>0]=\pi\mathcal{I}_{\{1\}}(y)+
+        \mathbb{P}\left[Y^{\ast}=y|Y^{\ast}>0\right]=\pi\mathcal{I}_{\{1\}}(y)+
         (1-\pi)\mathcal{I}_{\mathbb{N}\setminus\{1\}}(y)\frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]}.
     \end{equation*}
+    where $\pi$ denotes the conditional probability of observing singletons.
     \item The hurdle zero-truncated model (\code{Hurdlezt}$^\ast$) for Poisson, geometric and NB2 is defined as:
     \begin{align*}
-        \mathbb{P}^{\ast}[Y=y]&=\begin{cases}
+        \mathbb{P}\left[Y^{\ast}=y\right]&=\begin{cases}
         \pi & y=1, \\
         (1-\pi) \frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=1]} & y\neq1,
         \end{cases}\\
-        \mathbb{P}^{\ast}[Y=y|Y>0]&=\begin{cases}
+        \mathbb{P}\left[Y^{\ast}=y|Y^{\ast}>0\right]&=\begin{cases}
             \pi\frac{1-\mathbb{P}[Y=1]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]} & y=1,\\
             (1-\pi)\frac{\mathbb{P}[Y=y]}{1-\mathbb{P}[Y=0]-\mathbb{P}[Y=1]} & y>1,
         \end{cases}
     \end{align*}
+    where $\pi$ denotes the unconditional probability of observing singletons.
 \end{itemize}
-
-where \(\pi\) denotes conditional probability of observing singletons.
 
 The approaches presented above differ in their assumptions,
 computational complexity, or in the way they treat heterogeneity of
@@ -516,7 +518,7 @@ associated with a user specified formula.
 \nlset{2} Store values from the previous step: 
     $\ell_{-}\leftarrow\ell, \boldsymbol{W}_{-}\leftarrow\boldsymbol{W}, \boldsymbol{\beta}_{-}\leftarrow\boldsymbol{\beta}$ 
     (the last assignment is omitted during the first iteration), and assign values in the current iteration 
-    $\displaystyle\boldsymbol{\eta}\leftarrow\boldsymbol{X}_{\text{vlm}}\boldsymbol{\beta}+\boldsymbol{o}, \boldsymbol{W}_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boldsymbol{\eta}_{(k)}^\top\partial\boldsymbol{\eta}_{(k)}}\right], Z_k\leftarrow\boldsymbol{\eta}_{(k)}+\frac{\partial\ell}{\partial\boldsymbol{\eta}_{(k)}}\boldsymbol{W}_{(k)}^{-1}-\boldsymbol{o}_{(k)}$,\;
+    $\displaystyle\boldsymbol{\eta}\leftarrow\boldsymbol{X}_{\text{vlm}}\boldsymbol{\beta}+\boldsymbol{o}, \boldsymbol{W}_{(k)}\leftarrow\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boldsymbol{\eta}_{(k)}^\top\partial\boldsymbol{\eta}_{(k)}}\right], \boldsymbol{Z}_{(k)}\leftarrow\boldsymbol{\eta}_{(k)}+\frac{\partial\ell}{\partial\boldsymbol{\eta}_{(k)}}\boldsymbol{W}_{(k)}^{-1}-\boldsymbol{o}_{(k)}$,\;
     where $\boldsymbol{o}$ denotes offset.\;
 \nlset{3} Assign the current coefficient value: 
     $\boldsymbol{\beta}\leftarrow\left(\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{X}_{\text{vlm}}\right)^{-1}\boldsymbol{X}_{\text{vlm}}\boldsymbol{W}\boldsymbol{Z}$.\;
@@ -530,7 +532,8 @@ associated with a user specified formula.
 In the case of multi-parameter families, we get a matrix of linear
 predictors \(\boldsymbol{\eta}\) instead of a vector, with the number of
 columns matching the number of parameters in the distribution.
-``Weights'' are then modified to be information matrices
+``Weights'' (matrix \(\boldsymbol{W}\)) are then modified to be
+information matrices
 \(\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boldsymbol{\eta}_{(k)}^\top\partial\boldsymbol{\eta}_{(k)}}\right]\),
 where \(\ell\) is the log-likelihood function and
 \(\boldsymbol{\eta}_{(k)}\) is the \(k\)-th row of
@@ -775,21 +778,16 @@ except for additional results of population size estimates (denoted as
 R> basicModel <- estimatePopsize(
 +   formula = capture ~ gender + age + nation,
 +   model   = ztpoisson(),
-+   data    = netherlandsimmigrant
++   data    = netherlandsimmigrant,
++   controlMethod = controlMethod(silent = TRUE)
 + )
-\end{CodeInput}
-\begin{CodeOutput}
-Warning in singleRcaptureinternalIRLSmultipar(dependent = y, covariates = X, :
-Convergence at halfstepsize
-\end{CodeOutput}
-\begin{CodeInput}
 R> summary(basicModel)
 \end{CodeInput}
 \begin{CodeOutput}
 
 Call:
 estimatePopsize.default(formula = capture ~ gender + age + nation, 
-    data = netherlandsimmigrant, model = ztpoisson())
+    data = netherlandsimmigrant, model = ztpoisson(), controlMethod = controlMethod(silent = TRUE))
 
 Pearson Residuals:
      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
@@ -999,7 +997,7 @@ capture-recapture studies consists in comparing the fitted marginal
 frequencies
 \(\displaystyle\sum_{j=1}^{N_{obs}}\hat{\mathbb{P}}\left[Y_{j}=k|\boldsymbol{x}_{j}, Y_{j} > 0\right]\)
 with the observed marginal frequencies
-\(\displaystyle\sum_{k=1}^{N}\mathcal{I}_{\{k\}}(Y_{k})=\sum_{k=1}^{N_{obs}}\mathcal{I}_{\{k\}}(Y_{k})\)
+\(\displaystyle\sum_{j=1}^{N}\mathcal{I}_{\{k\}}(Y_{j})=\sum_{j=1}^{N_{obs}}\mathcal{I}_{\{k\}}(Y_{j})\)
 for \(k\geq1\). If the fitted model bears sufficient resemblance to the
 real data collection process, these quantities should be quite close and
 both \(G\) and \(\chi^{2}\) tests can be used to test the statistical
@@ -1643,19 +1641,20 @@ differences}\label{a-note-on-implementation-and-differences}
 One possible advantage of using \code{vglm} function from \pkg{VGAM}
 instead of \code{estimatingPopsize} is that in the latter one cannot fit
 models of the form analogous to: \begin{align*}
-  \log(\lambda)         &= \beta_{0} + \beta_{1}X\\
-  \text{logit}(\omega)  &= (e^{-\pi})\beta_{0} + \frac{1}{2}(\beta_{0}+\beta_{1})X,
-\end{align*} It is possible to specify many quite ``unusual'' linear
-dependencies between elements of a coefficient matrix in the former
-function since implementation of \pkg{VGAM} allows the user to supply
-full constraint matrices (cf. \citet{yee2015vgam}) while
-\pkg{singleRcapture} ``forces'' the user to use formulas. We have
-decided to limit the number of possible models for the sake of
-simplicity since these more complicated dependencies seem not to be that
-frequently used in SSCR. Additionally it is worth remembering that much
-of the implementation of the most computationally intensive code in
-\pkg{VGAM} is done in \proglang{C} making the implementation of
-\code{vglm} faster than that of \code{estimatePopsize}.
+  \log(\lambda)         &= \beta_{0} + \beta_{1}X_{1},\\
+  \text{logit}(\omega)  &= (e^{-e})\beta_{0} + \frac{1}{2}(\beta_{0}+\beta_{1})X_{2},
+\end{align*} for some explanatory variables \(X_{1}, X_{2}\). It is
+possible to specify many quite ``unusual'' linear dependencies between
+elements of a coefficient matrix in the former function since
+implementation of \pkg{VGAM} allows the user to supply full constraint
+matrices (cf. \citet{yee2015vgam}) while \pkg{singleRcapture} ``forces''
+the user to use formulas. We have decided to limit the number of
+possible models for the sake of simplicity since these more complicated
+dependencies seem not to be that frequently used in SSCR. Additionally
+it is worth remembering that much of the implementation of the most
+computationally intensive code in \pkg{VGAM} is done in \proglang{C}
+making the implementation of \code{vglm} faster than that of
+\code{estimatePopsize}.
 
 An advantage of using \code{estimatingPopsize} to fit the model as
 compared to calling it on \code{vglm} class object are that:
@@ -2391,7 +2390,7 @@ function (x, inverse = FALSE, deriv = 0)
     }
     res
 }
-<bytecode: 0x10a5a1630>
+<bytecode: 0x12f91b3e8>
 <environment: namespace:singleRcapture>
 \end{CodeOutput}
 \end{CodeChunk}
