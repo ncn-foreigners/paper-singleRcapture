@@ -303,7 +303,7 @@ where each $\bX_{i}$ corresponds to a model matrix associated with a user specif
     else \code{iter}$\leftarrow 1+$\code{iter} and return to step 2.
 \end{algorithm}
 
-In the case of multi-parameter families, we get a matrix of linear predictors $\boeta$ instead of a vector, with the number of columns matching the number of parameters in the distribution. "Weights" are then modified to be information matrices $\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boeta_{(k)}^\top\partial\boeta_{(k)}}\right]$, where $\ell$ is the log-likelihood function and $\boeta_{(k)}$ is the $k$-th row of $\boeta$, while in the typical IRLS they are scalars $\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\eta_{k}^{2}}\right]$, which is often just
+In the case of multi-parameter families, we get a matrix of linear predictors $\boeta$ instead of a vector, with the number of columns matching the number of parameters in the distribution. "Weights" (matrix \boldsymbol{W}) are then modified to be information matrices $\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boeta_{(k)}^\top\partial\boeta_{(k)}}\right]$, where $\ell$ is the log-likelihood function and $\boeta_{(k)}$ is the $k$-th row of $\boeta$, while in the typical IRLS they are scalars $\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\eta_{k}^{2}}\right]$, which is often just
 $\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}$. 
 
 
