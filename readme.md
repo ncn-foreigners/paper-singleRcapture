@@ -7,7 +7,15 @@
 Arxiv version
 
 ```
-
+@misc{chlebicki2024singlercapturerpackagesinglesource,
+      title={singleRcapture: An R Package for Single-Source Capture-Recapture Models}, 
+      author={Piotr Chlebicki and Maciej Beręsewicz},
+      year={2024},
+      eprint={2411.11032},
+      archivePrefix={arXiv},
+      primaryClass={stat.AP},
+      url={https://arxiv.org/abs/2411.11032}, 
+}
 ```
 
 ## Acknowledgements
