@@ -4,7 +4,7 @@
 
 ## How to cite
 
-Arxiv version
+Arxiv version: `Chlebicki, P., & Beręsewicz, M. (2024). singleRcapture: An R Package for Single-Source Capture-Recapture Models. arXiv preprint arXiv:2411.11032.`
 
 ```
 @misc{chlebicki2024singlercapturerpackagesinglesource,
