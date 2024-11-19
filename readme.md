@@ -1,6 +1,7 @@
 # "`singleRcapture`: An Package for Single-Source Capture-Recapture Models"
 
-[the current version of the paper](singleRcapture/singleRcapture.pdf)
++ [the current version of the paper](singleRcapture/singleRcapture.pdf)
++ [Arxiv version](https://arxiv.org/abs/2411.11032)
 
 ## How to cite
 
