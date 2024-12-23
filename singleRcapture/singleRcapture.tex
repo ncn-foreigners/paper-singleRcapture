@@ -537,10 +537,13 @@ which is often just
 
 \subsection{Bootstrap variance estimators}\label{sec-boostrap}
 
-We have implemented three types of bootstrap algorithms: parametric,
-semi-parametric and nonparametric. The nonparametric version is the
-usual bootstrap algorithm, as noted in \cite{norrpoll} and \cite{zwane}.
-In this section, the focus is on the latter two approaches.
+We have implemented three types of bootstrap algorithms: parametric
+(adapted from theory in \cite{zwane}, \cite{norrpoll} for multiple
+source setting with covariates), semi-parametric (see
+e.g.~\cite{BoehningFriedl2021}) and nonparametric. The nonparametric
+version is the usual bootstrap algorithm; which will typically
+underestimate the variance of \(\hat{N}\). In this section, the focus is
+on the first two approaches.
 
 The idea of semi-parametric bootstrap is to modify the usual bootstrap
 to include the additional uncertainty resulting from the fact that the
@@ -1456,8 +1459,8 @@ Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
 The authors would like to thank Peter van der Heijden, Maarten Cruyff,
 Dankmar Böhning and Layna Dennett for useful comments that have helped
 to improve the functionality of the package. In addition, we would like
-to thank Marcin Szymkowiak and Tymon Świtalski for his valuable comments
-that have improved the paper.
+to thank Marcin Szymkowiak and Tymon Świtalski for their valuable
+comments that have considerably improved the paper.
 
 \appendix
 
