@@ -310,7 +310,7 @@ $\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}$.
 
 ## Bootstrap variance estimators {#sec-boostrap}
 
-We have implemented three types of bootstrap algorithms: parametric, semi-parametric and nonparametric. The nonparametric version is the usual bootstrap algorithm, as noted in \cite{norrpoll} and \cite{zwane}. In this section, the focus is on the latter two approaches.
+We have implemented three types of bootstrap algorithms: parametric (adapted from theory in \cite{zwane}, \cite{norrpoll} for multiple source setting with covariates), semi-parametric (see e.g. \cite{BoehningFriedl2021}) and nonparametric. The nonparametric version is the usual bootstrap algorithm; which will typically underestimate the variance of $\hat{N}$. In this section, the focus is on the first two approaches.
 
 The idea of semi-parametric bootstrap is to modify the usual bootstrap to include the additional uncertainty resulting from the fact that the sample size is a random variable. This type of bootstrap is performed in steps listed in Algorithm \ref{algo-semipar-boot}.
 
