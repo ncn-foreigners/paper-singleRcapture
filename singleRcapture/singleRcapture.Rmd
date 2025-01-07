@@ -307,6 +307,7 @@ where each $\bX_{i}$ corresponds to a model matrix associated with a user specif
 In the case of multi-parameter families, we get a matrix of linear predictors $\boeta$ instead of a vector, with the number of columns matching the number of parameters in the distribution. "Weights" (matrix $\bW$) are then modified to be information matrices $\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boeta_{(k)}^\top\partial\boeta_{(k)}}\right]$, where $\ell$ is the log-likelihood function and $\boeta_{(k)}$ is the $k$-th row of $\boeta$, while in the typical IRLS they are scalars $\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\eta_{k}^{2}}\right]$, which is often just
 $\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}$. 
 
+\newpage
 
 ## Bootstrap variance estimators {#sec-boostrap}
 
@@ -339,6 +340,8 @@ In other words, we first draw a sample size and then a sample conditional on the
 
 Note that in order for this type of algorithm to result in consistent standard error estimates, it is imperative that the estimated model for the entire superpopulation probability space is consistent, which may be much less realistic than in the case of the semi-parametric bootstrap. The parametric bootstrap algorithm is the default option in \pkg{singleRcapture}.
 
+
+\newpage
 
 # The main function {#sec-main}
 
@@ -464,8 +467,8 @@ According to this approach, the population size is about 7,000, which is about 5
 We can access population size estimates using the following code, which returns a list with numerical results.
 
 ```{r, extract_pop_size}
-popSizeEst(basicModel)    #basicModel$populationSize
-popSizeEst(modelInflated) #modelInflated$populationSize
+popSizeEst(basicModel)    # alternative: basicModel$populationSize
+popSizeEst(modelInflated) # alternative: modelInflated$populationSize
 ```
 
 The decision whether to use a zero-truncated Poisson or one-inflated zero-truncated geometric model should be based on the assessment of the model and the assumptions regarding the data generation process. One possible method of selection is based on the likelihood ratio test, which can be computed quickly and conveniently with the \pkg{lmtest} (@lmtest) interface:
@@ -696,7 +699,7 @@ The full list of explicitly defined methods for \code{singleRStaticCountData} me
 
 # Concluding remarks
 
-In this paper we have introduced two packages for single source capture-recapture models, namely \pkg{singleRcapture} and \pkg{singleRcaptureExtra}. The packages implement state-of-the-art methods for estimating population size based on a single data set with multiple counts. The package implements different methods to account for heterogeneity in capture probabilities, modelled using covariates, as well as behavioral change, modelled using one-inflation. We have built the package to facilitate the implementation of new models using \code{family} objects; their application is exemplified in the Appendix \ref{sec-family}. 
+In this paper we have introduced the \pkg{singleRcapture} package for single source capture-recapture models. The package implement state-of-the-art methods for estimating population size based on a single data set with multiple counts. The package implements different methods to account for heterogeneity in capture probabilities, modelled using covariates, as well as behavioral change, modelled using one-inflation. We have built the package to facilitate the implementation of new models using \code{family} objects; their application is exemplified in the Appendix \ref{sec-family}. 
 
 Furthermore, since many \proglang{R} users are familiar with \pkg{countreg} or \pkg{VGAM} packages, we have implemented a lightweight extension called \pkg{singleRcaptureExtra}, available through Github (\url{https://github.com/ncn-foreigners/singleRcaptureExtra}), which can be used to integrate \pkg{singleRcapture} with these packages. 
 
@@ -759,7 +762,7 @@ attr(X, "hwm") <- c(4, 3)
 3. Obtain starting $\bbeta$ parameters using the \code{glm.fit} function.
 
 ```{r, estimatePopsizeFit-3}
-start <- glm.fit(# get starting points
+start <- glm.fit(
   y = farmsubmission$TOTAL_SUB, 
   x = X[1:NROW(farmsubmission), 1:4], 
   family = poisson()
@@ -811,6 +814,7 @@ The default \code{maxiter} parameter for \code{"optim"} fitting is $1000$, but w
 
 The above situation is rather typical. While we did not conduct any formal numerical analyses, it seems that when one attempts to model more than one parameter of the distribution as covariate dependent \code{optim} algorithms, both \code{"Nelder-Mead"} and \code{"L-BFGS-B"} seem to be ill-suited for the task despite being provided with the analytically computed gradient. This is one of the reasons why \code{"IRLS"} is the default fitting method.
 
+\clearpage
 
 ## Structure of a family function {#sec-family}
 
@@ -849,7 +853,6 @@ A factory function for creating the following functions:
 
 
 \clearpage
-
 
 # Implementing a custom \pkg{singleRcapture} family function {short-title="Implementing custom singleRcapture family function"}
 

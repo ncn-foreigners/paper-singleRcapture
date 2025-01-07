@@ -535,6 +535,8 @@ where \(\ell\) is the log-likelihood function and
 which is often just
 \(\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}\).
 
+\newpage
+
 \subsection{Bootstrap variance estimators}\label{sec-boostrap}
 
 We have implemented three types of bootstrap algorithms: parametric
@@ -586,6 +588,8 @@ the entire superpopulation probability space is consistent, which may be
 much less realistic than in the case of the semi-parametric bootstrap.
 The parametric bootstrap algorithm is the default option in
 \pkg{singleRcapture}.
+
+\newpage
 
 \section{The main function}\label{sec-main}
 
@@ -924,7 +928,7 @@ returns a list with numerical results.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> popSizeEst(basicModel)    #basicModel$populationSize
+R> popSizeEst(basicModel)    # alternative: basicModel$populationSize
 \end{CodeInput}
 \begin{CodeOutput}
 Point estimate: 12690.35
@@ -935,7 +939,7 @@ normal      7186.449   18194.25
 logNormal   8431.277   19718.31
 \end{CodeOutput}
 \begin{CodeInput}
-R> popSizeEst(modelInflated) #modelInflated$populationSize
+R> popSizeEst(modelInflated) # alternative: modelInflated$populationSize
 \end{CodeInput}
 \begin{CodeOutput}
 Point estimate: 6699.953
@@ -1428,16 +1432,15 @@ The full list of explicitly defined methods for
 
 \section{Concluding remarks}\label{concluding-remarks}
 
-In this paper we have introduced two packages for single source
-capture-recapture models, namely \pkg{singleRcapture} and
-\pkg{singleRcaptureExtra}. The packages implement state-of-the-art
-methods for estimating population size based on a single data set with
-multiple counts. The package implements different methods to account for
-heterogeneity in capture probabilities, modelled using covariates, as
-well as behavioral change, modelled using one-inflation. We have built
-the package to facilitate the implementation of new models using
-\code{family} objects; their application is exemplified in the Appendix
-\ref{sec-family}.
+In this paper we have introduced the \pkg{singleRcapture} package for
+single source capture-recapture models. The package implement
+state-of-the-art methods for estimating population size based on a
+single data set with multiple counts. The package implements different
+methods to account for heterogeneity in capture probabilities, modelled
+using covariates, as well as behavioral change, modelled using
+one-inflation. We have built the package to facilitate the
+implementation of new models using \code{family} objects; their
+application is exemplified in the Appendix \ref{sec-family}.
 
 Furthermore, since many \proglang{R} users are familiar with
 \pkg{countreg} or \pkg{VGAM} packages, we have implemented a lightweight
@@ -1548,7 +1551,7 @@ R> attr(X, "hwm") <- c(4, 3)
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> start <- glm.fit(# get starting points
+R> start <- glm.fit(
 +   y = farmsubmission$TOTAL_SUB, 
 +   x = X[1:NROW(farmsubmission), 1:4], 
 +   family = poisson()
@@ -1649,6 +1652,8 @@ than one parameter of the distribution as covariate dependent
 seem to be ill-suited for the task despite being provided with the
 analytically computed gradient. This is one of the reasons why
 \code{"IRLS"} is the default fitting method.
+
+\clearpage
 
 \subsection{Structure of a family function}\label{sec-family}
 
