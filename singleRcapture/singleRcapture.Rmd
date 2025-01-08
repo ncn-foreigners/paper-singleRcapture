@@ -634,7 +634,7 @@ Only the \code{logNormal} type of confidence interval is used for plotting since
 
 \section[Classes and S3Methods]{Classes and \code{S3Methods}}\label{sec-methods}
 
-We have created a number of classes: \code{singleRStaticCountData}, \code{singleR} in the package (for the time being the two classes are the same, the distinction is made for future development), \code{singleRfamily}, \code{popSizeEstResults}, \code{summarysingleRStaticCountData} and \code{summarysingleRmargin}, which make it possible to extract relevant information regarding the population size. 
+We have created a number of classes: the main one: \code{singleRStaticCountData}, \code{singleRfamily} and supplementary: \code{popSizeEstResults}, \code{summarysingleRStaticCountData} and \code{summarysingleRmargin}, which make it possible to extract relevant information regarding the population size. 
 
 For instance, the \code{popSizeEst} function can be used to extract information about the estimated size of the population as given below:
 
@@ -679,7 +679,7 @@ Function & Description \\
 \code{cooks.distance} & it works only for single predictor models \\
 \code{dfbeta, dfpopsize} & Multi-threading in \code{dfbeta} is available and \code{dfpopsize} calls \code{dfbeta} if no \code{dfbeta} object was provided in the call; \\
 \code{bread, estfun, vcovHC} & for (almost) full \pkg{sandwich} compatibility; \\
-\code{AIC, BIC, extractAIC, family, confint, df.residual, model.frame, hatvalues, nobs, print}  & it works exactly like \code{glm} counterparts.\\
+\code{AIC, BIC, extractAIC, family, confint, df.residual, model.frame, hatvalues, nobs, print, sigma, influence, rstudent, rstandard}  & it works exactly like \code{glm} counterparts.\\
 \hline 
 \end{tabular}
 \caption{\code{S3Methods} implemented in the \pkg{singleRcapture}}

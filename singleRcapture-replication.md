@@ -1,5 +1,6 @@
 
-```{r}
+
+``` r
 options(prompt = 'R> ', continue = '+ ')
 
 ## .bordered {
@@ -14,11 +15,43 @@ library(singleRcapture)
 
 data(netherlandsimmigrant)
 head(netherlandsimmigrant)
+```
 
+```
+##   capture gender    age       reason       nation
+## 1       1   male <40yrs Other reason North Africa
+## 2       1   male <40yrs Other reason North Africa
+## 3       1   male <40yrs Other reason North Africa
+## 4       1   male <40yrs Other reason         Asia
+## 5       1   male <40yrs Other reason         Asia
+## 6       2   male <40yrs Other reason North Africa
+```
+
+``` r
 summary(netherlandsimmigrant)
+```
 
+```
+##     capture         gender         age                reason                        nation    
+##  Min.   :1.000   female: 398   <40yrs:1769   Illegal stay: 259   American and Australia: 173  
+##  1st Qu.:1.000   male  :1482   >40yrs: 111   Other reason:1621   Asia                  : 284  
+##  Median :1.000                                                   North Africa          :1023  
+##  Mean   :1.162                                                   Rest of Africa        : 243  
+##  3rd Qu.:1.000                                                   Surinam               :  64  
+##  Max.   :6.000                                                   Turkey                :  93
+```
+
+``` r
 table(netherlandsimmigrant$capture)
+```
 
+```
+## 
+##    1    2    3    4    5    6 
+## 1645  183   37   13    1    1
+```
+
+``` r
 basicModel <- estimatePopsize(
   formula = capture ~ gender + age + nation,
   model   = ztpoisson(),
@@ -26,7 +59,55 @@ basicModel <- estimatePopsize(
   controlMethod = controlMethod(silent = TRUE)
 )
 summary(basicModel)
+```
 
+```
+## 
+## Call:
+## estimatePopsize.default(formula = capture ~ gender + age + nation, 
+##     data = netherlandsimmigrant, model = ztpoisson(), controlMethod = controlMethod(silent = TRUE))
+## 
+## Pearson Residuals:
+##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+## -0.486442 -0.486442 -0.298080  0.002093 -0.209444 13.910844 
+## 
+## Coefficients:
+## -----------------------
+## For linear predictors associated with: lambda 
+##                      Estimate Std. Error z value  P(>|z|)    
+## (Intercept)           -1.3411     0.2149  -6.241 4.35e-10 ***
+## gendermale             0.3972     0.1630   2.436 0.014832 *  
+## age>40yrs             -0.9746     0.4082  -2.387 0.016972 *  
+## nationAsia            -1.0926     0.3016  -3.622 0.000292 ***
+## nationNorth Africa     0.1900     0.1940   0.979 0.327398    
+## nationRest of Africa  -0.9106     0.3008  -3.027 0.002468 ** 
+## nationSurinam         -2.3364     1.0136  -2.305 0.021159 *  
+## nationTurkey          -1.6754     0.6028  -2.779 0.005445 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## AIC: 1712.901
+## BIC: 1757.213
+## Residual deviance: 1128.553
+## 
+## Log-likelihood: -848.4504 on 1872 Degrees of freedom 
+## Number of iterations: 8
+## -----------------------
+## Population size estimation results: 
+## Point estimate 12690.35
+## Observed proportion: 14.8% (N obs = 1880)
+## Std. Error 2808.165
+## 95% CI for the population size:
+##           lowerBound upperBound
+## normal      7186.449   18194.25
+## logNormal   8431.277   19718.31
+## 95% CI for the share of observed population:
+##           lowerBound upperBound
+## normal     10.332933   26.16035
+## logNormal   9.534288   22.29793
+```
+
+``` r
 set.seed(123456)
 modelInflated <- estimatePopsize(
     formula = capture ~ nation,
@@ -38,11 +119,105 @@ modelInflated <- estimatePopsize(
     popVar = "bootstrap",
     controlPopVar = controlPopVar(bootType = "semiparametric")
 )
+```
+
+```
+## Warning in estimatePopsize.default(formula = capture ~ nation, model = oiztgeom(omegaLink = "cloglog"), : The (analytically computed) hessian of the score function is not negative define.
+## NOTE: Second derivative test failing does not 
+##         necessarily mean that the maximum of score function that was found 
+##         numericaly is invalid since R^k is not a bounded space.
+## Additionally in one inflated and hurdle models second derivative test often fails even on valid arguments.
+```
+
+```
+## Warning in estimatePopsize.default(formula = capture ~ nation, model = oiztgeom(omegaLink = "cloglog"), : Switching
+## from observed information matrix to Fisher information matrix because hessian of log-likelihood is not negative
+## define.
+```
+
+``` r
 summary(modelInflated)
+```
 
+```
+## 
+## Call:
+## estimatePopsize.default(formula = capture ~ nation, data = netherlandsimmigrant, 
+##     model = oiztgeom(omegaLink = "cloglog"), popVar = "bootstrap", 
+##     controlModel = controlModel(omegaFormula = ~gender + age), 
+##     controlPopVar = controlPopVar(bootType = "semiparametric"))
+## 
+## Pearson Residuals:
+##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+## -0.41643 -0.41643 -0.30127  0.00314 -0.18323 13.88376 
+## 
+## Coefficients:
+## -----------------------
+## For linear predictors associated with: lambda 
+##                      Estimate Std. Error z value  P(>|z|)    
+## (Intercept)           -1.2552     0.2149  -5.840 5.22e-09 ***
+## nationAsia            -0.8193     0.2544  -3.220  0.00128 ** 
+## nationNorth Africa     0.2057     0.1838   1.119  0.26309    
+## nationRest of Africa  -0.6692     0.2548  -2.627  0.00862 ** 
+## nationSurinam         -1.5205     0.6271  -2.425  0.01532 *  
+## nationTurkey          -1.1888     0.4343  -2.737  0.00619 ** 
+## -----------------------
+## For linear predictors associated with: omega 
+##             Estimate Std. Error z value  P(>|z|)    
+## (Intercept)  -1.4577     0.3884  -3.753 0.000175 ***
+## gendermale   -0.8738     0.3602  -2.426 0.015267 *  
+## age>40yrs     1.1745     0.5423   2.166 0.030326 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## AIC: 1677.125
+## BIC: 1726.976
+## Residual deviance: 941.5416
+## 
+## Log-likelihood: -829.5625 on 3751 Degrees of freedom 
+## Number of iterations: 10
+## -----------------------
+## Population size estimation results: 
+## Point estimate 6699.953
+## Observed proportion: 28.1% (N obs = 1880)
+## Boostrap sample skewness: 1.621389
+## 0 skewness is expected for normally distributed variable
+## ---
+## Bootstrap Std. Error 1719.353
+## 95% CI for the population size:
+## lowerBound upperBound 
+##   5001.409  11415.969 
+## 95% CI for the share of observed population:
+## lowerBound upperBound 
+##   16.46816   37.58941
+```
+
+``` r
 popSizeEst(basicModel)    # alternative: basicModel$populationSize
-popSizeEst(modelInflated) # alternative: modelInflated$populationSize
+```
 
+```
+## Point estimate: 12690.35
+## Variance: 7885790
+## 95% confidence intervals:
+##           lowerBound upperBound
+## normal      7186.449   18194.25
+## logNormal   8431.277   19718.31
+```
+
+``` r
+popSizeEst(modelInflated) # alternative: modelInflated$populationSize
+```
+
+```
+## Point estimate: 6699.953
+## Variance: 2956175
+## 95% confidence intervals:
+## lowerBound upperBound 
+##   5001.409  11415.969
+```
+
+``` r
 library(lmtest)
 
 lrtest(basicModel, modelInflated,
@@ -51,34 +226,138 @@ lrtest(basicModel, modelInflated,
         "Basic model"
     else "Inflated model"
 })
+```
 
+```
+## Likelihood ratio test
+## 
+## Model 1: Basic model
+## Model 2: Inflated model
+##   #Df  LogLik Df  Chisq Pr(>Chisq)    
+## 1   8 -848.45                         
+## 2   9 -829.56  1 37.776  7.936e-10 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+``` r
 margFreq <- marginalFreq(basicModel)
 summary(margFreq, df = 1, dropl5 = "group")
+```
 
+```
+## Test for Goodness of fit of a regression model:
+## 
+##                  Test statistics df P(>X^2)
+## Chi-squared test           50.06  1 1.5e-12
+## G-test                     34.31  1 4.7e-09
+## 
+## -------------------------------------------------------------- 
+## Cells with fitted frequencies of < 5 have been grouped 
+## Names of cells used in calculating test(s) statistic: 1 2 3
+```
+
+``` r
 margFreq_inf <- marginalFreq(modelInflated)
 summary(margFreq_inf, df = 1, dropl5 = "group")
+```
 
+```
+## Test for Goodness of fit of a regression model:
+## 
+##                  Test statistics df P(>X^2)
+## Chi-squared test            1.88  1    0.17
+## G-test                      2.32  1    0.13
+## 
+## -------------------------------------------------------------- 
+## Cells with fitted frequencies of < 5 have been grouped 
+## Names of cells used in calculating test(s) statistic: 1 2 3 4
+```
+
+``` r
 plot(   basicModel, plotType = "rootogram", main = "ZT Poisson model")
-plot(modelInflated, plotType = "rootogram", main = "OI ZT Geometric model")
+```
 
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-1.png)
+
+``` r
+plot(modelInflated, plotType = "rootogram", main = "OI ZT Geometric model")
+```
+
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-2.png)
+
+``` r
 #dev.off()
 
 dfb <- dfbeta(basicModel)
 round(t(apply(dfb, 2, quantile)*100), 4)
+```
 
+```
+##                           0%     25%     50%    75%    100%
+## (Intercept)          -0.9909 -0.1533  0.0191 0.0521  8.6619
+## gendermale           -9.0535 -0.0777 -0.0283 0.1017  2.2135
+## age>40yrs            -2.0010  0.0179  0.0379 0.0691 16.0061
+## nationAsia           -9.5559 -0.0529  0.0066 0.0120 17.9914
+## nationNorth Africa   -9.6605 -0.0842 -0.0177 0.0087  3.1260
+## nationRest of Africa -9.4497 -0.0244  0.0030 0.0083 10.9787
+## nationSurinam        -9.3138 -0.0065  0.0021 0.0037 99.3383
+## nationTurkey         -9.6198 -0.0220  0.0079 0.0143 32.0980
+```
+
+``` r
 dfi <- dfbeta(modelInflated)
 round(t(apply(dfi, 2, quantile)*100), 4)
+```
 
+```
+##                            0%     25%     50%     75%    100%
+## (Intercept)           -1.4640  0.0050  0.0184  0.0557  9.0600
+## nationAsia            -6.6331 -0.0346  0.0157  0.0347 12.2406
+## nationNorth Africa    -7.2770 -0.0768 -0.0170  0.0085  1.9415
+## nationRest of Africa  -6.6568 -0.0230  0.0081  0.0262  7.1710
+## nationSurinam         -6.2308 -0.0124  0.0162  0.0421 62.2045
+## nationTurkey          -6.4795 -0.0273  0.0204  0.0462 21.1338
+## (Intercept):omega     -6.8668 -0.0193  0.0476  0.0476  9.3389
+## gendermale:omega      -2.2733 -0.2227  0.1313  0.2482 11.1234
+## age>40yrs:omega      -30.2130 -0.2247 -0.1312 -0.0663  2.0393
+```
+
+``` r
 dfb_pop <- dfpopsize(basicModel, dfbeta = dfb)
 dfi_pop <- dfpopsize(modelInflated, dfbeta = dfi)
 summary(dfb_pop)
-summary(dfi_pop)
+```
 
+```
+##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+## -4236.407     2.660     2.660     5.445    17.281   117.445
+```
+
+``` r
+summary(dfi_pop)
+```
+
+```
+##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+## -456.6443   -3.1121   -0.7243    3.4333    5.1535  103.5949
+```
+
+``` r
 plot(basicModel, plotType = "dfpopContr",
      dfpop = dfb_pop, xlim = c(-4500, 150))
+```
+
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-3.png)
+
+``` r
 plot(modelInflated, plotType = "dfpopContr",
      dfpop = dfi_pop, xlim = c(-4500, 150))
+```
 
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-4.png)
+
+``` r
 #dev.off()
 
 # ?plot.singleRStaticCountData
@@ -90,12 +369,44 @@ popSizestrata_report <- popSizestrata[, cols]
 cols_custom <- c("Name", "Obs", "Estimated", "LowerBound", "UpperBound")
 names(popSizestrata_report) <- cols_custom
 popSizestrata_report
+```
 
+```
+##                              Name  Obs  Estimated LowerBound UpperBound
+## 1                  gender==female  398  3811.0911  2189.0443   6902.133
+## 2                    gender==male 1482  8879.2594  6090.7762  13354.880
+## 3                     age==<40yrs 1769 10506.8971  7359.4155  15426.455
+## 4                     age==>40yrs  111  2183.4535   872.0130   5754.876
+## 5  nation==American and Australia  173   708.3688   504.6086   1037.331
+## 6                    nation==Asia  284  2742.3147  1755.2548   4391.590
+## 7            nation==North Africa 1023  3055.2033  2697.4900   3489.333
+## 8          nation==Rest of Africa  243  2058.1533  1318.7466   3305.786
+## 9                 nation==Surinam   64  2386.4513   505.2457  12287.983
+## 10                 nation==Turkey   93  1739.8592   638.0497   5068.959
+```
+
+``` r
 popSizestrata_inflated <- stratifyPopsize(modelInflated)
 popSizestrata_inflated_report <- popSizestrata_inflated[, cols]
 names(popSizestrata_inflated_report) <- cols_custom
 popSizestrata_inflated_report
+```
 
+```
+##                              Name  Obs Estimated LowerBound UpperBound
+## 1  nation==American and Australia  173  516.2432   370.8463   768.4919
+## 2                    nation==Asia  284 1323.5377   831.1601  2258.9954
+## 3            nation==North Africa 1023 2975.8801  2254.7071  4119.3050
+## 4          nation==Rest of Africa  243 1033.9753   667.6106  1716.4484
+## 5                 nation==Surinam   64  354.2236   193.8891   712.4739
+## 6                  nation==Turkey   93  496.0934   283.1444   947.5309
+## 7                  gender==female  398 1109.7768   778.7197  1728.7066
+## 8                    gender==male 1482 5590.1764  3838.4550  8644.0776
+## 9                     age==<40yrs 1769 6437.8154  4462.3472  9862.2147
+## 10                    age==>40yrs  111  262.1379   170.9490   492.0347
+```
+
+``` r
 library(sandwich)
 popSizestrataCustom <- stratifyPopsize(
   object  = basicModel,
@@ -107,7 +418,17 @@ popSizestrataCustom <- stratifyPopsize(
 popSizestrataCustom_report <- popSizestrataCustom[, c(cols, "confLevel")]
 names(popSizestrataCustom_report) <- c(cols_custom, "alpha")
 popSizestrataCustom_report
+```
 
+```
+##             Name  Obs Estimated LowerBound UpperBound alpha
+## 1 gender==female  398  3811.091  2275.6416   6602.161  0.10
+## 2   gender==male 1482  8879.259  6261.5125  12930.751  0.10
+## 3    age==<40yrs 1769 10506.897  7297.2081  15580.138  0.05
+## 4    age==>40yrs  111  2183.453   787.0676   6464.009  0.05
+```
+
+``` r
 # list(
 #   "Stratum 1" = netherlandsimmigrant$gender == "male"   &
 #     netherlandsimmigrant$nation == "Suriname",
@@ -117,21 +438,67 @@ popSizestrataCustom_report
 
 par(mar = c(2.5, 8.5, 4.1, 2.5), cex.main = .7, cex.lab = .6)
 plot(basicModel, plotType = "strata")
-plot(modelInflated, plotType = "strata")
+```
 
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-5.png)
+
+``` r
+plot(modelInflated, plotType = "strata")
+```
+
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-6.png)
+
+``` r
 #dev.off()
 
 (popEst <- popSizeEst(basicModel))
+```
 
+```
+## Point estimate: 12690.35
+## Variance: 7885790
+## 95% confidence intervals:
+##           lowerBound upperBound
+## normal      7186.449   18194.25
+## logNormal   8431.277   19718.31
+```
+
+``` r
 coef(summary(basicModel))
+```
 
+```
+##                        Estimate Std. Error    z value      P(>|z|)
+## (Intercept)          -1.3410661  0.2148870 -6.2407965 4.353484e-10
+## gendermale            0.3971793  0.1630155  2.4364504 1.483220e-02
+## age>40yrs            -0.9746058  0.4082420 -2.3873235 1.697155e-02
+## nationAsia           -1.0925990  0.3016259 -3.6223642 2.919228e-04
+## nationNorth Africa    0.1899980  0.1940007  0.9793677 3.273983e-01
+## nationRest of Africa -0.9106361  0.3008092 -3.0272880 2.467587e-03
+## nationSurinam        -2.3363949  1.0135639 -2.3051284 2.115938e-02
+## nationTurkey         -1.6753917  0.6027744 -2.7794674 5.444812e-03
+```
+
+``` r
 set.seed(1234567890)
 N <- 10000
 gender <- rbinom(N, 1, 0.2)
 eta <- -1 + 0.5*gender
 counts <- simulate(ztpoisson(), eta = cbind(eta), seed = 1)
 summary(data.frame(gender, eta, counts))
+```
 
+```
+##      gender            eta              counts      
+##  Min.   :0.0000   Min.   :-1.0000   Min.   :0.0000  
+##  1st Qu.:0.0000   1st Qu.:-1.0000   1st Qu.:0.0000  
+##  Median :0.0000   Median :-1.0000   Median :0.0000  
+##  Mean   :0.2036   Mean   :-0.8982   Mean   :0.4196  
+##  3rd Qu.:0.0000   3rd Qu.:-1.0000   3rd Qu.:1.0000  
+##  Max.   :1.0000   Max.   :-0.5000   Max.   :5.0000
+```
+
+``` r
 # estimatePopsize(
 #   TOTAL_SUB ~ .,
 #   data = farmsubmission,
@@ -159,7 +526,13 @@ start <- glm.fit(
   family = poisson()
 )$coefficients
 start
+```
 
+```
+## [1] -0.82583943  0.33254499 -0.03277732  0.32746933
+```
+
+``` r
 res <- estimatePopsizeFit(
   y            = farmsubmission$TOTAL_SUB,
   X            = X,
@@ -188,7 +561,22 @@ res2 <- estimatePopsizeFit(
 
 data.frame(IRLS  = round(c(res$beta, -ll(res$beta), res$iter), 4),
            optim = round(c(res2$beta, -ll(res2$beta), res2$iter[1]), 4))
+```
 
+```
+##          IRLS       optim
+## 1     -2.7845     -2.5971
+## 2      0.6170      0.6163
+## 3     -0.0646     -0.0825
+## 4      0.5346      0.5431
+## 5     -3.1745     -0.1504
+## 6      0.1281     -0.1586
+## 7     -1.0865     -1.0372
+## 8 -17278.7613 -17280.1189
+## 9     15.0000   1696.0000
+```
+
+``` r
 # Implementing a custom \pkg{singleRcapture} family function {short-title="Implementing custom singleRcapture family function"}
 
 
@@ -546,13 +934,85 @@ mm <- estimatePopsize(
   controlPopVar = controlPopVar(covType = "Fisher")
 )
 summary(mm)
+```
 
+```
+## 
+## Call:
+## estimatePopsize.default(formula = Y ~ 1, data = data.frame(Y = Y[Y > 
+##     0]), model = myFamilyFunction(lambdaLink = "logit", piLink = "logit"), 
+##     controlPopVar = controlPopVar(covType = "Fisher"))
+## 
+## Pearson Residuals:
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## -0.8198 -0.8198  0.8099  0.0000  0.8099  0.8099 
+## 
+## Coefficients:
+## -----------------------
+## For linear predictors associated with: lambda 
+##             Estimate Std. Error z value P(>|z|)
+## (Intercept)  0.01217    0.20253    0.06   0.952
+## -----------------------
+## For linear predictors associated with: pi 
+##             Estimate Std. Error z value P(>|z|)
+## (Intercept) -0.01217    0.08926  -0.136   0.892
+## 
+## AIC: 687.4249
+## BIC: 695.8259
+## Residual deviance: 0
+## 
+## Log-likelihood: -341.7124 on 984 Degrees of freedom 
+## Number of iterations: 2
+## -----------------------
+## Population size estimation results: 
+## Point estimate 986
+## Observed proportion: 50% (N obs = 493)
+## Std. Error 70.30092
+## 95% CI for the population size:
+##           lowerBound upperBound
+## normal      848.2127   1123.787
+## logNormal   866.3167   1144.053
+## 95% CI for the share of observed population:
+##           lowerBound upperBound
+## normal      43.86951   58.12221
+## logNormal   43.09241   56.90759
+```
 
+``` r
 # where the link functions, such as \code{singleRcapture:::singleRinternalcloglogLink}, are just internal functions in \pkg{singleRcapture} that compute link functions, their inverses and derivatives of both links and inverse links up to the third order:  singleRcapture:::singleRinternalcloglogLink
 
 
 ## sessionInfo
 
 sessionInfo()
+```
+
+```
+## R version 4.3.2 (2023-10-31)
+## Platform: aarch64-apple-darwin20 (64-bit)
+## Running under: macOS Sonoma 14.5
+## 
+## Matrix products: default
+## BLAS:   /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib 
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
+## 
+## locale:
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## time zone: Europe/Warsaw
+## tzcode source: internal
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] sandwich_3.1-1         lmtest_0.9-40          zoo_1.8-12             singleRcapture_0.2.1.4
+## 
+## loaded via a namespace (and not attached):
+##  [1] doParallel_1.0.17  cli_3.6.3          knitr_1.49         rlang_1.1.4        xfun_0.49          RcppParallel_5.1.9
+##  [7] rticles_0.27       markdown_1.13      htmltools_0.5.8.1  rsconnect_1.3.3    rmarkdown_2.29     grid_4.3.2        
+## [13] evaluate_1.0.1     fastmap_1.2.0      yaml_2.3.10        foreach_1.5.2      lifecycle_1.0.4    compiler_4.3.2    
+## [19] mathjaxr_1.6-0     codetools_0.2-20   Rcpp_1.0.13-1      lamW_2.2.4         rstudioapi_0.17.1  lattice_0.22-6    
+## [25] digest_0.6.37      parallel_4.3.2     commonmark_1.9.2   tools_4.3.2        mime_0.12          iterators_1.0.14
 ```
 
