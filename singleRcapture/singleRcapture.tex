@@ -170,8 +170,8 @@ next subsection we describe existing \proglang{R} packages and other
 software that could be used for estimating population size using SSCR
 methods.
 
-\subsection{Software for capture-recapture with single and multiple
-sources}\label{sec-software}
+\subsection{Software for capture-recapture with a single
+source}\label{sec-software}
 
 The majority of SSCR methods assume zero-truncated distributions or
 their extensions (e.g., inclusion of one-inflation). The
@@ -216,26 +216,28 @@ functions of the package. Section \ref{sec-study} presents a case study
 and contains an assessment of its results, diagnostics and estimates of
 specific sub-populations. Section \ref{sec-methods} describes classes
 and \code{S3methods} implemented in the package. The paper ends with
-conclusions and an appendix showing how to implement a custom model and
-how to use the \code{estimatePopsizeFit} function which is aimed to
-mimic the \code{glm.fit} or similar functions. This option could be of
-interest to users wishing to apply any new bootstrap methods not
-implemented in the package (see replication materials).
+conclusions and an appendix showing how to use the
+\code{estimatePopsizeFit} function which is aimed to mimic the
+\code{glm.fit} or similar functions. In replication materials we show
+how to implement a custom model as this option could be of interest to
+users wishing to apply any new bootstrap methods not implemented in the
+package.
 
 \section{Theoretical background}\label{sec-theory}
 
 \subsection{How to estimate population size with a single
-register?}\label{how-to-estimate-population-size-with-a-single-register}
+source?}\label{how-to-estimate-population-size-with-a-single-source}
 
 Let \(Y_{k}\) represent the number of times the \(k\)-th unit was
-observed in a register. Clearly, we only observe \(k:Y_{k}>0\) and do
-not know how many units have been missed (i.e.~\(Y_{k}=0\)), so the
-population size, denoted by \(N\), needs to be estimated. In general, we
-assume that the conditional distribution of \(Y_{k}\) given a vector of
-covariates \(\boldsymbol{x}_{k}\) follows a version of the
-zero-truncated count data distribution (and its extensions). When we
-know the parameters of the distribution we can estimate the population
-size using a Horvitz-Thompson type estimator given by:
+observed in a single source (e.g.~register). Clearly, we only observe
+\(k:Y_{k}>0\) and do not know how many units have been missed
+(i.e.~\(Y_{k}=0\)), so the population size, denoted by \(N\), needs to
+be estimated. In general, we assume that the conditional distribution of
+\(Y_{k}\) given a vector of covariates \(\boldsymbol{x}_{k}\) follows a
+version of the zero-truncated count data distribution (and its
+extensions). When we know the parameters of the distribution we can
+estimate the population size using a Horvitz-Thompson type estimator
+given by:
 
 \begin{equation}
 \hat{N}=
@@ -535,8 +537,6 @@ where \(\ell\) is the log-likelihood function and
 which is often just
 \(\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}\).
 
-\newpage
-
 \subsection{Bootstrap variance estimators}\label{sec-boostrap}
 
 We have implemented three types of bootstrap algorithms: parametric
@@ -589,8 +589,6 @@ much less realistic than in the case of the semi-parametric bootstrap.
 The parametric bootstrap algorithm is the default option in
 \pkg{singleRcapture}.
 
-\newpage
-
 \section{The main function}\label{sec-main}
 
 \subsection[The estimatePopsize function]{The \code{estimatePopsize} function}
@@ -608,6 +606,26 @@ corresponds to the number of times a given unit was observed in the
 source. The most important arguments are given in Table
 \ref{tab-arguments-popsize}; the obligatory ones are
 \code{formula, data, model}.
+
+\begin{table}[ht!]
+\centering
+\begin{tabular}{p{3cm}p{11cm}}
+\hline
+Argument & Description \\
+\hline
+\code{formula} & The main formula (i.e for the Poisson $\lambda$ parameter); \\
+\code{data} & a \code{data.frame} (or \code{data.frame} coercible) object; \\
+\code{model} & either a function a string or a family class object specifying which model should be used; possible values are listed in the documentation. The supplied argument should have the form \code{model =  "ztpoisson"}, \code{model = ztpoisson}, or if a link function should be specified, then \code{model = ztpoisson(lambdaLink = "log")} can be used; \\
+\code{method} & a numerical method used to fit regression \code{IRLS} or \code{optim}; \\
+\code{popVar} & a method for estimating variance of $\hat{N}$ and creating confidence intervals (either bootstrap, analytic or skipping the estimation entirely); \\
+\code{controlMethod}, \code{controlModel} or \code{controlPopVar} & control parameters for numerical fitting, specifying additional formulas (inflation, dispersion) and population size estimation, respectively; \\
+\code{offset} &  a matrix of offset values with the number of columns matching the number of distribution parameters providing offset values to each of linear predictors;\\
+\code{...} & additional optional arguments passed to other methods eg. \code{estimatePopsizeFit}; \\
+\hline
+\end{tabular}
+\caption{A description of \code{estimatePopsize} function arguments}
+\label{tab-arguments-popsize}
+\end{table}
 
 An important step in using \code{estimatePopsize} is specifying the
 \code{model} parameter, which indicates the type of model that will be
@@ -631,26 +649,6 @@ if covariates are assumed to be available for the hurdle models
 \code{piFormula} can be specified, as it provides a formula for the
 probability parameter in these models.
 
-\begin{table}[ht!]
-\centering
-\begin{tabular}{p{3cm}p{11cm}}
-\hline
-Argument & Description \\
-\hline
-\code{formula} & The main formula (i.e for the Poisson $\lambda$ parameter); \\
-\code{data} & a \code{data.frame} (or \code{data.frame} coercible) object; \\
-\code{model} & either a function a string or a family class object specifying which model should be used; possible values are listed in the documentation. The supplied argument should have the form \code{model =  "ztpoisson"}, \code{model = ztpoisson}, or if a link function should be specified, then \code{model = ztpoisson(lambdaLink = "log")} can be used; \\
-\code{method} & a numerical method used to fit regression \code{IRLS} or \code{optim}; \\
-\code{popVar} & a method for estimating variance of $\hat{N}$ and creating confidence intervals (either bootstrap, analytic or skipping the estimation entirely); \\
-\code{controlMethod}, \code{controlModel} or \code{controlPopVar} & control parameters for numerical fitting, specifying additional formulas (inflation, dispersion) and population size estimation, respectively; \\
-\code{offset} &  a matrix of offset values with the number of columns matching the number of distribution parameters providing offset values to each of linear predictors;\\
-\code{...} & additional optional arguments passed to other methods eg. \code{estimatePopsizeFit}; \\
-\hline
-\end{tabular}
-\caption{A description of \code{estimatePopsize} function arguments}
-\label{tab-arguments-popsize}
-\end{table}
-
 \subsection[Controlling variance estimation with controlPopVar]{Controlling variance estimation with \code{controlPopVar}}
 
 The \code{estimatePopsize} function makes it possible to specify the
@@ -658,7 +656,7 @@ variance estimation method via \code{popVar} (e.g.~analytic or variance
 bootstrap) and control the estimation process by specifying
 \code{controlPopVar}. In the control function \code{controlPopVar} the
 user can specify the \code{bootType} argument, which has three possible
-values: \code{"parametric", "semi-parametric"} and
+values: \code{"parametric", "semiparametric"} and
 \code{"nonparametric"}. Additional arguments accepted by the
 \code{contorlPopVar} function, which are relevant to bootstrap, include:
 
@@ -1317,11 +1315,11 @@ negative lower bounds.
 
 \section[Classes and S3Methods]{Classes and \code{S3Methods}}\label{sec-methods}
 
-We have created a number of classes: the main one:
-\code{singleRStaticCountData}, \code{singleRfamily} and supplementary:
-\code{popSizeEstResults}, \code{summarysingleRStaticCountData} and
-\code{summarysingleRmargin}, which make it possible to extract relevant
-information regarding the population size.
+We have created a number of classes. The main ones are:
+\code{singleRStaticCountData}, \code{singleRfamily}, and supplementary
+are: \code{popSizeEstResults}, \code{summarysingleRmargin} and
+\newline \code{summarysingleRStaticCountData}, which make it possible to
+extract relevant information regarding the population size.
 
 For instance, the \code{popSizeEst} function can be used to extract
 information about the estimated size of the population as given below:
@@ -1435,10 +1433,12 @@ single source capture-recapture models. The package implement
 state-of-the-art methods for estimating population size based on a
 single data set with multiple counts. The package implements different
 methods to account for heterogeneity in capture probabilities, modelled
-using covariates, as well as behavioral change, modelled using
+using covariates, as well as behavioural change, modelled using
 one-inflation. We have built the package to facilitate the
 implementation of new models using \code{family} objects; their
-application is exemplified in the Appendix \ref{sec-family}.
+application is exemplified in the Appendix \ref{sec-family}. An example
+of implementing a custom family described in Appendix \ref{sec-custom}
+is presented in replication materials.
 
 Furthermore, since many \proglang{R} users are familiar with
 \pkg{countreg} or \pkg{VGAM} packages, we have implemented a lightweight
@@ -1694,8 +1694,7 @@ A factory function for creating the following functions:
 \clearpage
 
 \section[Implementing custom singleRcapture family function]{Implementing
-a custom \pkg{singleRcapture} family
-function}\label{implementing-a-custom-family-function}
+a custom \pkg{singleRcapture} family function}\label{sec-custom}
 
 Suppose we want to implement a very specific zero truncated family
 function in the \pkg{singleRcapture}, which corresponds to the following

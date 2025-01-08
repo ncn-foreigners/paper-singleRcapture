@@ -59,8 +59,6 @@ summary(margFreq_inf, df = 1, dropl5 = "group")
 plot(   basicModel, plotType = "rootogram", main = "ZT Poisson model")
 plot(modelInflated, plotType = "rootogram", main = "OI ZT Geometric model")
 
-#dev.off()
-
 dfb <- dfbeta(basicModel)
 round(t(apply(dfb, 2, quantile)*100), 4)
 
@@ -76,8 +74,6 @@ plot(basicModel, plotType = "dfpopContr",
      dfpop = dfb_pop, xlim = c(-4500, 150))
 plot(modelInflated, plotType = "dfpopContr",
      dfpop = dfi_pop, xlim = c(-4500, 150))
-
-#dev.off()
 
 # ?plot.singleRStaticCountData
 
@@ -116,8 +112,6 @@ popSizestrataCustom_report
 par(mar = c(2.5, 8.5, 4.1, 2.5), cex.main = .7, cex.lab = .6)
 plot(basicModel, plotType = "strata")
 plot(modelInflated, plotType = "strata")
-
-#dev.off()
 
 (popEst <- popSizeEst(basicModel))
 
@@ -187,8 +181,8 @@ res2 <- estimatePopsizeFit(
 data.frame(IRLS  = round(c(res$beta, -ll(res$beta), res$iter), 4),
            optim = round(c(res2$beta, -ll(res2$beta), res2$iter[1]), 4))
 
-# Implementing a custom \pkg{singleRcapture} family function {short-title="Implementing custom singleRcapture family function"}
 
+## Suppose we want to implement a very specific zero truncated family function as presented in Appendix B
 
 myFamilyFunction <- function(lambdaLink = c("logit", "cloglog", "probit"),
                              piLink     = c("logit", "cloglog", "probit"),
@@ -524,8 +518,7 @@ myFamilyFunction <- function(lambdaLink = c("logit", "cloglog", "probit"),
   )
 }
 
-
-#A quick tests shows us that this implementation in fact works:
+# A quick tests shows us that this implementation in fact works:
 
 
 set.seed(123)
@@ -546,10 +539,12 @@ mm <- estimatePopsize(
 summary(mm)
 
 
-# where the link functions, such as \code{singleRcapture:::singleRinternalcloglogLink}, are just internal functions in \pkg{singleRcapture} that compute link functions, their inverses and derivatives of both links and inverse links up to the third order:  singleRcapture:::singleRinternalcloglogLink
+#where the link functions, such as singleRcapture:::singleRinternalcloglogLink, are just internal functions in singleRcapture that compute link functions, their inverses and derivatives of both links and inverse links up to the third order:
+
+singleRcapture:::singleRinternalcloglogLink
+
+# One could, of course, include the code for computing them manually.
 
 
-## sessionInfo
-
+# session info
 sessionInfo()
-

@@ -97,20 +97,20 @@ In this paper we focus on methods that involve a single data source with multipl
 
 While methods for two or more sources are implemented in various open-source software packages, for instance \pkg{CARE-4} [@yang2006care4] (in \proglang{GAUSS}), \pkg{Rcapture} [@baillargeon2007rcapture], \pkg{marked} [@laake2013marked] or \pkg{VGAM} [@yee2015vgam] (all in \proglang{R}), single-source capture-recapture (SSCR) methods are either not available at all or are only partially implemented in existing \proglang{R} packages or other software. Therefore, the paper attempts to bridge this gap by introducing the \pkg{singleRcapture} package, which implement *state-of-the-art* SSCR methods and offer a user friendly API resembling existing \proglang{R} functions (e.g., `glm`). In the next subsection we describe existing \proglang{R} packages and other software that could be used for estimating population size using SSCR methods.
 
-## Software for capture-recapture with single and multiple sources {#sec-software}
+## Software for capture-recapture with a single source {#sec-software}
 
 
 The majority of SSCR methods assume zero-truncated distributions or their extensions (e.g., inclusion of one-inflation). The \pkg{Distributions.jl} [@Distributionsjl] (in \proglang{Julia}), \pkg{StatsModels} [@seabold2010statsmodels] (in \proglang{Python}), \pkg{countreg} [@countreg], \pkg{VGAM} [@VGAM-main] or \pkg{distributions3} [@distributions3] (in \proglang{R}) implement some of those truncated distributions (e.g. \code{distributions3::ZTPoisson} or \code{countreg::zerotrunc}) and the most general distributions, such as Generally Altered, Inflated, Truncated and Deflated, can be found in the \pkg{VGAM} package (e.g. \code{VGAM::gaitdpoisson} for the Poisson distribution, see @gaitdcount for a detailed description). However, the estimation of parameters of a given truncated (and possibly inflated) distribution is just the first step (as in the case of log-linear models in capture-recapture with two sources) and, to the best of our knowledge, there is no open-source software that can be used to estimate population size using on SSCR methods and includes variance estimators or diagnostics.
 
 Therefore, the purpose of the \pkg{singleRcapture}, an \proglang{R} package, is to bridge this gap by providing scientists and other practitioners with a tool for estimating population size with SSCR methods. We have implemented state-of-the-art methods, as recently described by @bohning2018capture or @bohning2024one and provided their extensions (e.g., inclusion of covariates, different treatment of one-inflation), which will be covered in detail in Section \ref{sec-theory}. The package implements variance estimation based on various methods, can be used to create custom models and diagnostic plots (e.g. rootograms) with parameters estimated using a modified iteratively reweighted least squares (IRLS) algorithm we have implemented for estimation stability. To the best of our knowledge, no existing open-source package allows the estimation of population size by selecting an appropriate SSCR model, conducting the estimation, and providing informative diagnostics of the results.
 
-The remaining part of the paper is structured as follows. Section \ref{sec-theory} contains a brief description of the theoretical background and information about fitting methods and available methods of variance estimation. Section \ref{sec-main} introduces the main functions of the package. Section \ref{sec-study} presents a case study and contains an assessment of its results, diagnostics and estimates of specific sub-populations. Section \ref{sec-methods} describes classes and \code{S3methods} implemented in the package. The paper ends with conclusions and an appendix showing how to implement a custom model and how to use the \code{estimatePopsizeFit} function which is aimed to mimic the \code{glm.fit} or similar functions. This option could be of interest to users wishing to apply any new bootstrap methods not implemented in the package (see replication materials).
+The remaining part of the paper is structured as follows. Section \ref{sec-theory} contains a brief description of the theoretical background and information about fitting methods and available methods of variance estimation. Section \ref{sec-main} introduces the main functions of the package. Section \ref{sec-study} presents a case study and contains an assessment of its results, diagnostics and estimates of specific sub-populations. Section \ref{sec-methods} describes classes and \code{S3methods} implemented in the package. The paper ends with conclusions and an appendix showing how to use the \code{estimatePopsizeFit} function which is aimed to mimic the \code{glm.fit} or similar functions. In replication materials we show how to implement a custom model as this option could be of interest to users wishing to apply any new bootstrap methods not implemented in the package.
 
 # Theoretical background {#sec-theory}
 
-## How to estimate population size with a single register?
+## How to estimate population size with a single source?
 
-Let $Y_{k}$ represent the number of times the $k$-th unit was observed in a register. Clearly, we only observe $k:Y_{k}>0$ and do not know how many units have been missed (i.e. $Y_{k}=0$), so the population size, denoted by $N$, needs to be estimated. In general, we assume that the conditional distribution of $Y_{k}$ given a vector of covariates $\bx_{k}$ follows a version of the zero-truncated count data distribution (and its extensions). When we know the parameters of the distribution we can estimate the population size using a Horvitz-Thompson type estimator given by:
+Let $Y_{k}$ represent the number of times the $k$-th unit was observed in a single source (e.g. register). Clearly, we only observe $k:Y_{k}>0$ and do not know how many units have been missed (i.e. $Y_{k}=0$), so the population size, denoted by $N$, needs to be estimated. In general, we assume that the conditional distribution of $Y_{k}$ given a vector of covariates $\bx_{k}$ follows a version of the zero-truncated count data distribution (and its extensions). When we know the parameters of the distribution we can estimate the population size using a Horvitz-Thompson type estimator given by:
 
 \begin{equation}
 \hat{N}=
@@ -307,7 +307,6 @@ where each $\bX_{i}$ corresponds to a model matrix associated with a user specif
 In the case of multi-parameter families, we get a matrix of linear predictors $\boeta$ instead of a vector, with the number of columns matching the number of parameters in the distribution. "Weights" (matrix $\bW$) are then modified to be information matrices $\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\boeta_{(k)}^\top\partial\boeta_{(k)}}\right]$, where $\ell$ is the log-likelihood function and $\boeta_{(k)}$ is the $k$-th row of $\boeta$, while in the typical IRLS they are scalars $\displaystyle\mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial\eta_{k}^{2}}\right]$, which is often just
 $\displaystyle-\frac{\partial^{2}\ell}{\partial\eta^{2}}$. 
 
-\newpage
 
 ## Bootstrap variance estimators {#sec-boostrap}
 
@@ -341,18 +340,12 @@ In other words, we first draw a sample size and then a sample conditional on the
 Note that in order for this type of algorithm to result in consistent standard error estimates, it is imperative that the estimated model for the entire superpopulation probability space is consistent, which may be much less realistic than in the case of the semi-parametric bootstrap. The parametric bootstrap algorithm is the default option in \pkg{singleRcapture}.
 
 
-\newpage
-
 # The main function {#sec-main}
 
 \subsection[The estimatePopsize function]{The \code{estimatePopsize} function}
 
 The \pkg{singleRcapture} package is built around the \code{estimatePopsize} function. The main design objective was to make using \code{estimatePopsize} as similar as possible to the standard \code{stats::glm} function or packages for fitting zero-truncated regression models, such as \pkg{countreg} (e.g. \code{countreg::zerotrunc} function). 
 The \code{estimatePopsize} function is used to first fit an appropriate (vector) generalized linear model and to estimate the population size along with its variance. It is assumed that the response vector (i.e. the dependent variable) corresponds to the number of times a given unit was observed in the source. The most important arguments are given in Table \ref{tab-arguments-popsize}; the obligatory ones are \code{formula, data, model}.
-
-An important step in using \code{estimatePopsize} is specifying the \code{model} parameter, which indicates the type of model that will be used for estimating the *unobserved* part of the population. For instance, to fit Chao's or Zelterman's model one should select \code{chao} or \code{zelterman} and, assuming that one-inflation is present, one can select one of the zero-truncated one-inflated (\code{ztoi}$^\ast$) or one-inflated zero-truncated (\code{oizt}$^\ast$) models, such as \code{oiztpoisson} for Poisson or \code{ztoinegbin} for NB2.
-
-If it is assumed that heterogeneity is observed for NB2 models, one can specify the formula in the \code{controlModel} argument with the \code{controlModel} function and the \code{alphaFormula} argument. This enables the user to provide a formula for the dispersion parameter in the NB2 models. If heterogeneity is assumed for \code{ztoi}$^\ast$ or \code{oizt}$^\ast$, one can specify the \code{omegaFormula} argument, which corresponds to the $\omega$ parameter in these models. Finally, if covariates are assumed to be available for the hurdle models (\code{ztHurdle}$^\ast$ or \code{Hurdlezt}$^\ast$), then \code{piFormula} can be specified, as it provides a formula for the probability parameter in these models. 
 
 \begin{table}[ht!]
 \centering
@@ -374,10 +367,15 @@ Argument & Description \\
 \label{tab-arguments-popsize}
 \end{table}
 
+An important step in using \code{estimatePopsize} is specifying the \code{model} parameter, which indicates the type of model that will be used for estimating the *unobserved* part of the population. For instance, to fit Chao's or Zelterman's model one should select \code{chao} or \code{zelterman} and, assuming that one-inflation is present, one can select one of the zero-truncated one-inflated (\code{ztoi}$^\ast$) or one-inflated zero-truncated (\code{oizt}$^\ast$) models, such as \code{oiztpoisson} for Poisson or \code{ztoinegbin} for NB2.
+
+If it is assumed that heterogeneity is observed for NB2 models, one can specify the formula in the \code{controlModel} argument with the \code{controlModel} function and the \code{alphaFormula} argument. This enables the user to provide a formula for the dispersion parameter in the NB2 models. If heterogeneity is assumed for \code{ztoi}$^\ast$ or \code{oizt}$^\ast$, one can specify the \code{omegaFormula} argument, which corresponds to the $\omega$ parameter in these models. Finally, if covariates are assumed to be available for the hurdle models (\code{ztHurdle}$^\ast$ or \code{Hurdlezt}$^\ast$), then \code{piFormula} can be specified, as it provides a formula for the probability parameter in these models. 
+
+
 \subsection[Controlling variance estimation with controlPopVar]{Controlling variance estimation with \code{controlPopVar}}
 
 The \code{estimatePopsize} function makes it possible to specify the variance estimation method via \code{popVar} (e.g. analytic or variance bootstrap) and control the estimation process by specifying \code{controlPopVar}. In the control function \code{controlPopVar} the user can specify the \code{bootType} argument, which has
-three possible values: \code{"parametric", "semi-parametric"} and \code{"nonparametric"}. Additional arguments accepted by the \code{contorlPopVar} function, which are relevant to bootstrap, include:
+three possible values: \code{"parametric", "semiparametric"} and \code{"nonparametric"}. Additional arguments accepted by the \code{contorlPopVar} function, which are relevant to bootstrap, include:
 
 \begin{itemize}
   \item \code{alpha}, \code{B} -- the significance level and the number of bootstrap samples to be performed, respectively, with $0.05$ and $500$ being the default options.
@@ -634,7 +632,7 @@ Only the \code{logNormal} type of confidence interval is used for plotting since
 
 \section[Classes and S3Methods]{Classes and \code{S3Methods}}\label{sec-methods}
 
-We have created a number of classes: the main one: \code{singleRStaticCountData}, \code{singleRfamily} and supplementary: \code{popSizeEstResults}, \code{summarysingleRStaticCountData} and \code{summarysingleRmargin}, which make it possible to extract relevant information regarding the population size. 
+We have created a number of classes. The main ones are: \code{singleRStaticCountData}, \code{singleRfamily}, and supplementary are: \code{popSizeEstResults}, \code{summarysingleRmargin} and \newline \code{summarysingleRStaticCountData}, which make it possible to extract relevant information regarding the population size. 
 
 For instance, the \code{popSizeEst} function can be used to extract information about the estimated size of the population as given below:
 
@@ -699,7 +697,7 @@ The full list of explicitly defined methods for \code{singleRStaticCountData} me
 
 # Concluding remarks
 
-In this paper we have introduced the \pkg{singleRcapture} package for single source capture-recapture models. The package implement state-of-the-art methods for estimating population size based on a single data set with multiple counts. The package implements different methods to account for heterogeneity in capture probabilities, modelled using covariates, as well as behavioral change, modelled using one-inflation. We have built the package to facilitate the implementation of new models using \code{family} objects; their application is exemplified in the Appendix \ref{sec-family}. 
+In this paper we have introduced the \pkg{singleRcapture} package for single source capture-recapture models. The package implement state-of-the-art methods for estimating population size based on a single data set with multiple counts. The package implements different methods to account for heterogeneity in capture probabilities, modelled using covariates, as well as behavioural change, modelled using one-inflation. We have built the package to facilitate the implementation of new models using \code{family} objects; their application is exemplified in the Appendix \ref{sec-family}. An example of implementing a custom family described in Appendix \ref{sec-custom} is presented in replication materials.
 
 Furthermore, since many \proglang{R} users are familiar with \pkg{countreg} or \pkg{VGAM} packages, we have implemented a lightweight extension called \pkg{singleRcaptureExtra}, available through Github (\url{https://github.com/ncn-foreigners/singleRcaptureExtra}), which can be used to integrate \pkg{singleRcapture} with these packages. 
 
@@ -709,7 +707,7 @@ In future work we plan to implement Bayesian estimation using \proglang{Stan} (e
 
 The authors' work has been financed by the National Science Centre in Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
 
-The authors would like to thank Peter van der Heijden, Maarten Cruyff, Dankmar Böhning and Layna Dennett for useful comments that have helped to improve the functionality of the package. In addition, we would like to thank Marcin Szymkowiak and Tymon Świtalski for their valuable comments that have considerably improved the paper.
+The authors would like to thank Peter van der Heijden, Maarten Cruyff, Dankmar Böhning, Łukasz Chrostowski and Layna Dennett for useful comments that have helped to improve the functionality of the package. In addition, we would like to thank Marcin Szymkowiak and Tymon Świtalski for their valuable comments that have considerably improved the paper.
 
 \appendix
 
@@ -854,7 +852,7 @@ A factory function for creating the following functions:
 
 \clearpage
 
-# Implementing a custom \pkg{singleRcapture} family function {short-title="Implementing custom singleRcapture family function"}
+# Implementing a custom \pkg{singleRcapture} family function {#sec-custom short-title="Implementing custom singleRcapture family function"}
 
 Suppose we want to implement a very specific zero truncated family function in the \pkg{singleRcapture}, which corresponds to the following "untruncated" distribution: 
 

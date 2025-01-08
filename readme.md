@@ -22,3 +22,12 @@ Arxiv version: `Chlebicki, P., & Beręsewicz, M. (2025). singleRcapture: An R Pa
 ## Acknowledgements
 
 The authors' work has been financed by the National Science Centre in Poland, OPUS 20, grant no. 2020/39/B/HS4/00941. 
+
+## Code for reproduction of results
+
+```{r}
+knitr::purl("singleRcapture/singleRcapture.Rmd", "submission/code-new.R", documentation = 0)
+knitr::spin("submission/code-new.R")
+file.rename(c("code-new.md", "code-new.html"), paste0("submission/", c("code-new.md", "code-new.html")))
+unlink("figure", recursive = TRUE)
+```

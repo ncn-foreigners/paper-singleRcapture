@@ -1,193 +1,6 @@
-options(prompt = 'R> ', continue = '+ ')
-
-## .bordered {
-##   border: solid;
-## }
-
-# ?ztpoisson
-
-# install.packages("singleRcapture")
-
-library(singleRcapture)
-
-data(netherlandsimmigrant)
-head(netherlandsimmigrant)
-
-summary(netherlandsimmigrant)
-
-table(netherlandsimmigrant$capture)
-
-basicModel <- estimatePopsize(
-  formula = capture ~ gender + age + nation,
-  model   = ztpoisson(),
-  data    = netherlandsimmigrant,
-  controlMethod = controlMethod(silent = TRUE)
-)
-summary(basicModel)
-
-set.seed(123456)
-modelInflated <- estimatePopsize(
-    formula = capture ~ nation,
-    model   = oiztgeom(omegaLink = "cloglog"),
-    data    = netherlandsimmigrant,
-    controlModel = controlModel(
-        omegaFormula = ~ gender + age
-    ),
-    popVar = "bootstrap",
-    controlPopVar = controlPopVar(bootType = "semiparametric")
-)
-summary(modelInflated)
-
-popSizeEst(basicModel)    # alternative: basicModel$populationSize
-popSizeEst(modelInflated) # alternative: modelInflated$populationSize
-
-library(lmtest)
-
-lrtest(basicModel, modelInflated,
-       name = function(x) {
-    if (family(x)$family == "ztpoisson")
-        "Basic model"
-    else "Inflated model"
-})
-
-margFreq <- marginalFreq(basicModel)
-summary(margFreq, df = 1, dropl5 = "group")
-
-margFreq_inf <- marginalFreq(modelInflated)
-summary(margFreq_inf, df = 1, dropl5 = "group")
-
-plot(   basicModel, plotType = "rootogram", main = "ZT Poisson model")
-plot(modelInflated, plotType = "rootogram", main = "OI ZT Geometric model")
-
-#dev.off()
-
-dfb <- dfbeta(basicModel)
-round(t(apply(dfb, 2, quantile)*100), 4)
-
-dfi <- dfbeta(modelInflated)
-round(t(apply(dfi, 2, quantile)*100), 4)
-
-dfb_pop <- dfpopsize(basicModel, dfbeta = dfb)
-dfi_pop <- dfpopsize(modelInflated, dfbeta = dfi)
-summary(dfb_pop)
-summary(dfi_pop)
-
-plot(basicModel, plotType = "dfpopContr",
-     dfpop = dfb_pop, xlim = c(-4500, 150))
-plot(modelInflated, plotType = "dfpopContr",
-     dfpop = dfi_pop, xlim = c(-4500, 150))
-
-#dev.off()
-
-# ?plot.singleRStaticCountData
-
-popSizestrata <- stratifyPopsize(basicModel)
-cols <- c("name", "Observed", "Estimated", "logNormalLowerBound",
-          "logNormalUpperBound")
-popSizestrata_report <- popSizestrata[, cols]
-cols_custom <- c("Name", "Obs", "Estimated", "LowerBound", "UpperBound")
-names(popSizestrata_report) <- cols_custom
-popSizestrata_report
-
-popSizestrata_inflated <- stratifyPopsize(modelInflated)
-popSizestrata_inflated_report <- popSizestrata_inflated[, cols]
-names(popSizestrata_inflated_report) <- cols_custom
-popSizestrata_inflated_report
-
-library(sandwich)
-popSizestrataCustom <- stratifyPopsize(
-  object  = basicModel,
-  strata = ~ gender + age,
-  alpha   = rep(c(0.1, 0.05), each=2),
-  cov     = vcovHC(basicModel, type = "HC4")
-)
-
-popSizestrataCustom_report <- popSizestrataCustom[, c(cols, "confLevel")]
-names(popSizestrataCustom_report) <- c(cols_custom, "alpha")
-popSizestrataCustom_report
-
-# list(
-#   "Stratum 1" = netherlandsimmigrant$gender == "male"   &
-#     netherlandsimmigrant$nation == "Suriname",
-#   "Stratum 2" = netherlandsimmigrant$gender == "female" &
-#     netherlandsimmigrant$nation == "North Africa"
-# )
-
-par(mar = c(2.5, 8.5, 4.1, 2.5), cex.main = .7, cex.lab = .6)
-plot(basicModel, plotType = "strata")
-plot(modelInflated, plotType = "strata")
-
-#dev.off()
-
-(popEst <- popSizeEst(basicModel))
-
-coef(summary(basicModel))
-
-set.seed(1234567890)
-N <- 10000
-gender <- rbinom(N, 1, 0.2)
-eta <- -1 + 0.5*gender
-counts <- simulate(ztpoisson(), eta = cbind(eta), seed = 1)
-summary(data.frame(gender, eta, counts))
-
-# estimatePopsize(
-#   TOTAL_SUB ~ .,
-#   data = farmsubmission,
-#   model = ztoigeom(),
-#   controlModel(
-#     omegaFormula = ~ 1 + log_size + C_TYPE
-#   )
-# )
-
-X <- matrix(data = 0, nrow = 2 * NROW(farmsubmission), ncol = 7)
-
-X[1:NROW(farmsubmission), 1:4] <- model.matrix(
-  ~ 1 + log_size + log_distance + C_TYPE,
-  farmsubmission
-)
-X[-(1:NROW(farmsubmission)), 5:7] <- model.matrix(
-  ~ 1 + log_distance + C_TYPE,
-  farmsubmission
-)
-attr(X, "hwm") <- c(4, 3)
-
-start <- glm.fit(
-  y = farmsubmission$TOTAL_SUB,
-  x = X[1:NROW(farmsubmission), 1:4],
-  family = poisson()
-)$coefficients
-start
-
-res <- estimatePopsizeFit(
-  y            = farmsubmission$TOTAL_SUB,
-  X            = X,
-  method       = "IRLS",
-  priorWeights = 1,
-  family       = ztoigeom(),
-  control      = controlMethod(silent = TRUE),
-  coefStart    = c(start, 0, 0, 0),
-  etaStart     = matrix(X %*% c(start, 0, 0, 0), ncol = 2),
-  offset       = cbind(rep(0, NROW(farmsubmission)),
-                       rep(0, NROW(farmsubmission)))
-)
-
-ll <- ztoigeom()$makeMinusLogLike(y = farmsubmission$TOTAL_SUB, X = X)
-
-res2 <- estimatePopsizeFit(
-  y = farmsubmission$TOTAL_SUB,
-  X = X,
-  method = "optim",
-  priorWeights = 1,
-  family = ztoigeom(),
-  coefStart = c(start, 0, 0, 0),
-  control = controlMethod(silent = TRUE, maxiter = 10000),
-  offset = cbind(rep(0, NROW(farmsubmission)), rep(0, NROW(farmsubmission)))
-)
-
-data.frame(IRLS  = round(c(res$beta, -ll(res$beta), res$iter), 4),
-           optim = round(c(res2$beta, -ll(res2$beta), res2$iter[1]), 4))
-
 # Implementing a custom \pkg{singleRcapture} family function {short-title="Implementing custom singleRcapture family function"}
+
+#Suppose we want to implement a very specific zero truncated family function as presented in Appendix B
 
 
 myFamilyFunction <- function(lambdaLink = c("logit", "cloglog", "probit"),
@@ -524,8 +337,7 @@ myFamilyFunction <- function(lambdaLink = c("logit", "cloglog", "probit"),
   )
 }
 
-
-#A quick tests shows us that this implementation in fact works:
+# A quick tests shows us that this implementation in fact works:
 
 
 set.seed(123)
@@ -546,10 +358,8 @@ mm <- estimatePopsize(
 summary(mm)
 
 
-# where the link functions, such as \code{singleRcapture:::singleRinternalcloglogLink}, are just internal functions in \pkg{singleRcapture} that compute link functions, their inverses and derivatives of both links and inverse links up to the third order:  singleRcapture:::singleRinternalcloglogLink
+#where the link functions, such as \code{singleRcapture:::singleRinternalcloglogLink}, are just internal functions in \pkg{singleRcapture} that compute link functions, their inverses and derivatives of both links and inverse links up to the third order:
 
+singleRcapture:::singleRinternalcloglogLink
 
-## sessionInfo
-
-sessionInfo()
-
+# One could, of course, include the code for computing them manually.
