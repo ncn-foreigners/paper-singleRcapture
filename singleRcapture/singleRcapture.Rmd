@@ -469,10 +469,10 @@ popSizeEst(basicModel)    # alternative: basicModel$populationSize
 popSizeEst(modelInflated) # alternative: modelInflated$populationSize
 ```
 
-The decision whether to use a zero-truncated Poisson or one-inflated zero-truncated geometric model should be based on the assessment of the model and the assumptions regarding the data generation process. One possible method of selection is based on the likelihood ratio test, which can be computed quickly and conveniently with the \pkg{st} (@st) interface:
+The decision whether to use a zero-truncated Poisson or one-inflated zero-truncated geometric model should be based on the assessment of the model and the assumptions regarding the data generation process. One possible method of selection is based on the likelihood ratio test, which can be computed quickly and conveniently with the \pkg{lmtest} (@lmtest) interface:
 
 ```{r, message=FALSE}
-library(st)
+library(lmtest)
 ```
 
 ```{r}
