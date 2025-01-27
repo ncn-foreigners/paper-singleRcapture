@@ -469,10 +469,10 @@ popSizeEst(basicModel)    # alternative: basicModel$populationSize
 popSizeEst(modelInflated) # alternative: modelInflated$populationSize
 ```
 
-The decision whether to use a zero-truncated Poisson or one-inflated zero-truncated geometric model should be based on the assessment of the model and the assumptions regarding the data generation process. One possible method of selection is based on the likelihood ratio test, which can be computed quickly and conveniently with the \pkg{lmtest} (@lmtest) interface:
+The decision whether to use a zero-truncated Poisson or one-inflated zero-truncated geometric model should be based on the assessment of the model and the assumptions regarding the data generation process. One possible method of selection is based on the likelihood ratio test, which can be computed quickly and conveniently with the \pkg{st} (@st) interface:
 
 ```{r, message=FALSE}
-library(lmtest)
+library(st)
 ```
 
 ```{r}
@@ -483,7 +483,7 @@ lrtest(basicModel, modelInflated,
     else "Inflated model"
 })
 ```
-However, the above is not a standard method of model selection in SSCR. The next sections are dedicated to a  detailed description of how to assess the results using standard statistical tests and diagnostics.
+The next sections are dedicated to a detailed description of how one can assess the results using standard statistical tests and diagnostics beyond just the likelihood ratio test.
 
 ## Testing marginal frequencies
 
