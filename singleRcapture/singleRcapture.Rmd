@@ -482,7 +482,7 @@ lrtest(basicModel, modelInflated,
     else "Inflated model"
 })
 ```
-However, the above is not a standard method of model selection in SSCR. The next sections are dedicated to a  detailed description of how to assess the results using standard statistical tests and diagnostics.
+The next sections are dedicated to a detailed description of how one can assess the results using standard statistical tests and diagnostics beyond just the likelihood ratio test.
 
 ## Testing marginal frequencies
 
