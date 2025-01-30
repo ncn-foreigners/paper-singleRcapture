@@ -27,7 +27,11 @@ The authors' work has been financed by the National Science Centre in Poland, OP
 
 ```{r}
 knitr::purl("singleRcapture/singleRcapture.Rmd", "submission/code-new.R", documentation = 0)
+file.append("submission/code-new.R", "submission/custom-family.R") ## comment out dev.off()
 knitr::spin("submission/code-new.R")
-file.rename(c("code-new.md", "code-new.html"), paste0("submission/", c("code-new.md", "code-new.html")))
+file.rename(paste0(c("submission/code-new.R", "code-new.md", "code-new.html")),
+            paste0("submission/", c("code.R", "code.md", "code.html")))
 unlink("figure", recursive = TRUE)
+
 ```
+
