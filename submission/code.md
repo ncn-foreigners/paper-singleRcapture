@@ -131,8 +131,8 @@ modelInflated <- estimatePopsize(
 
 ```
 ## Warning in estimatePopsize.default(formula = capture ~ nation, model = oiztgeom(omegaLink = "cloglog"), :
-## Switching from observed information matrix to Fisher information matrix because hessian of log-likelihood is
-## not negative define.
+## Switching from observed information matrix to Fisher information matrix because hessian of log-likelihood is not
+## negative define.
 ```
 
 ``` r
@@ -219,7 +219,24 @@ popSizeEst(modelInflated) # alternative: modelInflated$populationSize
 
 ``` r
 library(lmtest)
+```
 
+```
+## Loading required package: zoo
+```
+
+```
+## 
+## Attaching package: 'zoo'
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     as.Date, as.Date.numeric
+```
+
+``` r
 lrtest(basicModel, modelInflated,
        name = function(x) {
     if (family(x)$family == "ztpoisson")
@@ -986,35 +1003,61 @@ singleRcapture:::singleRinternalcloglogLink
 ```
 
 ```
-## function(x,
-##                                      inverse = FALSE,
-##                                      deriv = 0) {
-##   deriv <- deriv + 1
-##   if (isFALSE(inverse)) {
-##     res <- switch(
-##       deriv,
-##       log(-log(1 - x)),
-##       -1 / ((1 - x) * log(1 - x)),
-##       -(1 + log(1 - x)) / ((x - 1) ^ 2 * log(1 - x) ^ 2),
-##       (2*log(1 - x) ^ 2 + 3 * log(1 - x) + 2) / (log(1 - x) ^ 3 * (x - 1) ^ 3)
-##     )
-##   } else {
-##     res <- switch(
-##       deriv,
-##       1 - exp(-exp(x)),
-##       exp(x - exp(x)),
-##       (1 - exp(x)) * exp(x - exp(x)),
-##       (exp(2 * x) - 3 * exp(x) + 1) * exp(x - exp(x))
-##     )
-##   }
-##   
-##   res
+## function (x, inverse = FALSE, deriv = 0) 
+## {
+##     deriv <- deriv + 1
+##     if (isFALSE(inverse)) {
+##         res <- switch(deriv, log(-log(1 - x)), -1/((1 - x) * 
+##             log(1 - x)), -(1 + log(1 - x))/((x - 1)^2 * log(1 - 
+##             x)^2), (2 * log(1 - x)^2 + 3 * log(1 - x) + 2)/(log(1 - 
+##             x)^3 * (x - 1)^3))
+##     }
+##     else {
+##         res <- switch(deriv, 1 - exp(-exp(x)), exp(x - exp(x)), 
+##             (1 - exp(x)) * exp(x - exp(x)), (exp(2 * x) - 3 * 
+##                 exp(x) + 1) * exp(x - exp(x)))
+##     }
+##     res
 ## }
-## <bytecode: 0x10e120878>
+## <bytecode: 0x127503390>
 ## <environment: namespace:singleRcapture>
 ```
 
 ``` r
 # One could, of course, include the code for computing them manually.
+
+# Session info
+
+sessionInfo()
+```
+
+```
+## R version 4.4.2 (2024-10-31)
+## Platform: aarch64-apple-darwin20
+## Running under: macOS Sonoma 14.5
+## 
+## Matrix products: default
+## BLAS:   /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib 
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
+## 
+## locale:
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## time zone: Europe/Warsaw
+## tzcode source: internal
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] sandwich_3.1-1       lmtest_0.9-40        zoo_1.8-12           singleRcapture_0.2.2
+## 
+## loaded via a namespace (and not attached):
+##  [1] doParallel_1.0.17   cli_3.6.3           knitr_1.49          rlang_1.1.5         xfun_0.50          
+##  [6] RcppParallel_5.1.10 rticles_0.27        htmltools_0.5.8.1   rsconnect_1.3.4     rmarkdown_2.29     
+## [11] grid_4.4.2          evaluate_1.0.3      fastmap_1.2.0       yaml_2.3.10         foreach_1.5.2      
+## [16] lifecycle_1.0.4     compiler_4.4.2      mathjaxr_1.6-0      codetools_0.2-20    Rcpp_1.0.14        
+## [21] lamW_2.2.4          rstudioapi_0.17.1   lattice_0.22-6      digest_0.6.37       parallel_4.4.2     
+## [26] tools_4.4.2         iterators_1.0.14
 ```
 

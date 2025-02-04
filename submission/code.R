@@ -186,6 +186,7 @@ res2 <- estimatePopsizeFit(
 
 data.frame(IRLS  = round(c(res$beta, -ll(res$beta), res$iter), 4),
            optim = round(c(res2$beta, -ll(res2$beta), res2$iter[1]), 4))
+
 # Implementing a custom \pkg{singleRcapture} family function {short-title="Implementing custom singleRcapture family function"}
 
 #Suppose we want to implement a very specific zero truncated family function as presented in Appendix B
@@ -551,3 +552,7 @@ summary(mm)
 singleRcapture:::singleRinternalcloglogLink
 
 # One could, of course, include the code for computing them manually.
+
+# Session info
+
+sessionInfo()

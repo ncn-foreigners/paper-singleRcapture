@@ -26,6 +26,7 @@ The authors' work has been financed by the National Science Centre in Poland, OP
 ## Code for reproduction of results
 
 ```{r}
+file.copy("singleRcapture/singleRcapture.pdf", "submission/singleRcapture.pdf")
 knitr::purl("singleRcapture/singleRcapture.Rmd", "submission/code-new.R", documentation = 0)
 file.append("submission/code-new.R", "submission/custom-family.R") ## comment out dev.off()
 knitr::spin("submission/code-new.R")
