@@ -130,9 +130,9 @@ modelInflated <- estimatePopsize(
 ```
 
 ```
-## Warning in estimatePopsize.default(formula = capture ~ nation, model = oiztgeom(omegaLink = "cloglog"), :
-## Switching from observed information matrix to Fisher information matrix because hessian of log-likelihood is not
-## negative define.
+## Warning in estimatePopsize.default(formula = capture ~ nation, model = oiztgeom(omegaLink =
+## "cloglog"), : Switching from observed information matrix to Fisher information matrix because hessian
+## of log-likelihood is not negative define.
 ```
 
 ``` r
@@ -304,7 +304,7 @@ plot(modelInflated, plotType = "rootogram", main = "OI ZT Geometric model")
 ![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-2.png)
 
 ``` r
-#dev.off()
+# dev.off()
 
 dfb <- dfbeta(basicModel)
 round(t(apply(dfb, 2, quantile)*100), 4)
@@ -375,7 +375,7 @@ plot(modelInflated, plotType = "dfpopContr",
 ![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-4.png)
 
 ``` r
-#dev.off()
+# dev.off()
 
 # ?plot.singleRStaticCountData
 
@@ -466,7 +466,7 @@ plot(modelInflated, plotType = "strata")
 ![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-6.png)
 
 ``` r
-#dev.off()
+# dev.off()
 
 (popEst <- popSizeEst(basicModel))
 ```
@@ -1003,23 +1003,31 @@ singleRcapture:::singleRinternalcloglogLink
 ```
 
 ```
-## function (x, inverse = FALSE, deriv = 0) 
-## {
-##     deriv <- deriv + 1
-##     if (isFALSE(inverse)) {
-##         res <- switch(deriv, log(-log(1 - x)), -1/((1 - x) * 
-##             log(1 - x)), -(1 + log(1 - x))/((x - 1)^2 * log(1 - 
-##             x)^2), (2 * log(1 - x)^2 + 3 * log(1 - x) + 2)/(log(1 - 
-##             x)^3 * (x - 1)^3))
-##     }
-##     else {
-##         res <- switch(deriv, 1 - exp(-exp(x)), exp(x - exp(x)), 
-##             (1 - exp(x)) * exp(x - exp(x)), (exp(2 * x) - 3 * 
-##                 exp(x) + 1) * exp(x - exp(x)))
-##     }
-##     res
+## function(x,
+##                                      inverse = FALSE,
+##                                      deriv = 0) {
+##   deriv <- deriv + 1
+##   if (isFALSE(inverse)) {
+##     res <- switch(
+##       deriv,
+##       log(-log(1 - x)),
+##       -1 / ((1 - x) * log(1 - x)),
+##       -(1 + log(1 - x)) / ((x - 1) ^ 2 * log(1 - x) ^ 2),
+##       (2*log(1 - x) ^ 2 + 3 * log(1 - x) + 2) / (log(1 - x) ^ 3 * (x - 1) ^ 3)
+##     )
+##   } else {
+##     res <- switch(
+##       deriv,
+##       1 - exp(-exp(x)),
+##       exp(x - exp(x)),
+##       (1 - exp(x)) * exp(x - exp(x)),
+##       (exp(2 * x) - 3 * exp(x) + 1) * exp(x - exp(x))
+##     )
+##   }
+##   
+##   res
 ## }
-## <bytecode: 0x127503390>
+## <bytecode: 0x11eaf58b8>
 ## <environment: namespace:singleRcapture>
 ```
 
@@ -1050,14 +1058,15 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] sandwich_3.1-1       lmtest_0.9-40        zoo_1.8-12           singleRcapture_0.2.2
+## [1] sandwich_3.1-1       lmtest_0.9-40        zoo_1.8-12           singleRcapture_0.2.3
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] doParallel_1.0.17   cli_3.6.3           knitr_1.49          rlang_1.1.5         xfun_0.50          
-##  [6] RcppParallel_5.1.10 rticles_0.27        htmltools_0.5.8.1   rsconnect_1.3.4     rmarkdown_2.29     
-## [11] grid_4.4.2          evaluate_1.0.3      fastmap_1.2.0       yaml_2.3.10         foreach_1.5.2      
-## [16] lifecycle_1.0.4     compiler_4.4.2      mathjaxr_1.6-0      codetools_0.2-20    Rcpp_1.0.14        
-## [21] lamW_2.2.4          rstudioapi_0.17.1   lattice_0.22-6      digest_0.6.37       parallel_4.4.2     
-## [26] tools_4.4.2         iterators_1.0.14
+##  [1] doParallel_1.0.17   cli_3.6.3           knitr_1.49          rlang_1.1.5        
+##  [5] xfun_0.50           RcppParallel_5.1.10 rticles_0.27        htmltools_0.5.8.1  
+##  [9] rsconnect_1.3.4     rmarkdown_2.29      grid_4.4.2          evaluate_1.0.3     
+## [13] fastmap_1.2.0       yaml_2.3.10         foreach_1.5.2       lifecycle_1.0.4    
+## [17] compiler_4.4.2      mathjaxr_1.6-0      codetools_0.2-20    Rcpp_1.0.14        
+## [21] lamW_2.2.4          rstudioapi_0.17.1   lattice_0.22-6      digest_0.6.37      
+## [25] parallel_4.4.2      tools_4.4.2         iterators_1.0.14
 ```
 

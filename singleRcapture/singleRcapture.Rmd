@@ -9,11 +9,11 @@ author:
       | 106 91 Stockholm, Sweden
     email: \email{piotr.chlebicki@math.su.se}
     url: https://github.com/Kertoo, https://www.su.se/profiles/pich3772
-    orcid: 0009-0006-4867-7434
+    orcid: 0009-0006-4867-7434 
   - name: Maciej Beręsewicz
     orcid: 0000-0002-8281-4301
     email: \email{maciej.beresewicz@ue.poznan.pl}
-    url: https://github.com/BERENZ, https://ue.poznan.pl/en/people/dr-maciej-beresewicz/
+    url: https://maciejberesewicz.com
     affiliation: |
       | Poznań University of Economics and Business 
       | Statistical Office in Poznań
@@ -109,7 +109,7 @@ The remaining part of the paper is structured as follows. Section \ref{sec-theor
 
 ## How to estimate population size with a single source?
 
-Let $Y_{k}$ represent the number of times the $k$-th unit was observed in a single source (e.g. register). Clearly, we only observe $k:Y_{k}>0$ and do not know how many units have been missed (i.e. $Y_{k}=0$), so the population size, denoted by $N$, needs to be estimated. In general, we assume that the conditional distribution of $Y_{k}$ given a vector of covariates $\bx_{k}$ follows a version of the zero-truncated count data distribution (and its extensions). When we know the parameters of the distribution we can estimate the population size using a Horvitz-Thompson type estimator given by:
+Let $Y_{k}$ represent the number of times the $k$-th unit was observed in a single source (e.g. register), where $k = 1, 2, \ldots, N$ indexes all units in the population. Clearly, we only observe units with $Y_{k} > 0$ and do not know how many units have been missed (i.e., for how many units $Y_{k} = 0$), so the population size, denoted by $N$, needs to be estimated. In general, we assume that the conditional distribution of $Y_{k}$ given a vector of covariates $\bx_{k}$ follows a version of the zero-truncated count data distribution (and its extensions). When we know the parameters of the distribution we can estimate the population size using a Horvitz-Thompson type estimator given by:
 
 \begin{equation}
 \hat{N}=
@@ -120,9 +120,9 @@ Let $Y_{k}$ represent the number of times the $k$-th unit was observed in a sing
 
 where $I_{k}:=\1_{\mathbb{N}}(Y_{k})$, $N_{obs}$ is the number of observed units and $\1$ is the indicator function, while the maximum likelihood estimate of $N$ is obtained after substituting regression parameters $\bbeta$ for $\mathbb{P}[Y_{k}>0|\bx_{k}]$ in \eqref{eq-ht-estimator}.
 
-The basic SSCR assumes independence between counts, which is a rather naive assumption, since the first capture may significantly influence the behavior of a given unit or limit the possibility of subsequent captures (e.g. due to incarceration). 
+The basic SSCR assumes independence between counts within units, which is a rather naive assumption, since the first capture may significantly influence the behavior of a given unit or limit the possibility of subsequent captures (e.g. due to incarceration). 
 
-To solve these issues, @godwin2017estimation and @ztoi-oizt-poisson introduced one-inflated distributions, which explicitly model the probability of singletons by giving additional mass $\omega$ to singletons denoted as $\1_{\{1\}}(y)$ [cf. @bohning2024one]. In other words they considered a new random varialbe $Y^{\ast}$ that corresponds to the data collection process which exhibits one inflation:
+To solve these issues, @godwin2017estimation and @ztoi-oizt-poisson introduced one-inflated distributions, which explicitly model the probability of singletons by giving additional mass $\omega$ to singletons denoted as $\1_{\{1\}}(y)$ [cf. @bohning2024one]. In other words they considered a new random variable $Y^{\ast}$ that corresponds to the data collection process which exhibits one-inflation:
 
 \begin{equation*}
   \mathbb{P}\left[Y^{\ast}=y|Y^{\ast}>0\right] =
@@ -260,7 +260,7 @@ The approaches presented above differ in their assumptions, computational comple
 
 While not discussed in the literature, the interpretation of heterogeneous $\alpha$ across the population (specified in \code{controlModel}) would be that the unobserved heterogeneity affects the accuracy of the prediction for the dependent variable $Y$ more severely than others. The geometric model (NB with $\alpha=1$) is singled out in the package and often considered in the literature because of inherent computational issues with NB models, which are exacerbated by the fact that data used for SSCR are usually of rather low quality. Data sparsity is a particularly common problem in SSCR and a big challenge for all numerical methods for fitting the (zero-truncated) NB model.
 
-The extra mass $\omega$ in one-inflated models is an important extension to the researcher's toolbox for SSCR models, since the inflation at $y=1$ is likely to occur in many types of applications. For example, when estimating the number of active people who committed criminal acts in a given time period, the fact of being captured for the first time following an arrest is associated with the risk of no longer being able to be captured a second time. One constraint present in modelling via inflated models is that attempts to include both the possibility of one inflation and one deflation lead to both numerical and inferential problems since the parameter space (of $(\omega, \lambda)$ or $(\omega, \lambda, \alpha)$) is then given by $\{(\omega, \lambda, \alpha) | \forall x\in \mathbb{N}: p(x|\omega, \lambda, \alpha)\geq0\}$ for the probability mass function $p$. The boundary of this set is then a $1$ or $2-$dimentional manifold, transforming this parameter space into $\mathbb{R}^{3}$ would require using "link" functions that depend on more than one parameter.
+The extra mass $\omega$ in one-inflated models is an important extension to the researcher's toolbox for SSCR models, since the inflation at $y=1$ is likely to occur in many types of applications. For example, when estimating the number of active people who committed criminal acts in a given time period, the fact of being captured for the first time following an arrest is associated with the risk of no longer being able to be captured a second time. One constraint present in modelling via inflated models is that attempts to include both the possibility of one-inflation and one deflation lead to both numerical and inferential problems since the parameter space (of $(\omega, \lambda)$ or $(\omega, \lambda, \alpha)$) is then given by $\{(\omega, \lambda, \alpha) | \forall x\in \mathbb{N}: p(x|\omega, \lambda, \alpha)\geq0\}$ for the probability mass function $p$. The boundary of this set is then a $1$ or $2-$dimentional manifold, transforming this parameter space into $\mathbb{R}^{3}$ would require using "link" functions that depend on more than one parameter.
 
 Hurdle models represent another approach to modelling one-inflation. They can also model deflation as well as inflation and deflation simultaneously, so they are more flexible and, in the case of hurdle zero-truncated models, appear to be more numerically stable.
 
@@ -413,8 +413,7 @@ head(netherlandsimmigrant)
 ```
 
 
-The number of times each individual appeared in the records is included in the \code{capture} variable. The
-available covariates include \code{gender, age, reason, nation}; the last two represent the reason for being captured and the region of the world a given person comes from:
+The number of times each individual appeared in the records is included in the \code{capture} variable, and each row represents a different individual. The available covariates include \code{gender, age, reason, nation}; the last two represent the reason for being captured and the region of the world a given person comes from:
 
 ```{r, netherlandsimmigrant_summary}
 summary(netherlandsimmigrant)
@@ -706,7 +705,7 @@ In future work we plan to implement Bayesian estimation using \proglang{Stan} (e
 
 The authors' work has been financed by the National Science Centre in Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
 
-The authors would like to thank Peter van der Heijden, Maarten Cruyff, Dankmar Böhning, Łukasz Chrostowski and Layna Dennett for useful comments that have helped to improve the functionality of the package. In addition, we would like to thank Marcin Szymkowiak and Tymon Świtalski for their valuable comments that have considerably improved the paper.
+The authors would like to thank Peter van der Heijden, Maarten Cruyff, Dankmar Böhning, Łukasz Chrostowski and Layna Dennett for useful comments that have helped to improve the functionality of the package. In addition, we would like to thank Marcin Szymkowiak and Tymon Świtalski for their valuable comments that have considerably improved the paper. Finally, we would like to thank Editors for their support and comments that improved the software and paper.
 
 \appendix
 

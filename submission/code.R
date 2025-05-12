@@ -59,7 +59,7 @@ summary(margFreq_inf, df = 1, dropl5 = "group")
 plot(   basicModel, plotType = "rootogram", main = "ZT Poisson model")
 plot(modelInflated, plotType = "rootogram", main = "OI ZT Geometric model")
 
-#dev.off()
+# dev.off()
 
 dfb <- dfbeta(basicModel)
 round(t(apply(dfb, 2, quantile)*100), 4)
@@ -77,7 +77,7 @@ plot(basicModel, plotType = "dfpopContr",
 plot(modelInflated, plotType = "dfpopContr",
      dfpop = dfi_pop, xlim = c(-4500, 150))
 
-#dev.off()
+# dev.off()
 
 # ?plot.singleRStaticCountData
 
@@ -117,7 +117,7 @@ par(mar = c(2.5, 8.5, 4.1, 2.5), cex.main = .7, cex.lab = .6)
 plot(basicModel, plotType = "strata")
 plot(modelInflated, plotType = "strata")
 
-#dev.off()
+# dev.off()
 
 (popEst <- popSizeEst(basicModel))
 
