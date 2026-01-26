@@ -1,21 +1,22 @@
 # "`singleRcapture`: An Package for Single-Source Capture-Recapture Models"
 
-+ [the current version of the paper](singleRcapture/singleRcapture.pdf)
++ [Published version](https://doi.org/10.18637/jss.v115.i01)
 + [Arxiv version](https://arxiv.org/abs/2411.11032)
 
 ## How to cite
 
-Arxiv version: `Chlebicki, P., & Beręsewicz, M. (2025). singleRcapture: An R Package for Single-Source Capture-Recapture Models. arXiv preprint arXiv:2411.11032.`
+Chlebicki, P., & Berȩsewicz, M. (2025). singleRcapture: An R package for single-source capture-recapture models. Journal of Statistical Software, 115(1), 1–30. https://doi.org/10.18637/jss.v115.i01
 
 ```
-@misc{chlebicki2025singlercapturerpackagesinglesource,
-      title={singleRcapture: An R Package for Single-Source Capture-Recapture Models}, 
-      author={Piotr Chlebicki and Maciej Beręsewicz},
-      year={2025},
-      eprint={2411.11032},
-      archivePrefix={arXiv},
-      primaryClass={stat.AP},
-      url={https://arxiv.org/abs/2411.11032}, 
+@Article{,
+    title = {{singleRcapture}: An {R} Package for Single-Source Capture-Recapture Models},
+    author = {Piotr Chlebicki and Maciej Ber\k{e}sewicz},
+    journal = {Journal of Statistical Software},
+    year = {2025},
+    volume = {115},
+    number = {1},
+    pages = {1--30},
+    doi = {10.18637/jss.v115.i01},
 }
 ```
 
